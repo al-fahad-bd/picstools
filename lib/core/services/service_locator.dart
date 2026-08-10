@@ -13,6 +13,10 @@ import '../../features/converter/services/image_converter_service.dart';
 import '../../features/pdf/services/image_pdf_service.dart';
 import '../../features/id_photo/services/id_photo_service.dart';
 import '../../features/signature/services/signature_service.dart';
+import '../../features/bg_remover/data/services/segmentation_service.dart';
+import '../../features/bg_remover/data/repositories/bg_remover_repository_impl.dart';
+import '../../features/bg_remover/domain/repositories/bg_remover_repository.dart';
+import '../../features/bg_remover/presentation/bloc/bg_remover_bloc.dart';
 
 final getIt = GetIt.instance;
 
@@ -36,4 +40,13 @@ Future<void> initServiceLocator() async {
   getIt.registerLazySingleton<ImagePdfService>(() => ImagePdfService());
   getIt.registerLazySingleton<IdPhotoService>(() => IdPhotoService());
   getIt.registerLazySingleton<SignatureService>(() => SignatureService());
+
+  // Background Remover Clean Architecture Services & BLoC
+  getIt.registerLazySingleton<SegmentationService>(() => SegmentationService());
+  getIt.registerLazySingleton<BgRemoverRepository>(
+    () => BgRemoverRepositoryImpl(getIt<SegmentationService>()),
+  );
+  getIt.registerFactory<BgRemoverBloc>(
+    () => BgRemoverBloc(getIt<BgRemoverRepository>()),
+  );
 }
