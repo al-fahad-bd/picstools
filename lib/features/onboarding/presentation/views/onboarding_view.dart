@@ -7,21 +7,30 @@ import '../../../../core/constants/neo_styles.dart';
 import '../../../../core/widgets/neo_button.dart';
 import '../../../../core/widgets/neo_card.dart';
 import '../../../../core/widgets/neo_badge.dart';
+import '../../../../core/widgets/neo_doodles.dart';
 import '../../../../core/services/service_locator.dart';
 
 class OnboardingSlide {
-  final String title;
+  final String titlePrefix;
+  final String highlightedTitle;
+  final String? titleSuffix;
   final String description;
-  final IconData icon;
+  final String imagePath;
   final Color accentColor;
+  final Color softBgColor;
   final String tag;
+  final IconData icon;
 
   OnboardingSlide({
-    required this.title,
+    required this.titlePrefix,
+    required this.highlightedTitle,
+    this.titleSuffix,
     required this.description,
-    required this.icon,
+    required this.imagePath,
     required this.accentColor,
+    required this.softBgColor,
     required this.tag,
+    required this.icon,
   });
 }
 
@@ -38,25 +47,35 @@ class _OnboardingViewState extends State<OnboardingView> {
 
   final List<OnboardingSlide> _slides = [
     OnboardingSlide(
-      title: 'Compress Images\nWithout Losing Quality',
-      description: 'Reduce image file size by up to 90% instantly with smart batch processing.',
-      icon: Icons.compress_rounded,
+      titlePrefix: 'Compress Images\n',
+      highlightedTitle: 'WITHOUT LOSS',
+      description: 'Reduce image file size by up to 90% instantly with smart local batch processing.',
+      imagePath: 'assets/images/onboarding_compress.png',
       accentColor: NeoColors.yellow,
-      tag: 'FAST & EFFICIENT',
+      softBgColor: NeoColors.softYellow,
+      tag: '⚡ FAST & EFFICIENT',
+      icon: Icons.compress_rounded,
     ),
     OnboardingSlide(
-      title: '8 Essential\nImage Tools in One',
-      description: 'Resize, crop, convert JPG/PNG/WebP, build PDFs, make passport photos & digital signatures.',
-      icon: Icons.grid_view_rounded,
+      titlePrefix: '8 Essential\n',
+      highlightedTitle: 'IMAGE TOOLS',
+      titleSuffix: ' In One',
+      description: 'Resize, crop, convert formats, build PDFs, craft passport photos & signatures seamlessly.',
+      imagePath: 'assets/images/onboarding_tools.png',
       accentColor: NeoColors.cyan,
-      tag: 'ALL-IN-ONE UTILITY',
+      softBgColor: NeoColors.softCyan,
+      tag: '🛠️ ALL-IN-ONE UTILITY',
+      icon: Icons.grid_view_rounded,
     ),
     OnboardingSlide(
-      title: '100% On-Device\nPrivate & Secure',
+      titlePrefix: '100% On-Device\n',
+      highlightedTitle: 'PRIVATE & SECURE',
       description: 'All processing happens locally on your mobile device. Your photos never leave your phone.',
-      icon: Icons.shield_rounded,
+      imagePath: 'assets/images/onboarding_privacy.png',
       accentColor: NeoColors.pink,
-      tag: 'PRIVACY FIRST',
+      softBgColor: NeoColors.softPink,
+      tag: '🔒 PRIVACY FIRST',
+      icon: Icons.shield_rounded,
     ),
   ];
 
@@ -74,174 +93,310 @@ class _OnboardingViewState extends State<OnboardingView> {
     final currentSlide = _slides[_currentPage];
 
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              // Header Skip row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: NeoStyles.neoDecoration(
-                          backgroundColor: NeoColors.yellow,
-                          radius: 8,
-                          shadow: 2,
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(6),
-                          child: Image.asset(
-                            'assets/icon/app_icon.png',
-                            width: 28,
-                            height: 28,
-                            fit: BoxFit.cover,
+      backgroundColor: isDark ? NeoColors.darkBg : NeoColors.lightBg,
+      body: CustomPaint(
+        painter: NeoGridBackgroundPainter(isDark: isDark),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+            child: Column(
+              children: [
+                // Header Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Brand Logo Pill
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: NeoStyles.neoDecoration(
+                        backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+                        borderColor: NeoColors.borderLight,
+                        radius: 12,
+                        shadow: 3,
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              color: NeoColors.yellow,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: NeoColors.borderLight, width: 2),
+                            ),
+                            child: Image.asset(
+                              'assets/icon/app_icon.png',
+                              width: 22,
+                              height: 22,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'PicsTools',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                              color: isDark ? NeoColors.textPrimaryDark : NeoColors.textPrimaryLight,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Skip button chip
+                    if (_currentPage < _slides.length - 1)
+                      GestureDetector(
+                        onTap: _completeOnboarding,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          decoration: NeoStyles.neoDecoration(
+                            backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+                            radius: 10,
+                            shadow: 2.5,
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                'SKIP',
+                                style: GoogleFonts.spaceGrotesk(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                  color: isDark ? NeoColors.textPrimaryDark : NeoColors.textPrimaryLight,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(
+                                Icons.fast_forward_rounded,
+                                size: 14,
+                                color: isDark ? NeoColors.textPrimaryDark : NeoColors.borderLight,
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      Text(
-                        'PicsTools',
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (_currentPage < _slides.length - 1)
-                    TextButton(
-                      onPressed: _completeOnboarding,
-                      child: Text(
-                        'SKIP',
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // Main PageView Card
-              Expanded(
-                child: PageView.builder(
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    setState(() => _currentPage = index);
-                  },
-                  itemCount: _slides.length,
-                  itemBuilder: (context, index) {
-                    final slide = _slides[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: NeoCard(
-                        backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
-                        shadowOffset: 6,
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            NeoBadge(
-                              label: slide.tag,
-                              backgroundColor: slide.accentColor,
-                              fontSize: 11,
-                            ),
-                            const Spacer(),
-                            Container(
-                              width: 120,
-                              height: 120,
-                              decoration: NeoStyles.neoDecoration(
-                                backgroundColor: slide.accentColor,
-                                radius: 60,
-                                shadow: 5,
-                              ),
-                              child: Icon(
-                                slide.icon,
-                                size: 60,
-                                color: NeoColors.borderLight,
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              slide.title,
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.spaceGrotesk(
-                                fontSize: 26,
-                                fontWeight: FontWeight.w900,
-                                height: 1.15,
-                              ),
-                            ),
-                            const SizedBox(height: 14),
-                            Text(
-                              slide.description,
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.spaceGrotesk(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
-                                height: 1.4,
-                              ),
-                            ),
-                            const Spacer(),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+                  ],
                 ),
-              ),
-              const SizedBox(height: 20),
+                const SizedBox(height: 16),
 
-              // Indicators & Action buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Page dots
-                  Row(
-                    children: List.generate(_slides.length, (index) {
-                      final isSelected = index == _currentPage;
-                      return AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        margin: const EdgeInsets.only(right: 8),
-                        width: isSelected ? 32 : 12,
-                        height: 12,
-                        decoration: NeoStyles.neoDecoration(
-                          backgroundColor: isSelected
-                              ? currentSlide.accentColor
-                              : (isDark ? Colors.grey.shade800 : Colors.grey.shade300),
-                          radius: 6,
-                          shadow: isSelected ? 2 : 0,
-                          showShadow: isSelected,
+                // Main PageView Card
+                Expanded(
+                  child: PageView.builder(
+                    controller: _pageController,
+                    onPageChanged: (index) {
+                      setState(() => _currentPage = index);
+                    },
+                    itemCount: _slides.length,
+                    itemBuilder: (context, index) {
+                      final slide = _slides[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: NeoCard(
+                          backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+                          shadowOffset: 6,
+                          padding: const EdgeInsets.all(18),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // Tag & Sparkle doodle header
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  NeoBadge(
+                                    label: slide.tag,
+                                    backgroundColor: slide.accentColor,
+                                    fontSize: 11,
+                                  ),
+                                  NeoSparkleDoodle(
+                                    size: 22,
+                                    color: slide.accentColor,
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+
+                              // Neo-Brutalist Frame Illustration Container
+                              Expanded(
+                                flex: 5,
+                                child: Container(
+                                  width: double.infinity,
+                                  decoration: NeoStyles.neoDecoration(
+                                    backgroundColor: isDark
+                                        ? const Color(0xFF27272A)
+                                        : slide.softBgColor,
+                                    radius: 16,
+                                    shadow: 4,
+                                  ),
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      // Background doodle grid
+                                      Positioned.fill(
+                                        child: CustomPaint(
+                                          painter: NeoGridBackgroundPainter(isDark: isDark),
+                                        ),
+                                      ),
+                                      // Illustration Image
+                                      Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(12),
+                                          child: Image.asset(
+                                            slide.imagePath,
+                                            fit: BoxFit.contain,
+                                            errorBuilder: (context, error, stackTrace) {
+                                              return Container(
+                                                color: slide.accentColor,
+                                                child: Center(
+                                                  child: Icon(
+                                                    slide.icon,
+                                                    size: 80,
+                                                    color: NeoColors.borderLight,
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+
+                              // Highlight Typography Box (Image 1 & 3 style)
+                              Expanded(
+                                flex: 4,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    RichText(
+                                      textAlign: TextAlign.center,
+                                      text: TextSpan(
+                                        style: GoogleFonts.spaceGrotesk(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w900,
+                                          height: 1.2,
+                                          color: isDark ? NeoColors.textPrimaryDark : NeoColors.textPrimaryLight,
+                                        ),
+                                        children: [
+                                          TextSpan(text: slide.titlePrefix),
+                                          WidgetSpan(
+                                            alignment: PlaceholderAlignment.middle,
+                                            child: Container(
+                                              margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                              decoration: BoxDecoration(
+                                                color: slide.accentColor,
+                                                borderRadius: BorderRadius.circular(8),
+                                                border: Border.all(
+                                                  color: NeoColors.borderLight,
+                                                  width: 2.5,
+                                                ),
+                                                boxShadow: const [
+                                                  BoxShadow(
+                                                    color: NeoColors.borderLight,
+                                                    offset: Offset(2.5, 2.5),
+                                                    blurRadius: 0,
+                                                  ),
+                                                ],
+                                              ),
+                                              child: Text(
+                                                slide.highlightedTitle,
+                                                style: GoogleFonts.spaceGrotesk(
+                                                  fontSize: 22,
+                                                  fontWeight: FontWeight.w900,
+                                                  color: NeoColors.borderLight,
+                                                  letterSpacing: -0.5,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          if (slide.titleSuffix != null)
+                                            TextSpan(text: slide.titleSuffix),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      slide.description,
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.spaceGrotesk(
+                                        fontSize: 13.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: isDark
+                                            ? NeoColors.textSecondaryDark
+                                            : NeoColors.textSecondaryLight,
+                                        height: 1.35,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
-                    }),
-                  ),
-
-                  // Next / Get Started button
-                  NeoButton(
-                    label: _currentPage == _slides.length - 1 ? 'GET STARTED' : 'NEXT',
-                    icon: const Icon(Icons.arrow_forward_rounded, size: 18, color: NeoColors.borderLight),
-                    backgroundColor: currentSlide.accentColor,
-                    onPressed: () {
-                      if (_currentPage < _slides.length - 1) {
-                        _pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      } else {
-                        _completeOnboarding();
-                      }
                     },
                   ),
-                ],
-              ),
-            ],
+                ),
+                const SizedBox(height: 16),
+
+                // Footer Row (Indicators & Action Button)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Neo Dot Indicators
+                    Row(
+                      children: List.generate(_slides.length, (index) {
+                        final isSelected = index == _currentPage;
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeOutBack,
+                          margin: const EdgeInsets.only(right: 8),
+                          width: isSelected ? 36 : 12,
+                          height: 12,
+                          decoration: NeoStyles.neoDecoration(
+                            backgroundColor: isSelected
+                                ? currentSlide.accentColor
+                                : (isDark ? Colors.grey.shade800 : Colors.grey.shade300),
+                            radius: 6,
+                            shadow: isSelected ? 2.5 : 0,
+                            showShadow: isSelected,
+                          ),
+                        );
+                      }),
+                    ),
+
+                    // Next / Get Started Button
+                    NeoButton(
+                      label: _currentPage == _slides.length - 1 ? 'GET STARTED 🚀' : 'NEXT',
+                      icon: Icon(
+                        _currentPage == _slides.length - 1
+                            ? Icons.rocket_launch_rounded
+                            : Icons.arrow_forward_rounded,
+                        size: 18,
+                        color: NeoColors.borderLight,
+                      ),
+                      backgroundColor: currentSlide.accentColor,
+                      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+                      onPressed: () {
+                        if (_currentPage < _slides.length - 1) {
+                          _pageController.nextPage(
+                            duration: const Duration(milliseconds: 350),
+                            curve: Curves.easeOutCubic,
+                          );
+                        } else {
+                          _completeOnboarding();
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
