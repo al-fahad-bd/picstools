@@ -129,17 +129,6 @@ class _HomeViewState extends State<HomeView> {
       tag: 'VECTOR',
     ),
     ToolItem(
-      id: 'bg_remover',
-      title: 'BG Remover',
-      subtitle: 'Auto-erase background',
-      icon: Icons.auto_fix_high_rounded,
-      accentColor: NeoColors.purple,
-      softColor: NeoColors.softPurple,
-      route: '/tool/bg_remover',
-      category: 'edit',
-      tag: '✨ NEW',
-    ),
-    ToolItem(
       id: 'social',
       title: 'Social Presets',
       subtitle: 'IG, FB, YT & TikTok crop',
@@ -944,8 +933,6 @@ class _ToolCardItemState extends State<_ToolCardItem> {
         return IdPhotoToolGraphic(isDark: widget.isDark);
       case 'signature':
         return SignatureToolGraphic(isDark: widget.isDark);
-      case 'bg_remover':
-        return BgRemoverToolGraphic(isDark: widget.isDark);
       case 'social':
         return SocialToolGraphic(isDark: widget.isDark);
       default:

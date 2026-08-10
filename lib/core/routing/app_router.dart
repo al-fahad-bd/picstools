@@ -9,7 +9,6 @@ import '../../features/converter/presentation/views/convert_view.dart';
 import '../../features/pdf/presentation/views/pdf_view.dart';
 import '../../features/id_photo/presentation/views/id_photo_view.dart';
 import '../../features/signature/presentation/views/signature_view.dart';
-import '../../features/bg_remover/presentation/views/bg_remover_view.dart';
 import '../../features/settings/presentation/views/privacy_policy_view.dart';
 import '../../features/tool_placeholder_view.dart';
 
@@ -60,10 +59,6 @@ abstract class AppRouter {
       GoRoute(
         path: '/tool/signature',
         builder: (context, state) => const SignatureView(),
-      ),
-      GoRoute(
-        path: '/tool/bg_remover',
-        builder: (context, state) => const BgRemoverView(),
       ),
       GoRoute(
         path: '/tool/:name',
