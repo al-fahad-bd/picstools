@@ -86,15 +86,20 @@ class _OnboardingViewState extends State<OnboardingView> {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(2),
                         decoration: NeoStyles.neoDecoration(
                           backgroundColor: NeoColors.yellow,
+                          radius: 8,
                           shadow: 2,
                         ),
-                        child: const Icon(
-                          Icons.photo_library_rounded,
-                          size: 20,
-                          color: NeoColors.borderLight,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: Image.asset(
+                            'assets/icon/app_icon.png',
+                            width: 28,
+                            height: 28,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 10),

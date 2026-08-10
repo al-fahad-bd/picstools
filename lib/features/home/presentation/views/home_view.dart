@@ -185,15 +185,20 @@ class _HomeViewState extends State<HomeView> {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(6),
+                        padding: const EdgeInsets.all(2),
                         decoration: NeoStyles.neoDecoration(
-                          backgroundColor: NeoColors.yellow,
+                          backgroundColor: NeoColors.lightSurface,
+                          radius: 12,
                           shadow: 2,
                         ),
-                        child: const Icon(
-                          Icons.photo_library_rounded,
-                          size: 20,
-                          color: NeoColors.borderLight,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: Image.asset(
+                            'assets/icon/app_icon.png',
+                            width: 36,
+                            height: 36,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -220,38 +225,37 @@ class _HomeViewState extends State<HomeView> {
                 ],
               ),
               GestureDetector(
-                onTap: () =>
-                    setState(() => _currentNavIndex = 2), // Go to Pro
+                onTap: () => setState(() => _currentNavIndex = 2), // Go to Pro
                 child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: NeoStyles.neoDecoration(
-                        backgroundColor: NeoColors.pink,
-                        radius: 12,
-                        shadow: 3,
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.star_rounded,
-                            size: 16,
-                            color: NeoColors.borderLight,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'PRO',
-                            style: GoogleFonts.spaceGrotesk(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w900,
-                              color: NeoColors.borderLight,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
                   ),
+                  decoration: NeoStyles.neoDecoration(
+                    backgroundColor: NeoColors.pink,
+                    radius: 12,
+                    shadow: 3,
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.star_rounded,
+                        size: 16,
+                        color: NeoColors.borderLight,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'PRO',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w900,
+                          color: NeoColors.borderLight,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 20),
