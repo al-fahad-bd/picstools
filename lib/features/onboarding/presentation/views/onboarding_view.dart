@@ -49,7 +49,8 @@ class _OnboardingViewState extends State<OnboardingView> {
     OnboardingSlide(
       titlePrefix: 'Compress Images\n',
       highlightedTitle: 'WITHOUT LOSS',
-      description: 'Reduce image file size by up to 90% instantly with smart local batch processing.',
+      description:
+          'Reduce image file size by up to 90% instantly with smart local batch processing.',
       imagePath: 'assets/images/onboarding_compress.png',
       accentColor: NeoColors.yellow,
       softBgColor: NeoColors.softYellow,
@@ -60,7 +61,8 @@ class _OnboardingViewState extends State<OnboardingView> {
       titlePrefix: '8 Essential\n',
       highlightedTitle: 'IMAGE TOOLS',
       titleSuffix: ' In One',
-      description: 'Resize, crop, convert formats, build PDFs, craft passport photos & signatures seamlessly.',
+      description:
+          'Resize, crop, convert formats, build PDFs, craft passport photos & signatures seamlessly.',
       imagePath: 'assets/images/onboarding_tools.png',
       accentColor: NeoColors.cyan,
       softBgColor: NeoColors.softCyan,
@@ -70,7 +72,8 @@ class _OnboardingViewState extends State<OnboardingView> {
     OnboardingSlide(
       titlePrefix: '100% On-Device\n',
       highlightedTitle: 'PRIVATE & SECURE',
-      description: 'All processing happens locally on your mobile device. Your photos never leave your phone.',
+      description:
+          'All processing happens locally on your mobile device. Your photos never leave your phone.',
       imagePath: 'assets/images/onboarding_privacy.png',
       accentColor: NeoColors.pink,
       softBgColor: NeoColors.softPink,
@@ -98,7 +101,10 @@ class _OnboardingViewState extends State<OnboardingView> {
         painter: NeoGridBackgroundPainter(isDark: isDark),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20.0,
+              vertical: 16.0,
+            ),
             child: Column(
               children: [
                 // Header Row
@@ -107,9 +113,14 @@ class _OnboardingViewState extends State<OnboardingView> {
                   children: [
                     // Brand Logo Pill
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: NeoStyles.neoDecoration(
-                        backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+                        backgroundColor: isDark
+                            ? NeoColors.darkSurface
+                            : NeoColors.lightSurface,
                         borderColor: NeoColors.borderLight,
                         radius: 12,
                         shadow: 3,
@@ -121,7 +132,10 @@ class _OnboardingViewState extends State<OnboardingView> {
                             decoration: BoxDecoration(
                               color: NeoColors.yellow,
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: NeoColors.borderLight, width: 2),
+                              border: Border.all(
+                                color: NeoColors.borderLight,
+                                width: 2,
+                              ),
                             ),
                             child: Image.asset(
                               'assets/icon/app_icon.png',
@@ -136,7 +150,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 18,
                               fontWeight: FontWeight.w900,
-                              color: isDark ? NeoColors.textPrimaryDark : NeoColors.textPrimaryLight,
+                              color: isDark
+                                  ? NeoColors.textPrimaryDark
+                                  : NeoColors.textPrimaryLight,
                               letterSpacing: -0.5,
                             ),
                           ),
@@ -149,9 +165,14 @@ class _OnboardingViewState extends State<OnboardingView> {
                       GestureDetector(
                         onTap: _completeOnboarding,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
                           decoration: NeoStyles.neoDecoration(
-                            backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+                            backgroundColor: isDark
+                                ? NeoColors.darkSurface
+                                : NeoColors.lightSurface,
                             radius: 10,
                             shadow: 2.5,
                           ),
@@ -162,7 +183,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                                 style: GoogleFonts.spaceGrotesk(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w800,
-                                  color: isDark ? NeoColors.textPrimaryDark : NeoColors.textPrimaryLight,
+                                  color: isDark
+                                      ? NeoColors.textPrimaryDark
+                                      : NeoColors.textPrimaryLight,
                                   letterSpacing: 0.5,
                                 ),
                               ),
@@ -170,7 +193,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                               Icon(
                                 Icons.fast_forward_rounded,
                                 size: 14,
-                                color: isDark ? NeoColors.textPrimaryDark : NeoColors.borderLight,
+                                color: isDark
+                                    ? NeoColors.textPrimaryDark
+                                    : NeoColors.borderLight,
                               ),
                             ],
                           ),
@@ -193,7 +218,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 6),
                         child: NeoCard(
-                          backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+                          backgroundColor: isDark
+                              ? NeoColors.darkSurface
+                              : NeoColors.lightSurface,
                           shadowOffset: 6,
                           padding: const EdgeInsets.all(18),
                           child: Column(
@@ -201,7 +228,8 @@ class _OnboardingViewState extends State<OnboardingView> {
                             children: [
                               // Tag & Sparkle doodle header
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   NeoBadge(
                                     label: slide.tag,
@@ -234,29 +262,35 @@ class _OnboardingViewState extends State<OnboardingView> {
                                       // Background doodle grid
                                       Positioned.fill(
                                         child: CustomPaint(
-                                          painter: NeoGridBackgroundPainter(isDark: isDark),
+                                          painter: NeoGridBackgroundPainter(
+                                            isDark: isDark,
+                                          ),
                                         ),
                                       ),
                                       // Illustration Image
                                       Padding(
                                         padding: const EdgeInsets.all(12.0),
                                         child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                           child: Image.asset(
                                             slide.imagePath,
                                             fit: BoxFit.contain,
-                                            errorBuilder: (context, error, stackTrace) {
-                                              return Container(
-                                                color: slide.accentColor,
-                                                child: Center(
-                                                  child: Icon(
-                                                    slide.icon,
-                                                    size: 80,
-                                                    color: NeoColors.borderLight,
-                                                  ),
-                                                ),
-                                              );
-                                            },
+                                            errorBuilder:
+                                                (context, error, stackTrace) {
+                                                  return Container(
+                                                    color: slide.accentColor,
+                                                    child: Center(
+                                                      child: Icon(
+                                                        slide.icon,
+                                                        size: 80,
+                                                        color: NeoColors
+                                                            .borderLight,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
                                           ),
                                         ),
                                       ),
@@ -279,25 +313,38 @@ class _OnboardingViewState extends State<OnboardingView> {
                                           fontSize: 24,
                                           fontWeight: FontWeight.w900,
                                           height: 1.2,
-                                          color: isDark ? NeoColors.textPrimaryDark : NeoColors.textPrimaryLight,
+                                          color: isDark
+                                              ? NeoColors.textPrimaryDark
+                                              : NeoColors.textPrimaryLight,
                                         ),
                                         children: [
                                           TextSpan(text: slide.titlePrefix),
                                           WidgetSpan(
-                                            alignment: PlaceholderAlignment.middle,
+                                            alignment:
+                                                PlaceholderAlignment.middle,
                                             child: Container(
-                                              margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 2,
+                                                    vertical: 2,
+                                                  ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 8,
+                                                    vertical: 2,
+                                                  ),
                                               decoration: BoxDecoration(
                                                 color: slide.accentColor,
-                                                borderRadius: BorderRadius.circular(8),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
                                                 border: Border.all(
                                                   color: NeoColors.borderLight,
                                                   width: 2.5,
                                                 ),
                                                 boxShadow: const [
                                                   BoxShadow(
-                                                    color: NeoColors.borderLight,
+                                                    color:
+                                                        NeoColors.borderLight,
                                                     offset: Offset(2.5, 2.5),
                                                     blurRadius: 0,
                                                   ),
@@ -361,7 +408,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                           decoration: NeoStyles.neoDecoration(
                             backgroundColor: isSelected
                                 ? currentSlide.accentColor
-                                : (isDark ? Colors.grey.shade800 : Colors.grey.shade300),
+                                : (isDark
+                                      ? Colors.grey.shade800
+                                      : Colors.grey.shade300),
                             radius: 6,
                             shadow: isSelected ? 2.5 : 0,
                             showShadow: isSelected,
@@ -372,7 +421,9 @@ class _OnboardingViewState extends State<OnboardingView> {
 
                     // Next / Get Started Button
                     NeoButton(
-                      label: _currentPage == _slides.length - 1 ? 'GET STARTED 🚀' : 'NEXT',
+                      label: _currentPage == _slides.length - 1
+                          ? 'GET STARTED 🚀'
+                          : 'NEXT',
                       icon: Icon(
                         _currentPage == _slides.length - 1
                             ? Icons.rocket_launch_rounded
@@ -381,7 +432,10 @@ class _OnboardingViewState extends State<OnboardingView> {
                         color: NeoColors.borderLight,
                       ),
                       backgroundColor: currentSlide.accentColor,
-                      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 22,
+                        vertical: 14,
+                      ),
                       onPressed: () {
                         if (_currentPage < _slides.length - 1) {
                           _pageController.nextPage(

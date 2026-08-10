@@ -8,6 +8,8 @@ import '../../../../core/widgets/neo_button.dart';
 import '../../../../core/widgets/neo_badge.dart';
 import '../../../../core/widgets/neo_text_field.dart';
 import '../../../../core/widgets/neo_bottom_nav_bar.dart';
+import '../../../../core/widgets/neo_doodles.dart';
+import '../../../../core/widgets/neo_tool_graphics.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/history_service.dart';
 import '../../../../core/utils/file_utils.dart';
@@ -18,8 +20,10 @@ class ToolItem {
   final String subtitle;
   final IconData icon;
   final Color accentColor;
+  final Color softColor;
   final String route;
-  final bool isPopular;
+  final String category; // 'popular', 'edit', 'convert', 'utilities'
+  final String tag;
 
   const ToolItem({
     required this.id,
@@ -27,8 +31,10 @@ class ToolItem {
     required this.subtitle,
     required this.icon,
     required this.accentColor,
+    required this.softColor,
     required this.route,
-    this.isPopular = false,
+    required this.category,
+    required this.tag,
   });
 }
 
@@ -42,73 +48,96 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   int _currentNavIndex = 0;
   String _searchQuery = '';
+  String _selectedCategory = 'ALL';
 
   final List<ToolItem> _allTools = const [
     ToolItem(
       id: 'compress',
-      title: 'Compress',
-      subtitle: 'Reduce image file size',
+      title: 'Compress Image',
+      subtitle: 'Shrink file size up to 90%',
       icon: Icons.compress_rounded,
       accentColor: NeoColors.yellow,
+      softColor: NeoColors.softYellow,
       route: '/compress',
-      isPopular: true,
-    ),
-    ToolItem(
-      id: 'resize',
-      title: 'Resize',
-      subtitle: 'Width, height & ratio',
-      icon: Icons.aspect_ratio_rounded,
-      accentColor: NeoColors.cyan,
-      route: '/tool/resize',
-    ),
-    ToolItem(
-      id: 'crop',
-      title: 'Crop',
-      subtitle: 'Rotate, flip & aspect ratio',
-      icon: Icons.crop_rounded,
-      accentColor: NeoColors.pink,
-      route: '/tool/crop',
-    ),
-    ToolItem(
-      id: 'convert',
-      title: 'Convert',
-      subtitle: 'JPG, PNG, WebP format',
-      icon: Icons.transform_rounded,
-      accentColor: NeoColors.green,
-      route: '/tool/convert',
+      category: 'popular',
+      tag: '🔥 POPULAR',
     ),
     ToolItem(
       id: 'pdf',
-      title: 'Image → PDF',
-      subtitle: 'Single or batch to PDF',
+      title: 'Image to PDF',
+      subtitle: 'Merge images into PDF doc',
       icon: Icons.picture_as_pdf_rounded,
       accentColor: NeoColors.purple,
+      softColor: NeoColors.softPurple,
       route: '/tool/pdf',
-      isPopular: true,
+      category: 'popular',
+      tag: '🔥 POPULAR',
+    ),
+    ToolItem(
+      id: 'resize',
+      title: 'Resize Image',
+      subtitle: 'Exact width, height & ratio',
+      icon: Icons.aspect_ratio_rounded,
+      accentColor: NeoColors.cyan,
+      softColor: NeoColors.softCyan,
+      route: '/tool/resize',
+      category: 'edit',
+      tag: 'ESSENTIAL',
+    ),
+    ToolItem(
+      id: 'crop',
+      title: 'Crop & Rotate',
+      subtitle: 'Freehand, 1:1, 16:9 presets',
+      icon: Icons.crop_rounded,
+      accentColor: NeoColors.pink,
+      softColor: NeoColors.softPink,
+      route: '/tool/crop',
+      category: 'edit',
+      tag: 'FAST',
+    ),
+    ToolItem(
+      id: 'convert',
+      title: 'Format Convert',
+      subtitle: 'JPG, PNG, WebP & HEIC',
+      icon: Icons.transform_rounded,
+      accentColor: NeoColors.green,
+      softColor: NeoColors.softGreen,
+      route: '/tool/convert',
+      category: 'convert',
+      tag: 'BATCH',
     ),
     ToolItem(
       id: 'id_photo',
-      title: 'ID / Passport',
-      subtitle: 'Passport photo generator',
+      title: 'Passport Photo',
+      subtitle: 'Official ID standard sizes',
       icon: Icons.badge_rounded,
       accentColor: NeoColors.orange,
+      softColor: NeoColors.softOrange,
       route: '/tool/id_photo',
+      category: 'utilities',
+      tag: 'SMART',
     ),
     ToolItem(
       id: 'signature',
-      title: 'Signature',
-      subtitle: 'Digital signature canvas',
+      title: 'Digital Signature',
+      subtitle: 'Draw & export PNG sign',
       icon: Icons.draw_rounded,
       accentColor: NeoColors.blue,
+      softColor: NeoColors.softCyan,
       route: '/tool/signature',
+      category: 'utilities',
+      tag: 'VECTOR',
     ),
     ToolItem(
       id: 'social',
-      title: 'Social Resize',
-      subtitle: 'IG, FB, YT & TikTok presets',
+      title: 'Social Presets',
+      subtitle: 'IG, FB, YT & TikTok crop',
       icon: Icons.share_rounded,
       accentColor: NeoColors.yellow,
+      softColor: NeoColors.softYellow,
       route: '/tool/social',
+      category: 'edit',
+      tag: 'PRESETS',
     ),
   ];
 
@@ -141,7 +170,10 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
+      backgroundColor: isDark ? NeoColors.darkBg : NeoColors.lightBg,
       bottomNavigationBar: NeoBottomNavBar(
         currentIndex: _currentNavIndex,
         items: _navItems,
@@ -161,13 +193,23 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  // Tab 1: Home Dashboard
+  // Tab 1: Professional Neo-Brutalist Home Dashboard
   Widget _buildHomeTab(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
     final filteredTools = _allTools.where((t) {
-      final q = _searchQuery.toLowerCase();
-      return t.title.toLowerCase().contains(q) ||
-          t.subtitle.toLowerCase().contains(q);
+      final matchesSearch =
+          t.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          t.subtitle.toLowerCase().contains(_searchQuery.toLowerCase());
+
+      final matchesCategory =
+          _selectedCategory == 'ALL' ||
+          (_selectedCategory == 'POPULAR' && t.category == 'popular') ||
+          (_selectedCategory == 'EDIT' && t.category == 'edit') ||
+          (_selectedCategory == 'CONVERT' && t.category == 'convert') ||
+          (_selectedCategory == 'UTILITIES' && t.category == 'utilities');
+
+      return matchesSearch && matchesCategory;
     }).toList();
 
     return SingleChildScrollView(
@@ -179,57 +221,61 @@ class _HomeViewState extends State<HomeView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: NeoStyles.neoDecoration(
-                          backgroundColor: NeoColors.lightSurface,
-                          radius: 12,
-                          shadow: 2,
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(6),
-                          child: Image.asset(
-                            'assets/icon/app_icon.png',
-                            width: 36,
-                            height: 36,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'PicsTools',
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w900,
+              // Logo Pill
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: NeoStyles.neoDecoration(
+                  backgroundColor: isDark
+                      ? NeoColors.darkSurface
+                      : NeoColors.lightSurface,
+                  radius: 14,
+                  shadow: 3,
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: NeoColors.yellow,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: NeoColors.borderLight,
+                          width: 2,
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Image tools, made simple.',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: isDark
-                          ? NeoColors.textSecondaryDark
-                          : NeoColors.textSecondaryLight,
+                      child: Image.asset(
+                        'assets/icon/app_icon.png',
+                        width: 24,
+                        height: 24,
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 10),
+                    Text(
+                      'PicsTools',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -0.5,
+                        color: isDark
+                            ? NeoColors.textPrimaryDark
+                            : NeoColors.textPrimaryLight,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+
+              // PRO Badge
               GestureDetector(
-                onTap: () => setState(() => _currentNavIndex = 2), // Go to Pro
+                onTap: () => setState(() => _currentNavIndex = 2),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+                    horizontal: 14,
+                    vertical: 8,
                   ),
                   decoration: NeoStyles.neoDecoration(
                     backgroundColor: NeoColors.pink,
@@ -239,8 +285,8 @@ class _HomeViewState extends State<HomeView> {
                   child: Row(
                     children: [
                       const Icon(
-                        Icons.star_rounded,
-                        size: 16,
+                        Icons.bolt_rounded,
+                        size: 18,
                         color: NeoColors.borderLight,
                       ),
                       const SizedBox(width: 4),
@@ -250,6 +296,7 @@ class _HomeViewState extends State<HomeView> {
                           fontSize: 13,
                           fontWeight: FontWeight.w900,
                           color: NeoColors.borderLight,
+                          letterSpacing: 0.5,
                         ),
                       ),
                     ],
@@ -258,25 +305,173 @@ class _HomeViewState extends State<HomeView> {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 18),
 
-          // Pro Upgrade Banner
+          // Title Header with Highlight Pill (Matching Onboarding Vibe)
+          Row(
+            children: [
+              Expanded(
+                child: RichText(
+                  text: TextSpan(
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
+                      height: 1.2,
+                      color: isDark
+                          ? NeoColors.textPrimaryDark
+                          : NeoColors.textPrimaryLight,
+                    ),
+                    children: [
+                      const TextSpan(text: '8 Essential '),
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: NeoColors.yellow,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: NeoColors.borderLight,
+                              width: 2,
+                            ),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: NeoColors.borderLight,
+                                offset: Offset(2, 2),
+                                blurRadius: 0,
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            'IMAGE TOOLS',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                              color: NeoColors.borderLight,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const NeoSparkleDoodle(size: 24, color: NeoColors.cyan),
+            ],
+          ),
+          const SizedBox(height: 14),
+
+          // Search Field
+          NeoTextField(
+            hintText: 'Search tools (compress, resize, pdf)...',
+            prefixIcon: const Icon(Icons.search_rounded),
+            onChanged: (q) => setState(() => _searchQuery = q),
+          ),
+          const SizedBox(height: 16),
+
+          // Category Chips (Neo Brutalism Horizontal Selector)
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildCategoryChip('ALL', isDark),
+                const SizedBox(width: 8),
+                _buildCategoryChip('POPULAR', isDark),
+                const SizedBox(width: 8),
+                _buildCategoryChip('EDIT', isDark),
+                const SizedBox(width: 8),
+                _buildCategoryChip('CONVERT', isDark),
+                const SizedBox(width: 8),
+                _buildCategoryChip('UTILITIES', isDark),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
+
+          // Tools Grid with Custom Neo Mini Illustrations
+          if (filteredTools.isEmpty)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(32),
+              decoration: NeoStyles.neoDecoration(
+                backgroundColor: isDark
+                    ? NeoColors.darkSurface
+                    : NeoColors.lightSurface,
+                radius: 16,
+                shadow: 4,
+              ),
+              child: Column(
+                children: [
+                  const Icon(
+                    Icons.search_off_rounded,
+                    size: 48,
+                    color: NeoColors.borderLight,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'No Tools Found',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Try searching for another keyword like "compress" or "pdf".',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 13,
+                      color: isDark
+                          ? NeoColors.textSecondaryDark
+                          : NeoColors.textSecondaryLight,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: filteredTools.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 14,
+                mainAxisSpacing: 14,
+                childAspectRatio: 0.74,
+              ),
+              itemBuilder: (context, index) {
+                final tool = filteredTools[index];
+                return _ToolCardItem(
+                  tool: tool,
+                  isDark: isDark,
+                  onTap: () => context.push(tool.route),
+                );
+              },
+            ),
+          const SizedBox(height: 24),
+
+          // Featured Pro Banner (Matching Onboarding Aesthetics)
           NeoCard(
             backgroundColor: NeoColors.softYellow,
-            shadowOffset: 4,
+            shadowOffset: 5,
+            padding: const EdgeInsets.all(18),
             onTap: () => setState(() => _currentNavIndex = 2),
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(12),
                   decoration: NeoStyles.neoDecoration(
                     backgroundColor: NeoColors.yellow,
-                    radius: 12,
-                    shadow: 2,
+                    radius: 14,
+                    shadow: 3,
                   ),
                   child: const Icon(
-                    Icons.bolt_rounded,
-                    size: 28,
+                    Icons.workspace_premium_rounded,
+                    size: 32,
                     color: NeoColors.borderLight,
                   ),
                 ),
@@ -285,20 +480,31 @@ class _HomeViewState extends State<HomeView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Unlock PicsTools Pro',
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w900,
-                          color: NeoColors.borderLight,
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            'PicsTools PRO',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                              color: NeoColors.borderLight,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          const NeoBadge(
+                            label: 'UNLIMITED',
+                            backgroundColor: NeoColors.pink,
+                            fontSize: 9,
+                          ),
+                        ],
                       ),
+                      const SizedBox(height: 2),
                       Text(
-                        'Unlimited batch processing & 0 ads',
+                        'Batch processing without limits & 0 ads.',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: NeoColors.borderLight.withValues(alpha: 0.8),
+                          color: NeoColors.borderLight.withValues(alpha: 0.85),
                         ),
                       ),
                     ],
@@ -307,119 +513,44 @@ class _HomeViewState extends State<HomeView> {
                 const Icon(
                   Icons.arrow_forward_rounded,
                   color: NeoColors.borderLight,
+                  size: 22,
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 20),
-
-          // Search Field
-          NeoTextField(
-            hintText: 'Search image tools...',
-            prefixIcon: const Icon(Icons.search_rounded),
-            onChanged: (q) => setState(() => _searchQuery = q),
-          ),
-          const SizedBox(height: 24),
-
-          // All Tools Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Image Tools',
-                style: GoogleFonts.spaceGrotesk(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              NeoBadge(
-                label: '${filteredTools.length} TOOLS',
-                backgroundColor: NeoColors.cyan,
-                fontSize: 10,
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-
-          // Tools Grid (Responsive 2-column)
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: filteredTools.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 14,
-              mainAxisSpacing: 14,
-              childAspectRatio: 1.15,
-            ),
-            itemBuilder: (context, index) {
-              final tool = filteredTools[index];
-              return NeoCard(
-                backgroundColor: isDark
-                    ? NeoColors.darkSurface
-                    : NeoColors.lightSurface,
-                shadowOffset: 4,
-                padding: const EdgeInsets.all(14),
-                onTap: () => context.push(tool.route),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: NeoStyles.neoDecoration(
-                            backgroundColor: tool.accentColor,
-                            radius: 10,
-                            shadow: 2,
-                          ),
-                          child: Icon(
-                            tool.icon,
-                            size: 22,
-                            color: NeoColors.borderLight,
-                          ),
-                        ),
-                        if (tool.isPopular)
-                          const NeoBadge(
-                            label: 'POPULAR',
-                            backgroundColor: NeoColors.pink,
-                            fontSize: 9,
-                          ),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          tool.title,
-                          style: GoogleFonts.spaceGrotesk(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          tool.subtitle,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.spaceGrotesk(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                            color: isDark
-                                ? NeoColors.textSecondaryDark
-                                : NeoColors.textSecondaryLight,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryChip(String label, bool isDark) {
+    final isSelected = _selectedCategory == label;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedCategory = label),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: NeoStyles.neoDecoration(
+          backgroundColor: isSelected
+              ? NeoColors.yellow
+              : (isDark ? NeoColors.darkSurface : NeoColors.lightSurface),
+          radius: 12,
+          shadow: isSelected ? 3 : 1.5,
+          showShadow: true,
+        ),
+        child: Text(
+          label,
+          style: GoogleFonts.spaceGrotesk(
+            fontSize: 12,
+            fontWeight: FontWeight.w900,
+            color: isSelected
+                ? NeoColors.borderLight
+                : (isDark
+                      ? NeoColors.textPrimaryDark
+                      : NeoColors.textPrimaryLight),
+            letterSpacing: 0.5,
+          ),
+        ),
       ),
     );
   }
@@ -762,6 +893,165 @@ class _HomeViewState extends State<HomeView> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// Ultra-Premier Neo-Brutalist Tool Card Item Widget with Custom Graphic Mini Illustrations
+class _ToolCardItem extends StatefulWidget {
+  final ToolItem tool;
+  final bool isDark;
+  final VoidCallback onTap;
+
+  const _ToolCardItem({
+    required this.tool,
+    required this.isDark,
+    required this.onTap,
+  });
+
+  @override
+  State<_ToolCardItem> createState() => _ToolCardItemState();
+}
+
+class _ToolCardItemState extends State<_ToolCardItem> {
+  bool _isPressed = false;
+
+  Widget _buildToolGraphic(String toolId) {
+    switch (toolId) {
+      case 'compress':
+        return CompressToolGraphic(isDark: widget.isDark);
+      case 'pdf':
+        return PdfToolGraphic(isDark: widget.isDark);
+      case 'resize':
+        return ResizeToolGraphic(isDark: widget.isDark);
+      case 'crop':
+        return CropToolGraphic(isDark: widget.isDark);
+      case 'convert':
+        return ConvertToolGraphic(isDark: widget.isDark);
+      case 'id_photo':
+        return IdPhotoToolGraphic(isDark: widget.isDark);
+      case 'signature':
+        return SignatureToolGraphic(isDark: widget.isDark);
+      case 'social':
+        return SocialToolGraphic(isDark: widget.isDark);
+      default:
+        return CompressToolGraphic(isDark: widget.isDark);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cardBg = widget.isDark
+        ? NeoColors.darkSurface
+        : widget.tool.softColor;
+
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) => setState(() => _isPressed = false),
+      onTapCancel: () => setState(() => _isPressed = false),
+      onTap: widget.onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 100),
+        transform: Matrix4.translationValues(
+          _isPressed ? 3.0 : 0.0,
+          _isPressed ? 3.0 : 0.0,
+          0,
+        ),
+        padding: const EdgeInsets.all(12),
+        decoration: NeoStyles.neoDecoration(
+          backgroundColor: cardBg,
+          borderColor: NeoColors.borderLight,
+          radius: 16,
+          shadow: _isPressed ? 1.5 : 4.5,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Top Row: Tag Badge & Sparkle Icon Doodle
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                NeoBadge(
+                  label: widget.tool.tag,
+                  backgroundColor: widget.isDark
+                      ? widget.tool.accentColor
+                      : NeoColors.lightSurface,
+                  textColor: NeoColors.borderLight,
+                  fontSize: 8.5,
+                ),
+                NeoSparkleDoodle(size: 16, color: widget.tool.accentColor),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Middle Hero Container: Custom Neo Mini Illustration
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: widget.isDark
+                      ? const Color(0xFF1E1E24)
+                      : NeoColors.lightSurface,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: NeoColors.borderLight, width: 2),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: NeoColors.borderLight,
+                      offset: Offset(2, 2),
+                      blurRadius: 0,
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Center(child: _buildToolGraphic(widget.tool.id)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            // Bottom Info: Title + Arrow & Subtitle
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.tool.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
+                      color: widget.isDark
+                          ? NeoColors.textPrimaryDark
+                          : NeoColors.textPrimaryLight,
+                      height: 1.15,
+                    ),
+                  ),
+                ),
+                const Icon(
+                  Icons.arrow_forward_rounded,
+                  size: 16,
+                  color: NeoColors.borderLight,
+                ),
+              ],
+            ),
+            const SizedBox(height: 2),
+            Text(
+              widget.tool.subtitle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.spaceGrotesk(
+                fontSize: 10.5,
+                fontWeight: FontWeight.w600,
+                color: widget.isDark
+                    ? NeoColors.textSecondaryDark
+                    : NeoColors.textSecondaryLight,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
