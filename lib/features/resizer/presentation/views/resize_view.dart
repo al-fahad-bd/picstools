@@ -87,35 +87,37 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
           ),
         ),
       ),
-      body: BlocConsumer<ResizerBloc, ResizerState>(
-        listener: (context, state) {
-          if (state is ResizerConfiguredState) {
-            if (_widthController.text.isEmpty || _heightController.text.isEmpty) {
-              _widthController.text = state.targetWidth.toString();
-              _heightController.text = state.targetHeight.toString();
+      body: SafeArea(
+        child: BlocConsumer<ResizerBloc, ResizerState>(
+          listener: (context, state) {
+            if (state is ResizerConfiguredState) {
+              if (_widthController.text.isEmpty || _heightController.text.isEmpty) {
+                _widthController.text = state.targetWidth.toString();
+                _heightController.text = state.targetHeight.toString();
+              }
             }
-          }
-          if (state is ResizerErrorState) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: NeoColors.red,
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          if (state is ResizerInitialState) {
-            return _buildEmptyState(context, isDark);
-          } else if (state is ResizerConfiguredState) {
-            return _buildConfigurationState(context, state, isDark);
-          } else if (state is ResizerProcessingState) {
-            return _buildProcessingState(context, state, isDark);
-          } else if (state is ResizerSuccessState) {
-            return _buildSuccessState(context, state, isDark);
-          }
-          return const SizedBox.shrink();
-        },
+            if (state is ResizerErrorState) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: NeoColors.red,
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state is ResizerInitialState) {
+              return _buildEmptyState(context, isDark);
+            } else if (state is ResizerConfiguredState) {
+              return _buildConfigurationState(context, state, isDark);
+            } else if (state is ResizerProcessingState) {
+              return _buildProcessingState(context, state, isDark);
+            } else if (state is ResizerSuccessState) {
+              return _buildSuccessState(context, state, isDark);
+            }
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }

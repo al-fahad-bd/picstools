@@ -195,29 +195,31 @@ class _PdfViewContent extends StatelessWidget {
           ),
         ),
       ),
-      body: BlocConsumer<PdfBloc, PdfState>(
-        listener: (context, state) {
-          if (state is PdfErrorState) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: NeoColors.red,
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          if (state is PdfInitialState) {
-            return _buildEmptyState(context, isDark);
-          } else if (state is PdfConfiguredState) {
-            return _buildConfigurationState(context, state, isDark);
-          } else if (state is PdfProcessingState) {
-            return _buildProcessingState(context, isDark);
-          } else if (state is PdfSuccessState) {
-            return _buildSuccessState(context, state, isDark);
-          }
-          return const SizedBox.shrink();
-        },
+      body: SafeArea(
+        child: BlocConsumer<PdfBloc, PdfState>(
+          listener: (context, state) {
+            if (state is PdfErrorState) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: NeoColors.red,
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state is PdfInitialState) {
+              return _buildEmptyState(context, isDark);
+            } else if (state is PdfConfiguredState) {
+              return _buildConfigurationState(context, state, isDark);
+            } else if (state is PdfProcessingState) {
+              return _buildProcessingState(context, isDark);
+            } else if (state is PdfSuccessState) {
+              return _buildSuccessState(context, state, isDark);
+            }
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }

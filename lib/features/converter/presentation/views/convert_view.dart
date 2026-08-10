@@ -78,29 +78,31 @@ class _ConvertViewContent extends StatelessWidget {
           ),
         ),
       ),
-      body: BlocConsumer<ConverterBloc, ConverterState>(
-        listener: (context, state) {
-          if (state is ConverterErrorState) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: NeoColors.red,
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          if (state is ConverterInitialState) {
-            return _buildEmptyState(context, isDark);
-          } else if (state is ConverterConfiguredState) {
-            return _buildConfigurationState(context, state, isDark);
-          } else if (state is ConverterProcessingState) {
-            return _buildProcessingState(context, state, isDark);
-          } else if (state is ConverterSuccessState) {
-            return _buildSuccessState(context, state, isDark);
-          }
-          return const SizedBox.shrink();
-        },
+      body: SafeArea(
+        child: BlocConsumer<ConverterBloc, ConverterState>(
+          listener: (context, state) {
+            if (state is ConverterErrorState) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: NeoColors.red,
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state is ConverterInitialState) {
+              return _buildEmptyState(context, isDark);
+            } else if (state is ConverterConfiguredState) {
+              return _buildConfigurationState(context, state, isDark);
+            } else if (state is ConverterProcessingState) {
+              return _buildProcessingState(context, state, isDark);
+            } else if (state is ConverterSuccessState) {
+              return _buildSuccessState(context, state, isDark);
+            }
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }

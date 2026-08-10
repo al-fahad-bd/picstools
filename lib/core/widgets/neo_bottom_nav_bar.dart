@@ -35,16 +35,18 @@ class NeoBottomNavBar extends StatelessWidget {
     final bg = isDark ? NeoColors.darkSurface : NeoColors.lightSurface;
     final borderColor = isDark ? NeoColors.borderDark : NeoColors.borderLight;
 
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      decoration: NeoStyles.neoDecoration(
-        backgroundColor: bg,
-        borderColor: borderColor,
-        radius: 20,
-        shadow: 4,
-      ),
-      child: Row(
+    return SafeArea(
+      top: false,
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        decoration: NeoStyles.neoDecoration(
+          backgroundColor: bg,
+          borderColor: borderColor,
+          radius: 20,
+          shadow: 4,
+        ),
+        child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: List.generate(items.length, (index) {
           final item = items[index];
@@ -98,6 +100,7 @@ class NeoBottomNavBar extends StatelessWidget {
           );
         }),
       ),
-    );
-  }
+    ),
+  );
+}
 }

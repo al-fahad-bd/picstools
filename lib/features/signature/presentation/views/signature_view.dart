@@ -107,33 +107,35 @@ class _SignatureViewContentState extends State<_SignatureViewContent> with Singl
           ],
         ),
       ),
-      body: BlocConsumer<SignatureBloc, SignatureState>(
-        listener: (context, state) {
-          if (state is SignatureErrorState) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: NeoColors.red,
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          if (state is SignatureProcessingState) {
-            return _buildProcessingState(context, isDark);
-          } else if (state is SignatureSuccessState) {
-            return _buildSuccessState(context, state, isDark);
-          } else if (state is SignatureInitialState) {
-            return TabBarView(
-              controller: _tabController,
-              children: [
-                _buildDrawTab(context, state, isDark),
-                _buildScanTab(context, isDark),
-              ],
-            );
-          }
-          return const SizedBox.shrink();
-        },
+      body: SafeArea(
+        child: BlocConsumer<SignatureBloc, SignatureState>(
+          listener: (context, state) {
+            if (state is SignatureErrorState) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: NeoColors.red,
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state is SignatureProcessingState) {
+              return _buildProcessingState(context, isDark);
+            } else if (state is SignatureSuccessState) {
+              return _buildSuccessState(context, state, isDark);
+            } else if (state is SignatureInitialState) {
+              return TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildDrawTab(context, state, isDark),
+                  _buildScanTab(context, isDark),
+                ],
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }

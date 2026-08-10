@@ -72,29 +72,31 @@ class _IdPhotoViewContent extends StatelessWidget {
           ),
         ),
       ),
-      body: BlocConsumer<IdPhotoBloc, IdPhotoState>(
-        listener: (context, state) {
-          if (state is IdPhotoErrorState) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: NeoColors.red,
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          if (state is IdPhotoInitialState) {
-            return _buildEmptyState(context, isDark);
-          } else if (state is IdPhotoConfiguredState) {
-            return _buildConfigurationState(context, state, isDark);
-          } else if (state is IdPhotoProcessingState) {
-            return _buildProcessingState(context, isDark);
-          } else if (state is IdPhotoSuccessState) {
-            return _buildSuccessState(context, state, isDark);
-          }
-          return const SizedBox.shrink();
-        },
+      body: SafeArea(
+        child: BlocConsumer<IdPhotoBloc, IdPhotoState>(
+          listener: (context, state) {
+            if (state is IdPhotoErrorState) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: NeoColors.red,
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state is IdPhotoInitialState) {
+              return _buildEmptyState(context, isDark);
+            } else if (state is IdPhotoConfiguredState) {
+              return _buildConfigurationState(context, state, isDark);
+            } else if (state is IdPhotoProcessingState) {
+              return _buildProcessingState(context, isDark);
+            } else if (state is IdPhotoSuccessState) {
+              return _buildSuccessState(context, state, isDark);
+            }
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }

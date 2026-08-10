@@ -70,29 +70,31 @@ class _CropViewContent extends StatelessWidget {
           ),
         ),
       ),
-      body: BlocConsumer<CropperBloc, CropperState>(
-        listener: (context, state) {
-          if (state is CropperErrorState) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: NeoColors.red,
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          if (state is CropperInitialState) {
-            return _buildEmptyState(context, isDark);
-          } else if (state is CropperConfiguredState) {
-            return _buildConfigurationState(context, state, isDark);
-          } else if (state is CropperProcessingState) {
-            return _buildProcessingState(context, isDark);
-          } else if (state is CropperSuccessState) {
-            return _buildSuccessState(context, state, isDark);
-          }
-          return const SizedBox.shrink();
-        },
+      body: SafeArea(
+        child: BlocConsumer<CropperBloc, CropperState>(
+          listener: (context, state) {
+            if (state is CropperErrorState) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: NeoColors.red,
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state is CropperInitialState) {
+              return _buildEmptyState(context, isDark);
+            } else if (state is CropperConfiguredState) {
+              return _buildConfigurationState(context, state, isDark);
+            } else if (state is CropperProcessingState) {
+              return _buildProcessingState(context, isDark);
+            } else if (state is CropperSuccessState) {
+              return _buildSuccessState(context, state, isDark);
+            }
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }

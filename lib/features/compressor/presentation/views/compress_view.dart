@@ -78,29 +78,31 @@ class _CompressViewContent extends StatelessWidget {
           ),
         ),
       ),
-      body: BlocConsumer<CompressorBloc, CompressorState>(
-        listener: (context, state) {
-          if (state is CompressorErrorState) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: NeoColors.red,
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          if (state is CompressorInitialState) {
-            return _buildEmptyState(context, isDark);
-          } else if (state is CompressorImagesSelectedState) {
-            return _buildConfigurationState(context, state, isDark);
-          } else if (state is CompressorProcessingState) {
-            return _buildProcessingState(context, state, isDark);
-          } else if (state is CompressorSuccessState) {
-            return _buildSuccessState(context, state, isDark);
-          }
-          return const SizedBox.shrink();
-        },
+      body: SafeArea(
+        child: BlocConsumer<CompressorBloc, CompressorState>(
+          listener: (context, state) {
+            if (state is CompressorErrorState) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: NeoColors.red,
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state is CompressorInitialState) {
+              return _buildEmptyState(context, isDark);
+            } else if (state is CompressorImagesSelectedState) {
+              return _buildConfigurationState(context, state, isDark);
+            } else if (state is CompressorProcessingState) {
+              return _buildProcessingState(context, state, isDark);
+            } else if (state is CompressorSuccessState) {
+              return _buildSuccessState(context, state, isDark);
+            }
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }
