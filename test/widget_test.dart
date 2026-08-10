@@ -9,8 +9,13 @@ void main() {
     await initServiceLocator();
 
     await tester.pumpWidget(const PicsToolsApp());
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 100));
 
-    expect(find.text('PicsTools'), findsOneWidget);
+    expect(find.text('PICS'), findsOneWidget);
+    expect(find.text('TOOLS'), findsOneWidget);
+
+    // Fast-forward pending timers to settle splash transition
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
   });
 }

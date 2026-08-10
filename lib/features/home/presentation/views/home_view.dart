@@ -166,7 +166,8 @@ class _HomeViewState extends State<HomeView> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final filteredTools = _allTools.where((t) {
       final q = _searchQuery.toLowerCase();
-      return t.title.toLowerCase().contains(q) || t.subtitle.toLowerCase().contains(q);
+      return t.title.toLowerCase().contains(q) ||
+          t.subtitle.toLowerCase().contains(q);
     }).toList();
 
     return SingleChildScrollView(
@@ -189,7 +190,11 @@ class _HomeViewState extends State<HomeView> {
                           backgroundColor: NeoColors.yellow,
                           shadow: 2,
                         ),
-                        child: const Icon(Icons.photo_library_rounded, size: 20, color: NeoColors.borderLight),
+                        child: const Icon(
+                          Icons.photo_library_rounded,
+                          size: 20,
+                          color: NeoColors.borderLight,
+                        ),
                       ),
                       const SizedBox(width: 8),
                       Text(
@@ -207,36 +212,46 @@ class _HomeViewState extends State<HomeView> {
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+                      color: isDark
+                          ? NeoColors.textSecondaryDark
+                          : NeoColors.textSecondaryLight,
                     ),
                   ),
                 ],
               ),
               GestureDetector(
-                onTap: () => setState(() => _currentNavIndex = 2), // Go to Pro
+                onTap: () =>
+                    setState(() => _currentNavIndex = 2), // Go to Pro
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: NeoStyles.neoDecoration(
-                    backgroundColor: NeoColors.pink,
-                    radius: 12,
-                    shadow: 3,
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.star_rounded, size: 16, color: NeoColors.borderLight),
-                      const SizedBox(width: 4),
-                      Text(
-                        'PRO',
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w900,
-                          color: NeoColors.borderLight,
-                        ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
                       ),
-                    ],
+                      decoration: NeoStyles.neoDecoration(
+                        backgroundColor: NeoColors.pink,
+                        radius: 12,
+                        shadow: 3,
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.star_rounded,
+                            size: 16,
+                            color: NeoColors.borderLight,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'PRO',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w900,
+                              color: NeoColors.borderLight,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ),
             ],
           ),
           const SizedBox(height: 20),
@@ -255,7 +270,11 @@ class _HomeViewState extends State<HomeView> {
                     radius: 12,
                     shadow: 2,
                   ),
-                  child: const Icon(Icons.bolt_rounded, size: 28, color: NeoColors.borderLight),
+                  child: const Icon(
+                    Icons.bolt_rounded,
+                    size: 28,
+                    color: NeoColors.borderLight,
+                  ),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -281,7 +300,10 @@ class _HomeViewState extends State<HomeView> {
                     ],
                   ),
                 ),
-                const Icon(Icons.arrow_forward_rounded, color: NeoColors.borderLight),
+                const Icon(
+                  Icons.arrow_forward_rounded,
+                  color: NeoColors.borderLight,
+                ),
               ],
             ),
           ),
@@ -329,7 +351,9 @@ class _HomeViewState extends State<HomeView> {
             itemBuilder: (context, index) {
               final tool = filteredTools[index];
               return NeoCard(
-                backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+                backgroundColor: isDark
+                    ? NeoColors.darkSurface
+                    : NeoColors.lightSurface,
                 shadowOffset: 4,
                 padding: const EdgeInsets.all(14),
                 onTap: () => context.push(tool.route),
@@ -347,7 +371,11 @@ class _HomeViewState extends State<HomeView> {
                             radius: 10,
                             shadow: 2,
                           ),
-                          child: Icon(tool.icon, size: 22, color: NeoColors.borderLight),
+                          child: Icon(
+                            tool.icon,
+                            size: 22,
+                            color: NeoColors.borderLight,
+                          ),
                         ),
                         if (tool.isPopular)
                           const NeoBadge(
@@ -375,7 +403,9 @@ class _HomeViewState extends State<HomeView> {
                           style: GoogleFonts.spaceGrotesk(
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
-                            color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+                            color: isDark
+                                ? NeoColors.textSecondaryDark
+                                : NeoColors.textSecondaryLight,
                           ),
                         ),
                       ],
@@ -445,7 +475,11 @@ class _HomeViewState extends State<HomeView> {
                             radius: 40,
                             shadow: 3,
                           ),
-                          child: const Icon(Icons.history_rounded, size: 48, color: NeoColors.borderLight),
+                          child: const Icon(
+                            Icons.history_rounded,
+                            size: 48,
+                            color: NeoColors.borderLight,
+                          ),
                         ),
                         const SizedBox(height: 16),
                         Text(
@@ -461,7 +495,9 @@ class _HomeViewState extends State<HomeView> {
                           textAlign: TextAlign.center,
                           style: GoogleFonts.spaceGrotesk(
                             fontSize: 13,
-                            color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+                            color: isDark
+                                ? NeoColors.textSecondaryDark
+                                : NeoColors.textSecondaryLight,
                           ),
                         ),
                       ],
@@ -480,7 +516,9 @@ class _HomeViewState extends State<HomeView> {
                         item.processedSizeBytes,
                       );
                       return NeoCard(
-                        backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+                        backgroundColor: isDark
+                            ? NeoColors.darkSurface
+                            : NeoColors.lightSurface,
                         child: Row(
                           children: [
                             Container(
@@ -490,7 +528,10 @@ class _HomeViewState extends State<HomeView> {
                                 radius: 10,
                                 shadow: 2,
                               ),
-                              child: const Icon(Icons.compress_rounded, color: NeoColors.borderLight),
+                              child: const Icon(
+                                Icons.compress_rounded,
+                                color: NeoColors.borderLight,
+                              ),
                             ),
                             const SizedBox(width: 14),
                             Expanded(
@@ -508,7 +549,9 @@ class _HomeViewState extends State<HomeView> {
                                     'Saved ${FileUtils.formatBytes(item.originalSizeBytes - item.processedSizeBytes)} (-${saved.round()}%)',
                                     style: GoogleFonts.spaceGrotesk(
                                       fontSize: 12,
-                                      color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+                                      color: isDark
+                                          ? NeoColors.textSecondaryDark
+                                          : NeoColors.textSecondaryLight,
                                     ),
                                   ),
                                 ],
@@ -543,7 +586,11 @@ class _HomeViewState extends State<HomeView> {
               radius: 40,
               shadow: 4,
             ),
-            child: const Icon(Icons.workspace_premium_rounded, size: 50, color: NeoColors.borderLight),
+            child: const Icon(
+              Icons.workspace_premium_rounded,
+              size: 50,
+              color: NeoColors.borderLight,
+            ),
           ),
           const SizedBox(height: 16),
           Text(
@@ -558,15 +605,33 @@ class _HomeViewState extends State<HomeView> {
             'Unlock maximum image productivity',
             style: GoogleFonts.spaceGrotesk(
               fontSize: 14,
-              color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+              color: isDark
+                  ? NeoColors.textSecondaryDark
+                  : NeoColors.textSecondaryLight,
             ),
           ),
           const SizedBox(height: 24),
 
-          _buildProFeatureRow(Icons.block_rounded, 'Remove All Advertisements', isDark),
-          _buildProFeatureRow(Icons.layers_rounded, 'Unlimited Batch Processing', isDark),
-          _buildProFeatureRow(Icons.high_quality_rounded, 'Ultra HD Lossless Engine', isDark),
-          _buildProFeatureRow(Icons.picture_as_pdf_rounded, 'Advanced PDF Export & Encryption', isDark),
+          _buildProFeatureRow(
+            Icons.block_rounded,
+            'Remove All Advertisements',
+            isDark,
+          ),
+          _buildProFeatureRow(
+            Icons.layers_rounded,
+            'Unlimited Batch Processing',
+            isDark,
+          ),
+          _buildProFeatureRow(
+            Icons.high_quality_rounded,
+            'Ultra HD Lossless Engine',
+            isDark,
+          ),
+          _buildProFeatureRow(
+            Icons.picture_as_pdf_rounded,
+            'Advanced PDF Export & Encryption',
+            isDark,
+          ),
 
           const SizedBox(height: 32),
           NeoButton(
@@ -591,7 +656,9 @@ class _HomeViewState extends State<HomeView> {
               style: GoogleFonts.spaceGrotesk(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+                color: isDark
+                    ? NeoColors.textSecondaryDark
+                    : NeoColors.textSecondaryLight,
               ),
             ),
           ),
@@ -604,7 +671,9 @@ class _HomeViewState extends State<HomeView> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: NeoCard(
-        backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+        backgroundColor: isDark
+            ? NeoColors.darkSurface
+            : NeoColors.lightSurface,
         padding: const EdgeInsets.all(14),
         shadowOffset: 2,
         child: Row(
@@ -650,28 +719,40 @@ class _HomeViewState extends State<HomeView> {
           ),
           const SizedBox(height: 20),
           NeoCard(
-            backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+            backgroundColor: isDark
+                ? NeoColors.darkSurface
+                : NeoColors.lightSurface,
             child: Column(
               children: [
                 ListTile(
                   leading: const Icon(Icons.info_outline_rounded),
                   title: Text(
                     'App Version',
-                    style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold),
+                    style: GoogleFonts.spaceGrotesk(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   trailing: Text(
                     '1.0.0',
-                    style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w600),
+                    style: GoogleFonts.spaceGrotesk(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 const Divider(),
-                ListTile(
-                  leading: const Icon(Icons.shield_outlined),
-                  title: Text(
-                    'Privacy Policy',
-                    style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold),
+                Material(
+                  color: Colors.transparent,
+                  child: ListTile(
+                    leading: const Icon(Icons.shield_outlined),
+                    title: Text(
+                      'Privacy Policy',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () => context.push('/privacy_policy'),
                   ),
-                  trailing: const Icon(Icons.chevron_right_rounded),
                 ),
               ],
             ),
