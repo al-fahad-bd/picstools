@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+// ignore: unused_import
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/constants/neo_colors.dart';
@@ -59,14 +60,17 @@ class _SplashViewState extends State<SplashView>
     await Future.delayed(const Duration(milliseconds: 2300));
     if (!mounted) return;
 
-    final prefs = getIt<SharedPreferences>();
-    final completed = prefs.getBool('onboarding_completed') ?? false;
+    // TESTING MODE: Always show onboarding on launch.
+    // Production Logic (Uncomment for production release):
+    // final prefs = getIt<SharedPreferences>();
+    // final completed = prefs.getBool('onboarding_completed') ?? false;
+    // if (completed) {
+    //   context.go('/home');
+    // } else {
+    //   context.go('/onboarding');
+    // }
 
-    if (completed) {
-      context.go('/home');
-    } else {
-      context.go('/onboarding');
-    }
+    context.go('/onboarding');
   }
 
   @override
