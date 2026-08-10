@@ -58,7 +58,7 @@ class _OnboardingViewState extends State<OnboardingView> {
       icon: Icons.compress_rounded,
     ),
     OnboardingSlide(
-      titlePrefix: '9 Essential\n',
+      titlePrefix: '8 Essential\n',
       highlightedTitle: 'IMAGE TOOLS',
       titleSuffix: ' In One',
       description:

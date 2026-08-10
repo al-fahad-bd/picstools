@@ -322,7 +322,7 @@ class _HomeViewState extends State<HomeView> {
                           : NeoColors.textPrimaryLight,
                     ),
                     children: [
-                      const TextSpan(text: '9 Essential '),
+                      const TextSpan(text: '8 Essential '),
                       WidgetSpan(
                         alignment: PlaceholderAlignment.middle,
                         child: Container(
@@ -555,6 +555,30 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
+  IconData _getToolIcon(String toolName) {
+    final name = toolName.toLowerCase();
+    if (name.contains('pdf')) return Icons.picture_as_pdf_rounded;
+    if (name.contains('resize')) return Icons.aspect_ratio_rounded;
+    if (name.contains('crop')) return Icons.crop_rounded;
+    if (name.contains('convert')) return Icons.transform_rounded;
+    if (name.contains('id photo') || name.contains('passport')) return Icons.badge_rounded;
+    if (name.contains('signature')) return Icons.draw_rounded;
+    if (name.contains('social')) return Icons.share_rounded;
+    return Icons.compress_rounded;
+  }
+
+  Color _getToolAccentColor(String toolName) {
+    final name = toolName.toLowerCase();
+    if (name.contains('pdf')) return NeoColors.purple;
+    if (name.contains('resize')) return NeoColors.cyan;
+    if (name.contains('crop')) return NeoColors.pink;
+    if (name.contains('convert')) return NeoColors.green;
+    if (name.contains('id photo') || name.contains('passport')) return NeoColors.orange;
+    if (name.contains('signature')) return NeoColors.blue;
+    if (name.contains('social')) return NeoColors.yellow;
+    return NeoColors.yellow;
+  }
+
   // Tab 2: Processing History
   Widget _buildHistoryTab(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -650,6 +674,13 @@ class _HomeViewState extends State<HomeView> {
                         item.originalSizeBytes,
                         item.processedSizeBytes,
                       );
+                      final toolIcon = _getToolIcon(item.toolName);
+                      final toolColor = _getToolAccentColor(item.toolName);
+                      final hasSavings = item.originalSizeBytes > item.processedSizeBytes && item.originalSizeBytes > 0;
+                      final subtitleText = hasSavings
+                          ? 'Saved ${FileUtils.formatBytes(item.originalSizeBytes - item.processedSizeBytes)} (-${saved.round()}%)'
+                          : 'Processed • ${FileUtils.formatBytes(item.processedSizeBytes)}';
+
                       return NeoCard(
                         backgroundColor: isDark
                             ? NeoColors.darkSurface
@@ -659,12 +690,12 @@ class _HomeViewState extends State<HomeView> {
                             Container(
                               padding: const EdgeInsets.all(10),
                               decoration: NeoStyles.neoDecoration(
-                                backgroundColor: NeoColors.yellow,
+                                backgroundColor: toolColor,
                                 radius: 10,
                                 shadow: 2,
                               ),
-                              child: const Icon(
-                                Icons.compress_rounded,
+                              child: Icon(
+                                toolIcon,
                                 color: NeoColors.borderLight,
                               ),
                             ),
@@ -681,7 +712,7 @@ class _HomeViewState extends State<HomeView> {
                                     ),
                                   ),
                                   Text(
-                                    'Saved ${FileUtils.formatBytes(item.originalSizeBytes - item.processedSizeBytes)} (-${saved.round()}%)',
+                                    subtitleText,
                                     style: GoogleFonts.spaceGrotesk(
                                       fontSize: 12,
                                       color: isDark
