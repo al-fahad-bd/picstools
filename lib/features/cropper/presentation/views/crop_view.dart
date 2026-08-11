@@ -23,10 +23,8 @@ class CropView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => CropperBloc(
-        cropperService: getIt(),
-        historyService: getIt(),
-      ),
+      create: (context) =>
+          CropperBloc(cropperService: getIt(), historyService: getIt()),
       child: const _CropViewContent(),
     );
   }
@@ -54,7 +52,9 @@ class _CropViewContent extends StatelessWidget {
           icon: Container(
             padding: const EdgeInsets.all(6),
             decoration: NeoStyles.neoDecoration(
-              backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+              backgroundColor: isDark
+                  ? NeoColors.darkSurface
+                  : NeoColors.lightSurface,
               radius: 10,
               shadow: 2,
             ),
@@ -113,10 +113,10 @@ class _CropViewContent extends StatelessWidget {
               radius: 50,
               shadow: 5,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.crop_rounded,
               size: 50,
-              color: NeoColors.borderLight,
+              color: NeoColors.getContrastColor(NeoColors.pink),
             ),
           ),
           const SizedBox(height: 24),
@@ -134,7 +134,9 @@ class _CropViewContent extends StatelessWidget {
             textAlign: TextAlign.center,
             style: GoogleFonts.spaceGrotesk(
               fontSize: 14,
-              color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+              color: isDark
+                  ? NeoColors.textSecondaryDark
+                  : NeoColors.textSecondaryLight,
             ),
           ),
           const SizedBox(height: 36),
@@ -151,7 +153,10 @@ class _CropViewContent extends StatelessWidget {
                     radius: 12,
                     shadow: 2,
                   ),
-                  child: const Icon(Icons.photo_library_rounded, color: NeoColors.borderLight),
+                  child: Icon(
+                    Icons.photo_library_rounded,
+                    color: NeoColors.getContrastColor(NeoColors.pink),
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -176,13 +181,18 @@ class _CropViewContent extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right_rounded, color: NeoColors.borderLight),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: NeoColors.borderLight,
+                ),
               ],
             ),
           ),
           const SizedBox(height: 14),
           NeoCard(
-            backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+            backgroundColor: isDark
+                ? NeoColors.darkSurface
+                : NeoColors.lightSurface,
             shadowOffset: 3,
             onTap: () => _pickImage(context, ImageSource.camera),
             child: Row(
@@ -194,7 +204,10 @@ class _CropViewContent extends StatelessWidget {
                     radius: 12,
                     shadow: 2,
                   ),
-                  child: const Icon(Icons.camera_alt_rounded, color: NeoColors.borderLight),
+                  child: const Icon(
+                    Icons.camera_alt_rounded,
+                    color: NeoColors.borderLight,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -212,7 +225,9 @@ class _CropViewContent extends StatelessWidget {
                         'Capture instant photo to crop',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 12,
-                          color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+                          color: isDark
+                              ? NeoColors.textSecondaryDark
+                              : NeoColors.textSecondaryLight,
                         ),
                       ),
                     ],
@@ -250,7 +265,9 @@ class _CropViewContent extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: NeoCard(
-              backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+              backgroundColor: isDark
+                  ? NeoColors.darkSurface
+                  : NeoColors.lightSurface,
               padding: const EdgeInsets.all(8),
               shadowOffset: 4,
               child: NeoCropCanvas(
@@ -321,9 +338,17 @@ class _CropViewContent extends StatelessWidget {
                     final r = ratios[index];
                     final isSelected = state.selectedRatioName == r['name'];
                     return GestureDetector(
-                      onTap: () => bloc.add(SetCropAspectRatioEvent(r['name'] as String, r['val'] as double?)),
+                      onTap: () => bloc.add(
+                        SetCropAspectRatioEvent(
+                          r['name'] as String,
+                          r['val'] as double?,
+                        ),
+                      ),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
                         decoration: NeoStyles.neoDecoration(
                           backgroundColor: isSelected
                               ? NeoColors.pink
@@ -348,7 +373,6 @@ class _CropViewContent extends StatelessWidget {
 
               NeoButton(
                 label: 'APPLY CROP & SAVE',
-                icon: const Icon(Icons.check_rounded, color: NeoColors.borderLight),
                 backgroundColor: NeoColors.pink,
                 fullWidth: true,
                 padding: const EdgeInsets.symmetric(vertical: 14),
@@ -371,12 +395,18 @@ class _CropViewContent extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: NeoCard(
-        backgroundColor: isActive ? NeoColors.pink : (isDark ? NeoColors.darkBg : NeoColors.lightBg),
+        backgroundColor: isActive
+            ? NeoColors.pink
+            : (isDark ? NeoColors.darkBg : NeoColors.lightBg),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         shadowOffset: 2,
         child: Row(
           children: [
-            Icon(icon, size: 18, color: isActive ? NeoColors.borderLight : null),
+            Icon(
+              icon,
+              size: 18,
+              color: isActive ? NeoColors.borderLight : null,
+            ),
             const SizedBox(width: 6),
             Text(
               label,
@@ -408,7 +438,9 @@ class _CropViewContent extends StatelessWidget {
             child: const Center(
               child: CircularProgressIndicator(
                 strokeWidth: 3.5,
-                valueColor: AlwaysStoppedAnimation<Color>(NeoColors.borderLight),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  NeoColors.borderLight,
+                ),
               ),
             ),
           ),
@@ -469,7 +501,9 @@ class _CropViewContent extends StatelessWidget {
           const SizedBox(height: 20),
 
           NeoCard(
-            backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+            backgroundColor: isDark
+                ? NeoColors.darkSurface
+                : NeoColors.lightSurface,
             padding: const EdgeInsets.all(12),
             shadowOffset: 3,
             child: ClipRRect(
@@ -485,7 +519,10 @@ class _CropViewContent extends StatelessWidget {
 
           NeoButton(
             label: 'SAVE TO DEVICE',
-            icon: const Icon(Icons.download_rounded, color: NeoColors.borderLight),
+            icon: const Icon(
+              Icons.download_rounded,
+              color: NeoColors.borderLight,
+            ),
             backgroundColor: NeoColors.green,
             fullWidth: true,
             onPressed: () async {
@@ -511,13 +548,18 @@ class _CropViewContent extends StatelessWidget {
             backgroundColor: NeoColors.pink,
             fullWidth: true,
             onPressed: () {
-              Share.shareXFiles([XFile(state.result.croppedFile.path)], text: 'Cropped with PicsTools!');
+              Share.shareXFiles([
+                XFile(state.result.croppedFile.path),
+              ], text: 'Cropped with PicsTools!');
             },
           ),
           const SizedBox(height: 12),
           NeoButton(
             label: 'CROP ANOTHER IMAGE',
-            icon: const Icon(Icons.refresh_rounded, color: NeoColors.borderLight),
+            icon: const Icon(
+              Icons.refresh_rounded,
+              color: NeoColors.borderLight,
+            ),
             backgroundColor: NeoColors.yellow,
             fullWidth: true,
             onPressed: () => bloc.add(ResetCropperEvent()),

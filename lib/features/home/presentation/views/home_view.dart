@@ -315,10 +315,10 @@ class _HomeViewState extends State<HomeView> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.bolt_rounded,
                         size: 18,
-                        color: NeoColors.borderLight,
+                        color: NeoColors.getContrastColor(NeoColors.pink),
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -326,7 +326,7 @@ class _HomeViewState extends State<HomeView> {
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 13,
                           fontWeight: FontWeight.w900,
-                          color: NeoColors.borderLight,
+                          color: NeoColors.getContrastColor(NeoColors.pink),
                           letterSpacing: 0.5,
                         ),
                       ),
@@ -614,6 +614,16 @@ class _HomeViewState extends State<HomeView> {
     return NeoColors.yellow;
   }
 
+  Color _getToolIconColor(Color toolColor) {
+    if (toolColor == NeoColors.blue ||
+        toolColor == NeoColors.purple ||
+        toolColor == NeoColors.pink ||
+        toolColor.computeLuminance() < 0.35) {
+      return Colors.white;
+    }
+    return NeoColors.borderLight;
+  }
+
   // Tab 2: Processing History
   Widget _buildHistoryTab(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -711,6 +721,7 @@ class _HomeViewState extends State<HomeView> {
                       );
                       final toolIcon = _getToolIcon(item.toolName);
                       final toolColor = _getToolAccentColor(item.toolName);
+                      final iconColor = _getToolIconColor(toolColor);
                       final hasSavings =
                           item.originalSizeBytes > item.processedSizeBytes &&
                           item.originalSizeBytes > 0;
@@ -731,10 +742,7 @@ class _HomeViewState extends State<HomeView> {
                                 radius: 10,
                                 shadow: 2,
                               ),
-                              child: Icon(
-                                toolIcon,
-                                color: NeoColors.borderLight,
-                              ),
+                              child: Icon(toolIcon, color: iconColor),
                             ),
                             const SizedBox(width: 14),
                             Expanded(
@@ -789,10 +797,10 @@ class _HomeViewState extends State<HomeView> {
               radius: 40,
               shadow: 4,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.workspace_premium_rounded,
               size: 50,
-              color: NeoColors.borderLight,
+              color: NeoColors.getContrastColor(NeoColors.pink),
             ),
           ),
           const SizedBox(height: 16),
@@ -1189,7 +1197,7 @@ class _ToolCardItemState extends State<_ToolCardItem> {
                       ? widget.tool.accentColor
                       : NeoColors.lightSurface,
                   textColor: widget.isDark
-                      ? NeoColors.borderLight
+                      ? NeoColors.getContrastColor(widget.tool.accentColor)
                       : NeoColors.borderLight,
                   fontSize: 8.5,
                 ),

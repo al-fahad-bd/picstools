@@ -5,7 +5,7 @@ import '../constants/neo_colors.dart';
 class NeoBadge extends StatelessWidget {
   final String label;
   final Color backgroundColor;
-  final Color textColor;
+  final Color? textColor;
   final Color borderColor;
   final IconData? icon;
   final double fontSize;
@@ -14,7 +14,7 @@ class NeoBadge extends StatelessWidget {
     super.key,
     required this.label,
     this.backgroundColor = NeoColors.cyan,
-    this.textColor = NeoColors.borderLight,
+    this.textColor,
     this.borderColor = NeoColors.borderLight,
     this.icon,
     this.fontSize = 12.0,
@@ -22,10 +22,8 @@ class NeoBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkAccent = backgroundColor == NeoColors.purple || backgroundColor == NeoColors.blue;
-    final effectiveTextColor = (textColor == NeoColors.borderLight && isDarkAccent)
-        ? NeoColors.lightSurface
-        : textColor;
+    final effectiveTextColor =
+        textColor ?? NeoColors.getContrastColor(backgroundColor);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

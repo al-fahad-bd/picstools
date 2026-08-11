@@ -65,6 +65,9 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>PicsTools requires access to save generated image tools output directly to your device Photos album.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>PicsTools requires access to your photo library to pick images for processing.</string>
 </dict>
 </plist>

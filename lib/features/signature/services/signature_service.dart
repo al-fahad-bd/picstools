@@ -58,10 +58,20 @@ class SignatureService {
 
     // 2. Render Transparent PNG Image
     final transparentImg = img.Image(width: width, height: height, numChannels: 4);
+    img.fill(transparentImg, color: img.ColorRgba8(0, 0, 0, 0));
+
+    // 3. Render Solid White Background Image
+    final solidImg = img.Image(width: width, height: height);
+    img.fill(solidImg, color: img.ColorRgb8(255, 255, 255));
 
     for (final stroke in strokes) {
       final c = stroke.color;
-      final colorRgb = img.ColorRgb8(c.r.round(), c.g.round(), c.b.round());
+      final r = (c.r * 255).round().clamp(0, 255);
+      final g = (c.g * 255).round().clamp(0, 255);
+      final b = (c.b * 255).round().clamp(0, 255);
+
+      final colorRgba = img.ColorRgba8(r, g, b, 255);
+      final colorRgb = img.ColorRgb8(r, g, b);
 
       for (int i = 0; i < stroke.points.length - 1; i++) {
         final p1 = stroke.points[i];
@@ -78,17 +88,21 @@ class SignatureService {
           y1: y1,
           x2: x2,
           y2: y2,
+          color: colorRgba,
+          thickness: stroke.strokeWidth.round(),
+        );
+
+        img.drawLine(
+          solidImg,
+          x1: x1,
+          y1: y1,
+          x2: x2,
+          y2: y2,
           color: colorRgb,
           thickness: stroke.strokeWidth.round(),
         );
       }
     }
-
-    // 3. Render Solid Background Image
-    final solidImg = img.Image(width: width, height: height, numChannels: 4);
-    final bgRgb = img.ColorRgb8(solidBgColor.r.round(), solidBgColor.g.round(), solidBgColor.b.round());
-    img.fill(solidImg, color: bgRgb);
-    img.compositeImage(solidImg, transparentImg);
 
     // Save files
     final tempDir = await getTemporaryDirectory();
@@ -140,7 +154,15 @@ class SignatureService {
 
     final solidImg = img.Image(width: transparentImg.width, height: transparentImg.height);
     img.fill(solidImg, color: img.ColorRgb8(255, 255, 255));
-    img.compositeImage(solidImg, transparentImg);
+
+    for (int y = 0; y < transparentImg.height; y++) {
+      for (int x = 0; x < transparentImg.width; x++) {
+        final p = transparentImg.getPixel(x, y);
+        if (p.a > 10) {
+          solidImg.setPixel(x, y, img.ColorRgb8(p.r.round(), p.g.round(), p.b.round()));
+        }
+      }
+    }
 
     final tempDir = await getTemporaryDirectory();
     final ts = DateTime.now().millisecondsSinceEpoch;

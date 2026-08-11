@@ -53,4 +53,18 @@ abstract class NeoColors {
     const colors = [yellow, cyan, pink, green, purple, orange];
     return colors[index % colors.length];
   }
+
+  static Color getContrastColor(Color backgroundColor) {
+    if (backgroundColor == blue ||
+        backgroundColor == purple ||
+        backgroundColor == pink ||
+        backgroundColor == red ||
+        backgroundColor == borderLight ||
+        backgroundColor == darkSurface ||
+        backgroundColor == darkBg ||
+        backgroundColor.computeLuminance() < 0.35) {
+      return Colors.white;
+    }
+    return borderLight;
+  }
 }
