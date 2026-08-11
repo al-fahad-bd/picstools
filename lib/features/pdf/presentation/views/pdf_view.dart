@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:printing/printing.dart';
+import 'package:path/path.dart' as path;
 
 import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/constants/neo_styles.dart';
@@ -188,6 +190,94 @@ class _PdfViewContent extends StatelessWidget {
               ),
             );
           },
+        );
+      },
+    );
+  }
+
+  void _openPdfPreviewModal(BuildContext context, File pdfFile) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (modalContext) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.9,
+          decoration: BoxDecoration(
+            color: isDark ? NeoColors.darkBg : NeoColors.lightBg,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border.all(
+              color: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+              width: 3,
+            ),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              children: [
+                // Modal Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 12.0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: NeoStyles.neoDecoration(
+                              backgroundColor: NeoColors.purple,
+                              radius: 8,
+                              shadow: 2,
+                            ),
+                            child: const Icon(
+                              Icons.picture_as_pdf_rounded,
+                              size: 18,
+                              color: NeoColors.lightSurface,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            'PDF Document Preview',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close_rounded),
+                        onPressed: () => Navigator.pop(modalContext),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1, thickness: 1.5),
+
+                // Interactive PDF Viewer
+                Expanded(
+                  child: PdfPreview(
+                    build: (format) => pdfFile.readAsBytesSync(),
+                    canChangePageFormat: false,
+                    canChangeOrientation: false,
+                    canDebug: false,
+                    allowPrinting: true,
+                    allowSharing: true,
+                    pdfFileName: path.basename(pdfFile.path),
+                    scrollViewDecoration: BoxDecoration(
+                      color: isDark ? NeoColors.darkBg : NeoColors.lightBg,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
@@ -823,97 +913,144 @@ class _PdfViewContent extends StatelessWidget {
   ) {
     final bloc = context.read<PdfBloc>();
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        children: [
-          NeoCard(
-            backgroundColor: NeoColors.purple,
-            shadowOffset: 5,
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                const NeoBadge(
-                  label: 'PDF READY',
-                  backgroundColor: NeoColors.yellow,
-                  textColor: NeoColors.borderLight,
-                  fontSize: 12,
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              NeoCard(
+                backgroundColor: NeoColors.purple,
+                shadowOffset: 5,
+                padding: const EdgeInsets.all(20),
+                onTap: () =>
+                    _openPdfPreviewModal(context, state.result.pdfFile),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const NeoBadge(
+                          label: 'PDF READY',
+                          backgroundColor: NeoColors.yellow,
+                          textColor: NeoColors.borderLight,
+                          fontSize: 12,
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.25),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.touch_app_rounded,
+                                size: 12,
+                                color: NeoColors.lightSurface,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'TAP TO PREVIEW',
+                                style: GoogleFonts.spaceGrotesk(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: NeoColors.lightSurface,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      '${state.result.pageCount} Page PDF Document',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        color: NeoColors.lightSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'File Size: ${FileUtils.formatBytes(state.result.fileSizeBytes)}',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 13,
+                        color: NeoColors.lightSurface.withValues(alpha: 0.9),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  '${state.result.pageCount} Page PDF Document',
-                  style: GoogleFonts.spaceGrotesk(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w900,
-                    color: NeoColors.lightSurface,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'File Size: ${FileUtils.formatBytes(state.result.fileSizeBytes)}',
-                  style: GoogleFonts.spaceGrotesk(
-                    fontSize: 13,
-                    color: NeoColors.lightSurface.withValues(alpha: 0.9),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
+              ),
+              const SizedBox(height: 120),
 
-          NeoButton(
-            label: 'SAVE TO DEVICE',
-            icon: const Icon(
-              Icons.download_rounded,
-              color: NeoColors.borderLight,
-            ),
-            backgroundColor: NeoColors.green,
-            fullWidth: true,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            onPressed: () async {
-              final saver = getIt<FileSaveService>();
-              final saved = await saver.saveFileToPublicStorage(
-                sourceFile: state.result.pdfFile,
-                subFolder: 'PDF',
-              );
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Saved PDF to: ${saved.path}'),
-                    backgroundColor: NeoColors.green,
-                  ),
-                );
-              }
-            },
+              // Action Buttons
+              NeoButton(
+                label: 'SAVE TO DEVICE',
+                icon: const Icon(
+                  Icons.download_rounded,
+                  color: NeoColors.borderLight,
+                ),
+                backgroundColor: NeoColors.green,
+                fullWidth: true,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                onPressed: () async {
+                  final saver = getIt<FileSaveService>();
+                  final saved = await saver.saveFileToPublicStorage(
+                    sourceFile: state.result.pdfFile,
+                    subFolder: 'PDF',
+                  );
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Saved PDF to: ${saved.path}'),
+                        backgroundColor: NeoColors.green,
+                      ),
+                    );
+                  }
+                },
+              ),
+              const SizedBox(height: 12),
+
+              NeoButton(
+                label: 'SHARE PDF DOCUMENT',
+                icon: const Icon(
+                  Icons.share_rounded,
+                  color: NeoColors.lightSurface,
+                ),
+                backgroundColor: NeoColors.purple,
+                textColor: NeoColors.lightSurface,
+                fullWidth: true,
+                onPressed: () {
+                  Share.shareXFiles([
+                    XFile(state.result.pdfFile.path),
+                  ], text: 'Created with PicsTools!');
+                },
+              ),
+              const SizedBox(height: 12),
+
+              NeoButton(
+                label: 'CREATE ANOTHER PDF',
+                icon: const Icon(
+                  Icons.refresh_rounded,
+                  color: NeoColors.borderLight,
+                ),
+                backgroundColor: NeoColors.yellow,
+                fullWidth: true,
+                onPressed: () => bloc.add(ResetPdfEvent()),
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
-          NeoButton(
-            label: 'SHARE PDF DOCUMENT',
-            icon: const Icon(
-              Icons.share_rounded,
-              color: NeoColors.lightSurface,
-            ),
-            backgroundColor: NeoColors.purple,
-            textColor: NeoColors.lightSurface,
-            fullWidth: true,
-            onPressed: () {
-              Share.shareXFiles([
-                XFile(state.result.pdfFile.path),
-              ], text: 'Created with PicsTools!');
-            },
-          ),
-          const SizedBox(height: 12),
-          NeoButton(
-            label: 'CREATE ANOTHER PDF',
-            icon: const Icon(
-              Icons.refresh_rounded,
-              color: NeoColors.borderLight,
-            ),
-            backgroundColor: NeoColors.yellow,
-            fullWidth: true,
-            onPressed: () => bloc.add(ResetPdfEvent()),
-          ),
-        ],
+        ),
       ),
     );
   }
