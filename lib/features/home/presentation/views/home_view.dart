@@ -13,6 +13,7 @@ import '../../../../core/widgets/neo_doodles.dart';
 import '../../../../core/widgets/neo_tool_graphics.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/history_service.dart';
+import '../../../../core/services/audio_service.dart';
 import '../../../../core/utils/file_utils.dart';
 
 class ToolItem {
@@ -1030,6 +1031,39 @@ class _HomeViewState extends State<HomeView> {
                     ),
                     trailing: const Icon(Icons.chevron_right_rounded),
                     onTap: () => context.push('/privacy_policy'),
+                  ),
+                ),
+                const Divider(),
+                Material(
+                  color: Colors.transparent,
+                  child: ListTile(
+                    leading: const Icon(
+                      Icons.music_note_rounded,
+                      color: NeoColors.yellow,
+                    ),
+                    title: Text(
+                      'Background Sound',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Text(
+                      'Relaxing ambient music loop',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 11,
+                        color: isDark
+                            ? NeoColors.textSecondaryDark
+                            : NeoColors.textSecondaryLight,
+                      ),
+                    ),
+                    trailing: Switch.adaptive(
+                      value: getIt<AudioService>().isSoundEnabled,
+                      activeThumbColor: NeoColors.yellow,
+                      onChanged: (val) async {
+                        await getIt<AudioService>().setSoundEnabled(val);
+                        setState(() {});
+                      },
+                    ),
                   ),
                 ),
                 if (_isDeveloperUnlocked) ...[

@@ -4,6 +4,7 @@ import 'image_picker_service.dart';
 import 'history_service.dart';
 import 'file_save_service.dart';
 import 'sound_service.dart';
+import 'audio_service.dart';
 import 'monetization/ad_service.dart';
 import 'monetization/in_app_purchase_service.dart';
 import '../../features/compressor/services/image_compressor_service.dart';
@@ -20,19 +21,33 @@ Future<void> initServiceLocator() async {
   final prefs = await SharedPreferences.getInstance();
   getIt.registerSingleton<SharedPreferences>(prefs);
 
+  final audioService = AudioService(prefs);
+  await audioService.init();
+  getIt.registerSingleton<AudioService>(audioService);
+
   // Core Services
-  getIt.registerLazySingleton<ImagePickerService>(() => ImagePickerServiceImpl());
-  getIt.registerLazySingleton<HistoryService>(() => HistoryServiceImpl(getIt()));
+  getIt.registerLazySingleton<ImagePickerService>(
+    () => ImagePickerServiceImpl(),
+  );
+  getIt.registerLazySingleton<HistoryService>(
+    () => HistoryServiceImpl(getIt()),
+  );
   getIt.registerLazySingleton<FileSaveService>(() => FileSaveServiceImpl());
   getIt.registerLazySingleton<SoundService>(() => SoundServiceImpl());
   getIt.registerLazySingleton<AdService>(() => MockAdServiceImpl());
-  getIt.registerLazySingleton<InAppPurchaseService>(() => MockInAppPurchaseServiceImpl());
+  getIt.registerLazySingleton<InAppPurchaseService>(
+    () => MockInAppPurchaseServiceImpl(),
+  );
 
   // Feature Processing Services
-  getIt.registerLazySingleton<ImageCompressorService>(() => ImageCompressorService());
+  getIt.registerLazySingleton<ImageCompressorService>(
+    () => ImageCompressorService(),
+  );
   getIt.registerLazySingleton<ImageResizerService>(() => ImageResizerService());
   getIt.registerLazySingleton<ImageCropperService>(() => ImageCropperService());
-  getIt.registerLazySingleton<ImageConverterService>(() => ImageConverterService());
+  getIt.registerLazySingleton<ImageConverterService>(
+    () => ImageConverterService(),
+  );
   getIt.registerLazySingleton<ImagePdfService>(() => ImagePdfService());
   getIt.registerLazySingleton<IdPhotoService>(() => IdPhotoService());
   getIt.registerLazySingleton<SignatureService>(() => SignatureService());

@@ -9,6 +9,7 @@ import '../../../../core/constants/neo_styles.dart';
 import '../../../../core/widgets/neo_badge.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/sound_service.dart';
+import '../../../../core/services/audio_service.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -60,15 +61,8 @@ class _SplashViewState extends State<SplashView>
     await Future.delayed(const Duration(milliseconds: 2300));
     if (!mounted) return;
 
-    // TESTING MODE: Always show onboarding on launch.
-    // Production Logic (Uncomment for production release):
-    // final prefs = getIt<SharedPreferences>();
-    // final completed = prefs.getBool('onboarding_completed') ?? false;
-    // if (completed) {
-    //   context.go('/home');
-    // } else {
-    //   context.go('/onboarding');
-    // }
+    // Start background sound right as splash screen ends
+    getIt<AudioService>().playBackgroundSound();
 
     context.go('/onboarding');
   }
