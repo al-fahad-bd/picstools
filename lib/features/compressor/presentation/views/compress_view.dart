@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:path/path.dart' as path;
 
 import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/constants/neo_styles.dart';
@@ -32,8 +33,15 @@ class CompressView extends StatelessWidget {
   }
 }
 
-class _CompressViewContent extends StatelessWidget {
+class _CompressViewContent extends StatefulWidget {
   const _CompressViewContent();
+
+  @override
+  State<_CompressViewContent> createState() => _CompressViewContentState();
+}
+
+class _CompressViewContentState extends State<_CompressViewContent> {
+  int _selectedPreviewIndex = 0;
 
   Future<void> _pickImage(BuildContext context, ImageSource source) async {
     final picker = getIt<ImagePickerService>();
@@ -249,12 +257,107 @@ class _CompressViewContent extends StatelessWidget {
     bool isDark,
   ) {
     final bloc = context.read<CompressorBloc>();
+    final safeIndex = _selectedPreviewIndex.clamp(0, state.files.isEmpty ? 0 : state.files.length - 1);
+    final previewFile = state.files.isNotEmpty ? state.files[safeIndex] : null;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Live Image Preview Frame
+          if (previewFile != null) ...[
+            NeoCard(
+              backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+              shadowOffset: 4,
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                children: [
+                  Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.file(
+                          previewFile,
+                          height: 190,
+                          width: double.infinity,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: NeoBadge(
+                          label: FileUtils.formatBytes(previewFile.lengthSync()),
+                          backgroundColor: NeoColors.yellow,
+                          fontSize: 11,
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 8,
+                        left: 8,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.7),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            path.basename(previewFile.path),
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 11,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (state.files.length > 1) ...[
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 64,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: state.files.length,
+                        separatorBuilder: (_, _) => const SizedBox(width: 8),
+                        itemBuilder: (context, index) {
+                          final file = state.files[index];
+                          final isSelected = index == safeIndex;
+                          return GestureDetector(
+                            onTap: () => setState(() => _selectedPreviewIndex = index),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: isSelected ? NeoColors.yellow : (isDark ? NeoColors.borderDark : NeoColors.borderLight),
+                                  width: isSelected ? 3 : 1.5,
+                                ),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(6),
+                                child: Image.file(
+                                  file,
+                                  width: 56,
+                                  height: 56,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+
           // Selected Files Summary Header
           NeoCard(
             backgroundColor: NeoColors.softCyan,
@@ -308,7 +411,10 @@ class _CompressViewContent extends StatelessWidget {
                   label: 'CHANGE',
                   backgroundColor: NeoColors.yellow,
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  onPressed: () => bloc.add(ResetCompressorEvent()),
+                  onPressed: () {
+                    setState(() => _selectedPreviewIndex = 0);
+                    bloc.add(ResetCompressorEvent());
+                  },
                 ),
               ],
             ),
@@ -399,19 +505,37 @@ class _CompressViewContent extends StatelessWidget {
               _buildTargetChip(
                 label: 'Max 200 KB',
                 isSelected: state.targetSizeBytes == 200 * 1024,
-                onTap: () => bloc.add(const SetTargetFileSizeEvent(200 * 1024)),
+                onTap: () {
+                  if (state.targetSizeBytes == 200 * 1024) {
+                    bloc.add(const SetTargetFileSizeEvent(null));
+                  } else {
+                    bloc.add(const SetTargetFileSizeEvent(200 * 1024));
+                  }
+                },
                 isDark: isDark,
               ),
               _buildTargetChip(
                 label: 'Max 500 KB',
                 isSelected: state.targetSizeBytes == 500 * 1024,
-                onTap: () => bloc.add(const SetTargetFileSizeEvent(500 * 1024)),
+                onTap: () {
+                  if (state.targetSizeBytes == 500 * 1024) {
+                    bloc.add(const SetTargetFileSizeEvent(null));
+                  } else {
+                    bloc.add(const SetTargetFileSizeEvent(500 * 1024));
+                  }
+                },
                 isDark: isDark,
               ),
               _buildTargetChip(
                 label: 'Max 1 MB',
                 isSelected: state.targetSizeBytes == 1024 * 1024,
-                onTap: () => bloc.add(const SetTargetFileSizeEvent(1024 * 1024)),
+                onTap: () {
+                  if (state.targetSizeBytes == 1024 * 1024) {
+                    bloc.add(const SetTargetFileSizeEvent(null));
+                  } else {
+                    bloc.add(const SetTargetFileSizeEvent(1024 * 1024));
+                  }
+                },
                 isDark: isDark,
               ),
             ],

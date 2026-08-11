@@ -69,12 +69,13 @@ class CompressorImagesSelectedState extends CompressorState {
     List<File>? files,
     int? quality,
     int? targetSizeBytes,
+    bool clearTargetSizeBytes = false,
     int? totalOriginalSizeBytes,
   }) {
     return CompressorImagesSelectedState(
       files: files ?? this.files,
       quality: quality ?? this.quality,
-      targetSizeBytes: targetSizeBytes ?? this.targetSizeBytes,
+      targetSizeBytes: clearTargetSizeBytes ? null : (targetSizeBytes ?? this.targetSizeBytes),
       totalOriginalSizeBytes: totalOriginalSizeBytes ?? this.totalOriginalSizeBytes,
     );
   }
@@ -169,7 +170,11 @@ class CompressorBloc extends Bloc<CompressorEvent, CompressorState> {
   void _onSetTargetFileSize(SetTargetFileSizeEvent event, Emitter<CompressorState> emit) {
     if (state is CompressorImagesSelectedState) {
       final current = state as CompressorImagesSelectedState;
-      emit(current.copyWith(targetSizeBytes: event.targetSizeBytes));
+      if (event.targetSizeBytes == null) {
+        emit(current.copyWith(clearTargetSizeBytes: true));
+      } else {
+        emit(current.copyWith(targetSizeBytes: event.targetSizeBytes));
+      }
     }
   }
 

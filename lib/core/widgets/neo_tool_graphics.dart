@@ -26,11 +26,14 @@ class CompressToolGraphic extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(color: NeoColors.borderLight, width: 1.5),
                 boxShadow: const [
-                  BoxShadow(color: NeoColors.borderLight, offset: Offset(1.5, 1.5)),
+                  BoxShadow(
+                    color: NeoColors.borderLight,
+                    offset: Offset(1.5, 1.5),
+                  ),
                 ],
               ),
               child: Text(
-                '⚡ -90%',
+                '📷 -90%',
                 style: GoogleFonts.spaceGrotesk(
                   fontSize: 9.5,
                   fontWeight: FontWeight.w900,
@@ -47,7 +50,9 @@ class CompressToolGraphic extends StatelessWidget {
           width: 86,
           height: 46,
           decoration: NeoStyles.neoDecoration(
-            backgroundColor: isDark ? const Color(0xFF222226) : NeoColors.softYellow,
+            backgroundColor: isDark
+                ? const Color(0xFF222226)
+                : NeoColors.softYellow,
             radius: 10,
             shadow: 2.5,
           ),
@@ -58,7 +63,9 @@ class CompressToolGraphic extends StatelessWidget {
               Icon(
                 Icons.image_outlined,
                 size: 20,
-                color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+                color: isDark
+                    ? NeoColors.textSecondaryDark
+                    : NeoColors.textSecondaryLight,
               ),
               // Arrow shrink indicator
               Container(
@@ -124,7 +131,9 @@ class PdfToolGraphic extends StatelessWidget {
           width: 68,
           height: 62,
           decoration: NeoStyles.neoDecoration(
-            backgroundColor: isDark ? const Color(0xFF222226) : NeoColors.lightSurface,
+            backgroundColor: isDark
+                ? const Color(0xFF222226)
+                : NeoColors.lightSurface,
             radius: 10,
             shadow: 2.5,
           ),
@@ -248,7 +257,10 @@ class ResizeToolGraphic extends StatelessWidget {
                   height: 8,
                   decoration: BoxDecoration(
                     color: NeoColors.yellow,
-                    border: Border.all(color: NeoColors.borderLight, width: 1.2),
+                    border: Border.all(
+                      color: NeoColors.borderLight,
+                      width: 1.2,
+                    ),
                   ),
                 ),
               ),
@@ -262,7 +274,10 @@ class ResizeToolGraphic extends StatelessWidget {
                   height: 8,
                   decoration: BoxDecoration(
                     color: NeoColors.yellow,
-                    border: Border.all(color: NeoColors.borderLight, width: 1.2),
+                    border: Border.all(
+                      color: NeoColors.borderLight,
+                      width: 1.2,
+                    ),
                   ),
                 ),
               ),
@@ -294,7 +309,10 @@ class CropToolGraphic extends StatelessWidget {
                 borderRadius: BorderRadius.circular(5),
                 border: Border.all(color: NeoColors.borderLight, width: 1.2),
                 boxShadow: const [
-                  BoxShadow(color: NeoColors.borderLight, offset: Offset(1.2, 1.2)),
+                  BoxShadow(
+                    color: NeoColors.borderLight,
+                    offset: Offset(1.2, 1.2),
+                  ),
                 ],
               ),
               child: Text(
@@ -315,7 +333,9 @@ class CropToolGraphic extends StatelessWidget {
           width: 76,
           height: 44,
           decoration: NeoStyles.neoDecoration(
-            backgroundColor: isDark ? const Color(0xFF2B1F2D) : NeoColors.softPink,
+            backgroundColor: isDark
+                ? const Color(0xFF2B1F2D)
+                : NeoColors.softPink,
             radius: 8,
             shadow: 2,
           ),
@@ -454,7 +474,10 @@ class IdPhotoToolGraphic extends StatelessWidget {
                 borderRadius: BorderRadius.circular(5),
                 border: Border.all(color: NeoColors.borderLight, width: 1.2),
                 boxShadow: const [
-                  BoxShadow(color: NeoColors.borderLight, offset: Offset(1.2, 1.2)),
+                  BoxShadow(
+                    color: NeoColors.borderLight,
+                    offset: Offset(1.2, 1.2),
+                  ),
                 ],
               ),
               child: Text(
@@ -475,7 +498,9 @@ class IdPhotoToolGraphic extends StatelessWidget {
           width: 72,
           height: 44,
           decoration: NeoStyles.neoDecoration(
-            backgroundColor: isDark ? const Color(0xFF2C221B) : NeoColors.softOrange,
+            backgroundColor: isDark
+                ? const Color(0xFF2C221B)
+                : NeoColors.softOrange,
             radius: 10,
             shadow: 2,
           ),
@@ -549,11 +574,14 @@ class SignatureToolGraphic extends StatelessWidget {
                 borderRadius: BorderRadius.circular(5),
                 border: Border.all(color: NeoColors.borderLight, width: 1.2),
                 boxShadow: const [
-                  BoxShadow(color: NeoColors.borderLight, offset: Offset(1.2, 1.2)),
+                  BoxShadow(
+                    color: NeoColors.borderLight,
+                    offset: Offset(1.2, 1.2),
+                  ),
                 ],
               ),
               child: Text(
-                '✨ PNG CLEAR',
+                '🌃 PNG CLEAR',
                 style: GoogleFonts.spaceGrotesk(
                   fontSize: 8.5,
                   fontWeight: FontWeight.w900,
@@ -570,7 +598,9 @@ class SignatureToolGraphic extends StatelessWidget {
           width: 82,
           height: 44,
           decoration: NeoStyles.neoDecoration(
-            backgroundColor: isDark ? const Color(0xFF1A2638) : NeoColors.softCyan,
+            backgroundColor: isDark
+                ? const Color(0xFF1A2638)
+                : NeoColors.softCyan,
             radius: 10,
             shadow: 2,
           ),
@@ -623,7 +653,10 @@ class SocialToolGraphic extends StatelessWidget {
                 borderRadius: BorderRadius.circular(5),
                 border: Border.all(color: NeoColors.borderLight, width: 1.2),
                 boxShadow: const [
-                  BoxShadow(color: NeoColors.borderLight, offset: Offset(1.2, 1.2)),
+                  BoxShadow(
+                    color: NeoColors.borderLight,
+                    offset: Offset(1.2, 1.2),
+                  ),
                 ],
               ),
               child: Text(
@@ -691,4 +724,3 @@ class SocialToolGraphic extends StatelessWidget {
     );
   }
 }
-
