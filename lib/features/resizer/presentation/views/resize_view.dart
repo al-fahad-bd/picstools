@@ -215,6 +215,54 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
               ],
             ),
           ),
+          const SizedBox(height: 14),
+          NeoCard(
+            backgroundColor:
+                isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+            shadowOffset: 3,
+            onTap: () => _pickImage(context, ImageSource.camera),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: NeoStyles.neoDecoration(
+                    backgroundColor: NeoColors.yellow,
+                    radius: 12,
+                    shadow: 2,
+                  ),
+                  child: const Icon(
+                    Icons.camera_alt_rounded,
+                    color: NeoColors.borderLight,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Take Photo with Camera',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      Text(
+                        'Capture instant photo to resize',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 12,
+                          color: isDark
+                              ? NeoColors.textSecondaryDark
+                              : NeoColors.textSecondaryLight,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right_rounded),
+              ],
+            ),
+          ),
         ],
       ),
     );

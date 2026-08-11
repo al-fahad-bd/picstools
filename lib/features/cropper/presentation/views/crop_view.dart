@@ -159,7 +159,7 @@ class _CropViewContent extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Choose Photo to Crop',
+                        'Select from Gallery',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 16,
                           fontWeight: FontWeight.w900,
@@ -167,7 +167,7 @@ class _CropViewContent extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Pick from gallery or camera',
+                        'Pick existing photo to crop',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 12,
                           color: NeoColors.borderLight.withValues(alpha: 0.8),
@@ -177,6 +177,48 @@ class _CropViewContent extends StatelessWidget {
                   ),
                 ),
                 const Icon(Icons.chevron_right_rounded, color: NeoColors.borderLight),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+          NeoCard(
+            backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+            shadowOffset: 3,
+            onTap: () => _pickImage(context, ImageSource.camera),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: NeoStyles.neoDecoration(
+                    backgroundColor: NeoColors.cyan,
+                    radius: 12,
+                    shadow: 2,
+                  ),
+                  child: const Icon(Icons.camera_alt_rounded, color: NeoColors.borderLight),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Take Photo with Camera',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      Text(
+                        'Capture instant photo to crop',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 12,
+                          color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right_rounded),
               ],
             ),
           ),
