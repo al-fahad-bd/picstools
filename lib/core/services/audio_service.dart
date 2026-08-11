@@ -16,20 +16,32 @@ class AudioService {
 
   Future<void> init() async {
     try {
+      await AudioPlayer.global.setAudioContext(AudioContext(
+        iOS: AudioContextIOS(
+          category: AVAudioSessionCategory.playback,
+          options: {
+            AVAudioSessionOptions.defaultToSpeaker,
+            AVAudioSessionOptions.mixWithOthers,
+          },
+        ),
+        android: const AudioContextAndroid(
+          contentType: AndroidContentType.music,
+          usageType: AndroidUsageType.media,
+          audioFocus: AndroidAudioFocus.gainTransientMayDuck,
+        ),
+      ));
       await _player.setReleaseMode(ReleaseMode.loop);
-      await _player.setVolume(0.15); // Subtle ambient background level
+      await _player.setVolume(0.5);
     } catch (_) {}
   }
 
   Future<void> playBackgroundSound() async {
-    if (!_isSoundEnabled) return;
+    if (!_isSoundEnabled || _isPlaying) return;
     try {
-      if (!_isPlaying) {
-        await _player.setReleaseMode(ReleaseMode.loop);
-        await _player.setVolume(0.15);
-        await _player.play(AssetSource('audio/background_ambient.mp3'));
-        _isPlaying = true;
-      }
+      await _player.setReleaseMode(ReleaseMode.loop);
+      await _player.setVolume(0.5);
+      await _player.play(AssetSource('audio/background_ambient.mp3'));
+      _isPlaying = true;
     } catch (_) {}
   }
 

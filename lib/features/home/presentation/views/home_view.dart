@@ -11,6 +11,7 @@ import '../../../../core/widgets/neo_text_field.dart';
 import '../../../../core/widgets/neo_bottom_nav_bar.dart';
 import '../../../../core/widgets/neo_doodles.dart';
 import '../../../../core/widgets/neo_tool_graphics.dart';
+import '../../../../core/widgets/neo_switch.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/history_service.dart';
 import '../../../../core/services/audio_service.dart';
@@ -58,6 +59,16 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     super.initState();
     _loadDeveloperMode();
+    _startAudioIfEnabled();
+  }
+
+  void _startAudioIfEnabled() {
+    try {
+      final audio = getIt<AudioService>();
+      if (audio.isSoundEnabled && !audio.isPlaying) {
+        audio.playBackgroundSound();
+      }
+    } catch (_) {}
   }
 
   void _loadDeveloperMode() {
@@ -1037,9 +1048,9 @@ class _HomeViewState extends State<HomeView> {
                 Material(
                   color: Colors.transparent,
                   child: ListTile(
-                    leading: const Icon(
+                    leading: Icon(
                       Icons.music_note_rounded,
-                      color: NeoColors.yellow,
+                      color: isDark ? NeoColors.yellow : NeoColors.purple,
                     ),
                     title: Text(
                       'Background Sound',
@@ -1056,9 +1067,9 @@ class _HomeViewState extends State<HomeView> {
                             : NeoColors.textSecondaryLight,
                       ),
                     ),
-                    trailing: Switch.adaptive(
+                    trailing: NeoSwitch(
                       value: getIt<AudioService>().isSoundEnabled,
-                      activeThumbColor: NeoColors.yellow,
+                      activeTrackColor: NeoColors.yellow,
                       onChanged: (val) async {
                         await getIt<AudioService>().setSoundEnabled(val);
                         setState(() {});
@@ -1142,6 +1153,9 @@ class _ToolCardItemState extends State<_ToolCardItem> {
     final cardBg = widget.isDark
         ? NeoColors.darkSurface
         : widget.tool.softColor;
+    final shadowBorderColor = widget.isDark
+        ? NeoColors.borderDark
+        : NeoColors.borderLight;
 
     return GestureDetector(
       onTapDown: (_) => setState(() => _isPressed = true),
@@ -1158,7 +1172,7 @@ class _ToolCardItemState extends State<_ToolCardItem> {
         padding: const EdgeInsets.all(12),
         decoration: NeoStyles.neoDecoration(
           backgroundColor: cardBg,
-          borderColor: NeoColors.borderLight,
+          borderColor: shadowBorderColor,
           radius: 16,
           shadow: _isPressed ? 1.5 : 4.5,
         ),
@@ -1174,7 +1188,9 @@ class _ToolCardItemState extends State<_ToolCardItem> {
                   backgroundColor: widget.isDark
                       ? widget.tool.accentColor
                       : NeoColors.lightSurface,
-                  textColor: NeoColors.borderLight,
+                  textColor: widget.isDark
+                      ? NeoColors.borderLight
+                      : NeoColors.borderLight,
                   fontSize: 8.5,
                 ),
                 NeoSparkleDoodle(size: 16, color: widget.tool.accentColor),
@@ -1191,11 +1207,11 @@ class _ToolCardItemState extends State<_ToolCardItem> {
                       ? const Color(0xFF1E1E24)
                       : NeoColors.lightSurface,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: NeoColors.borderLight, width: 2),
-                  boxShadow: const [
+                  border: Border.all(color: shadowBorderColor, width: 2),
+                  boxShadow: [
                     BoxShadow(
-                      color: NeoColors.borderLight,
-                      offset: Offset(2, 2),
+                      color: shadowBorderColor,
+                      offset: const Offset(2, 2),
                       blurRadius: 0,
                     ),
                   ],
@@ -1227,10 +1243,12 @@ class _ToolCardItemState extends State<_ToolCardItem> {
                     ),
                   ),
                 ),
-                const Icon(
+                Icon(
                   Icons.arrow_forward_rounded,
                   size: 16,
-                  color: NeoColors.borderLight,
+                  color: widget.isDark
+                      ? NeoColors.textPrimaryDark
+                      : NeoColors.borderLight,
                 ),
               ],
             ),

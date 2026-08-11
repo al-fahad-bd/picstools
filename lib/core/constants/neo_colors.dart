@@ -6,10 +6,10 @@ abstract class NeoColors {
   static const Color darkBg = Color(0xFF141416);
   static const Color lightSurface = Color(0xFFFFFFFF);
   static const Color darkSurface = Color(0xFF1F1F23);
-  
+
   static const Color borderLight = Color(0xFF121212);
-  static const Color borderDark = Color(0xFFE4E4E7);
-  
+  static const Color borderDark = Color(0xFFD8D8DB);
+
   static const Color textPrimaryLight = Color(0xFF121212);
   static const Color textSecondaryLight = Color(0xFF52525B);
   static const Color textPrimaryDark = Color(0xFFFAFAFA);
@@ -50,14 +50,7 @@ abstract class NeoColors {
   }
 
   static Color getAccentColor(int index) {
-    const colors = [
-      yellow,
-      cyan,
-      pink,
-      green,
-      purple,
-      orange,
-    ];
+    const colors = [yellow, cyan, pink, green, purple, orange];
     return colors[index % colors.length];
   }
 }
