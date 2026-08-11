@@ -76,6 +76,7 @@ class CropperConfiguredState extends CropperState {
     File? file,
     String? selectedRatioName,
     double? selectedRatioValue,
+    bool clearRatioValue = false,
     Rect? normCropRect,
     int? rotationAngle,
     bool? flipHorizontal,
@@ -84,7 +85,9 @@ class CropperConfiguredState extends CropperState {
     return CropperConfiguredState(
       file: file ?? this.file,
       selectedRatioName: selectedRatioName ?? this.selectedRatioName,
-      selectedRatioValue: selectedRatioValue ?? this.selectedRatioValue,
+      selectedRatioValue: clearRatioValue
+          ? null
+          : (selectedRatioValue ?? this.selectedRatioValue),
       normCropRect: normCropRect ?? this.normCropRect,
       rotationAngle: rotationAngle ?? this.rotationAngle,
       flipHorizontal: flipHorizontal ?? this.flipHorizontal,
@@ -144,6 +147,7 @@ class CropperBloc extends Bloc<CropperEvent, CropperState> {
       emit(current.copyWith(
         selectedRatioName: event.ratioName,
         selectedRatioValue: event.ratioValue,
+        clearRatioValue: event.ratioValue == null,
       ));
     }
   }

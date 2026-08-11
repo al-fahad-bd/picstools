@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -247,6 +248,176 @@ class _CompressViewContentState extends State<_CompressViewContent> {
           ),
         ],
       ),
+    );
+  }
+
+  void _openImageViewerModal(
+    BuildContext context,
+    File imageFile, {
+    required int width,
+    required int height,
+    required int sizeBytes,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (modalContext) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.85,
+          decoration: BoxDecoration(
+            color: isDark ? NeoColors.darkBg : NeoColors.lightBg,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(24),
+            ),
+            border: Border.all(
+              color: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+              width: 3,
+            ),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              children: [
+                // Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 12.0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: NeoStyles.neoDecoration(
+                                backgroundColor: NeoColors.green,
+                                radius: 8,
+                                shadow: 2,
+                              ),
+                              child: const Icon(
+                                Icons.image_rounded,
+                                size: 18,
+                                color: NeoColors.borderLight,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                path.basename(imageFile.path),
+                                style: GoogleFonts.spaceGrotesk(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close_rounded),
+                        onPressed: () => Navigator.pop(modalContext),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1, thickness: 1.5),
+
+                // Image Canvas
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.file(
+                            imageFile,
+                            fit: BoxFit.contain,
+                            width: double.infinity,
+                            height: double.infinity,
+                          ),
+                        ),
+                        Positioned(
+                          top: 10,
+                          right: 10,
+                          child: NeoBadge(
+                            label: '$width x $height px • ${FileUtils.formatBytes(sizeBytes)}',
+                            backgroundColor: NeoColors.green,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Actions
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: NeoButton(
+                          label: 'SHARE',
+                          icon: const Icon(
+                            Icons.share_rounded,
+                            size: 16,
+                            color: NeoColors.borderLight,
+                          ),
+                          backgroundColor: NeoColors.yellow,
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                          onPressed: () {
+                            Share.shareXFiles([
+                              XFile(imageFile.path),
+                            ], text: 'Compressed with PicsTools!');
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: NeoButton(
+                          label: 'SAVE IMAGE',
+                          icon: const Icon(
+                            Icons.download_rounded,
+                            size: 16,
+                            color: NeoColors.borderLight,
+                          ),
+                          backgroundColor: NeoColors.green,
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                          onPressed: () async {
+                            final saver = getIt<FileSaveService>();
+                            final saved = await saver.saveFileToPublicStorage(
+                              sourceFile: imageFile,
+                              subFolder: 'Compressed',
+                            );
+                            if (modalContext.mounted) {
+                              ScaffoldMessenger.of(modalContext).showSnackBar(
+                                SnackBar(
+                                  content: Text('Saved to ${saved.path}'),
+                                  backgroundColor: NeoColors.green,
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -763,6 +934,13 @@ class _CompressViewContentState extends State<_CompressViewContent> {
 
               return NeoCard(
                 backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+                onTap: () => _openImageViewerModal(
+                  context,
+                  item.compressedFile,
+                  width: item.width,
+                  height: item.height,
+                  sizeBytes: item.compressedSizeBytes,
+                ),
                 child: Row(
                   children: [
                     ClipRRect(

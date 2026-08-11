@@ -10,6 +10,7 @@ import '../../features/pdf/presentation/views/pdf_view.dart';
 import '../../features/id_photo/presentation/views/id_photo_view.dart';
 import '../../features/signature/presentation/views/signature_view.dart';
 import '../../features/settings/presentation/views/privacy_policy_view.dart';
+import '../../features/settings/presentation/views/developer_details_view.dart';
 import '../../features/tool_placeholder_view.dart';
 
 abstract class AppRouter {
@@ -31,6 +32,10 @@ abstract class AppRouter {
       GoRoute(
         path: '/privacy_policy',
         builder: (context, state) => const PrivacyPolicyView(),
+      ),
+      GoRoute(
+        path: '/developer',
+        builder: (context, state) => const DeveloperDetailsView(),
       ),
       GoRoute(
         path: '/compress',

@@ -31,6 +31,7 @@ class ImageResizerService {
     required int targetWidth,
     required int targetHeight,
     bool maintainAspectRatio = true,
+    double? percentage,
   }) async {
     final originalBytes = await imageFile.readAsBytes();
     final decoded = img.decodeImage(originalBytes);
@@ -44,7 +45,10 @@ class ImageResizerService {
     int finalW = targetWidth;
     int finalH = targetHeight;
 
-    if (maintainAspectRatio && origW > 0 && origH > 0) {
+    if (percentage != null) {
+      finalW = (origW * (percentage / 100.0)).round();
+      finalH = (origH * (percentage / 100.0)).round();
+    } else if (maintainAspectRatio && origW > 0 && origH > 0) {
       final double ratio = origW / origH;
       if (finalW / finalH > ratio) {
         finalW = (finalH * ratio).round();

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/constants/neo_styles.dart';
 import '../../../../core/widgets/neo_card.dart';
@@ -49,6 +50,24 @@ class _HomeViewState extends State<HomeView> {
   int _currentNavIndex = 0;
   String _searchQuery = '';
   String _selectedCategory = 'ALL';
+  int _developerTapCount = 0;
+  bool _isDeveloperUnlocked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDeveloperMode();
+  }
+
+  void _loadDeveloperMode() {
+    try {
+      final prefs = getIt<SharedPreferences>();
+      setState(() {
+        _isDeveloperUnlocked =
+            prefs.getBool('developer_mode_unlocked') ?? false;
+      });
+    } catch (_) {}
+  }
 
   final List<ToolItem> _allTools = const [
     ToolItem(
@@ -561,7 +580,9 @@ class _HomeViewState extends State<HomeView> {
     if (name.contains('resize')) return Icons.aspect_ratio_rounded;
     if (name.contains('crop')) return Icons.crop_rounded;
     if (name.contains('convert')) return Icons.transform_rounded;
-    if (name.contains('id photo') || name.contains('passport')) return Icons.badge_rounded;
+    if (name.contains('id photo') || name.contains('passport')) {
+      return Icons.badge_rounded;
+    }
     if (name.contains('signature')) return Icons.draw_rounded;
     if (name.contains('social')) return Icons.share_rounded;
     return Icons.compress_rounded;
@@ -573,7 +594,9 @@ class _HomeViewState extends State<HomeView> {
     if (name.contains('resize')) return NeoColors.cyan;
     if (name.contains('crop')) return NeoColors.pink;
     if (name.contains('convert')) return NeoColors.green;
-    if (name.contains('id photo') || name.contains('passport')) return NeoColors.orange;
+    if (name.contains('id photo') || name.contains('passport')) {
+      return NeoColors.orange;
+    }
     if (name.contains('signature')) return NeoColors.blue;
     if (name.contains('social')) return NeoColors.yellow;
     return NeoColors.yellow;
@@ -676,7 +699,9 @@ class _HomeViewState extends State<HomeView> {
                       );
                       final toolIcon = _getToolIcon(item.toolName);
                       final toolColor = _getToolAccentColor(item.toolName);
-                      final hasSavings = item.originalSizeBytes > item.processedSizeBytes && item.originalSizeBytes > 0;
+                      final hasSavings =
+                          item.originalSizeBytes > item.processedSizeBytes &&
+                          item.originalSizeBytes > 0;
                       final subtitleText = hasSavings
                           ? 'Saved ${FileUtils.formatBytes(item.originalSizeBytes - item.processedSizeBytes)} (-${saved.round()}%)'
                           : 'Processed • ${FileUtils.formatBytes(item.processedSizeBytes)}';
@@ -867,6 +892,55 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
+  void _showDeveloperToast(
+    BuildContext context,
+    String message, {
+    Color color = NeoColors.purple,
+    IconData icon = Icons.terminal_rounded,
+  }) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        margin: const EdgeInsets.only(bottom: 24, left: 16, right: 16),
+        duration: const Duration(milliseconds: 1800),
+        content: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: NeoStyles.neoDecoration(
+            backgroundColor: color,
+            radius: 16,
+            shadow: 4,
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, size: 18, color: NeoColors.darkSurface),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  message,
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w900,
+                    color: NeoColors.darkSurface,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   // Tab 4: Settings Screen
   Widget _buildSettingsTab(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -890,19 +964,57 @@ class _HomeViewState extends State<HomeView> {
                 : NeoColors.lightSurface,
             child: Column(
               children: [
-                ListTile(
-                  leading: const Icon(Icons.info_outline_rounded),
-                  title: Text(
-                    'App Version',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontWeight: FontWeight.bold,
+                Material(
+                  color: Colors.transparent,
+                  child: ListTile(
+                    leading: const Icon(Icons.info_outline_rounded),
+                    title: Text(
+                      'App Version',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  trailing: Text(
-                    '1.0.0',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontWeight: FontWeight.w600,
+                    trailing: Text(
+                      '1.0.0',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
+                    onTap: () {
+                      final prefs = getIt<SharedPreferences>();
+                      final isUnlocked =
+                          prefs.getBool('developer_mode_unlocked') ?? false;
+
+                      if (isUnlocked) {
+                        return;
+                      }
+
+                      setState(() {
+                        _developerTapCount++;
+                      });
+
+                      final remaining = 10 - _developerTapCount;
+                      if (_developerTapCount >= 10) {
+                        prefs.setBool('developer_mode_unlocked', true);
+                        setState(() {
+                          _isDeveloperUnlocked = true;
+                        });
+                        _showDeveloperToast(
+                          context,
+                          '🎉 Developer Details Unlocked!',
+                          color: NeoColors.purple,
+                          icon: Icons.verified_rounded,
+                        );
+                        context.push('/developer');
+                      } else if (_developerTapCount >= 4) {
+                        _showDeveloperToast(
+                          context,
+                          'You are $remaining tap(s) away from finding the developer.',
+                          color: NeoColors.cyan,
+                          icon: Icons.terminal_rounded,
+                        );
+                      }
+                    },
                   ),
                 ),
                 const Divider(),
@@ -920,6 +1032,26 @@ class _HomeViewState extends State<HomeView> {
                     onTap: () => context.push('/privacy_policy'),
                   ),
                 ),
+                if (_isDeveloperUnlocked) ...[
+                  const Divider(),
+                  Material(
+                    color: Colors.transparent,
+                    child: ListTile(
+                      leading: const Icon(
+                        Icons.code_rounded,
+                        color: NeoColors.cyan,
+                      ),
+                      title: Text(
+                        'Developer Details',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      trailing: const Icon(Icons.chevron_right_rounded),
+                      onTap: () => context.push('/developer'),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

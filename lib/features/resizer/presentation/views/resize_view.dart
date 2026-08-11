@@ -1,9 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:path/path.dart' as path;
 
 import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/constants/neo_styles.dart';
@@ -24,10 +26,8 @@ class ResizeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ResizerBloc(
-        resizerService: getIt(),
-        historyService: getIt(),
-      ),
+      create: (context) =>
+          ResizerBloc(resizerService: getIt(), historyService: getIt()),
       child: const _ResizeViewContent(),
     );
   }
@@ -43,6 +43,7 @@ class _ResizeViewContent extends StatefulWidget {
 class _ResizeViewContentState extends State<_ResizeViewContent> {
   final TextEditingController _widthController = TextEditingController();
   final TextEditingController _heightController = TextEditingController();
+  int _selectedPreviewIndex = 0;
 
   Future<void> _pickImage(BuildContext context, ImageSource source) async {
     final picker = getIt<ImagePickerService>();
@@ -71,7 +72,9 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
           icon: Container(
             padding: const EdgeInsets.all(6),
             decoration: NeoStyles.neoDecoration(
-              backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+              backgroundColor: isDark
+                  ? NeoColors.darkSurface
+                  : NeoColors.lightSurface,
               radius: 10,
               shadow: 2,
             ),
@@ -91,7 +94,8 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
         child: BlocConsumer<ResizerBloc, ResizerState>(
           listener: (context, state) {
             if (state is ResizerConfiguredState) {
-              if (_widthController.text.isEmpty || _heightController.text.isEmpty) {
+              if (_widthController.text.isEmpty ||
+                  _heightController.text.isEmpty) {
                 _widthController.text = state.targetWidth.toString();
                 _heightController.text = state.targetHeight.toString();
               }
@@ -157,7 +161,9 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
             textAlign: TextAlign.center,
             style: GoogleFonts.spaceGrotesk(
               fontSize: 14,
-              color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+              color: isDark
+                  ? NeoColors.textSecondaryDark
+                  : NeoColors.textSecondaryLight,
             ),
           ),
           const SizedBox(height: 36),
@@ -174,7 +180,10 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                     radius: 12,
                     shadow: 2,
                   ),
-                  child: const Icon(Icons.photo_library_rounded, color: NeoColors.borderLight),
+                  child: const Icon(
+                    Icons.photo_library_rounded,
+                    color: NeoColors.borderLight,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -199,12 +208,190 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right_rounded, color: NeoColors.borderLight),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: NeoColors.borderLight,
+                ),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  void _openImageViewerModal(
+    BuildContext context,
+    File imageFile, {
+    required int width,
+    required int height,
+    required int sizeBytes,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (modalContext) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.85,
+          decoration: BoxDecoration(
+            color: isDark ? NeoColors.darkBg : NeoColors.lightBg,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border.all(
+              color: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+              width: 3,
+            ),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              children: [
+                // Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 12.0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: NeoStyles.neoDecoration(
+                                backgroundColor: NeoColors.cyan,
+                                radius: 8,
+                                shadow: 2,
+                              ),
+                              child: const Icon(
+                                Icons.image_rounded,
+                                size: 18,
+                                color: NeoColors.borderLight,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                path.basename(imageFile.path),
+                                style: GoogleFonts.spaceGrotesk(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close_rounded),
+                        onPressed: () => Navigator.pop(modalContext),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1, thickness: 1.5),
+
+                // Image Canvas
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.file(
+                            imageFile,
+                            fit: BoxFit.contain,
+                            width: double.infinity,
+                            height: double.infinity,
+                          ),
+                        ),
+                        Positioned(
+                          top: 10,
+                          right: 10,
+                          child: NeoBadge(
+                            label:
+                                '$width x $height px • ${FileUtils.formatBytes(sizeBytes)}',
+                            backgroundColor: NeoColors.cyan,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Actions
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: NeoButton(
+                          label: 'SHARE',
+                          icon: const Icon(
+                            Icons.share_rounded,
+                            size: 16,
+                            color: NeoColors.borderLight,
+                          ),
+                          backgroundColor: NeoColors.yellow,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 12,
+                          ),
+                          onPressed: () {
+                            Share.shareXFiles([
+                              XFile(imageFile.path),
+                            ], text: 'Resized with PicsTools!');
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: NeoButton(
+                          label: 'SAVE IMAGE',
+                          icon: const Icon(
+                            Icons.download_rounded,
+                            size: 16,
+                            color: NeoColors.borderLight,
+                          ),
+                          backgroundColor: NeoColors.green,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 12,
+                          ),
+                          onPressed: () async {
+                            final saver = getIt<FileSaveService>();
+                            final saved = await saver.saveFileToPublicStorage(
+                              sourceFile: imageFile,
+                              subFolder: 'Resized',
+                            );
+                            if (modalContext.mounted) {
+                              ScaffoldMessenger.of(modalContext).showSnackBar(
+                                SnackBar(
+                                  content: Text('Saved to ${saved.path}'),
+                                  backgroundColor: NeoColors.green,
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -214,6 +401,21 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
     bool isDark,
   ) {
     final bloc = context.read<ResizerBloc>();
+    final isBatch = state.files.length > 1;
+
+    final safeIndex = _selectedPreviewIndex.clamp(
+      0,
+      state.files.isEmpty ? 0 : state.files.length - 1,
+    );
+    final previewFile = state.files.isNotEmpty ? state.files[safeIndex] : null;
+    final origSize = (safeIndex < state.originalSizes.length)
+        ? state.originalSizes[safeIndex]
+        : Size(state.originalWidth.toDouble(), state.originalHeight.toDouble());
+
+    final currentScaledW = (origSize.width * (state.percentage / 100.0))
+        .round();
+    final currentScaledH = (origSize.height * (state.percentage / 100.0))
+        .round();
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -221,34 +423,109 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Live Image Preview Frame
-          NeoCard(
-            backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
-            shadowOffset: 4,
-            padding: const EdgeInsets.all(12),
-            child: Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.file(
-                    state.files.first,
-                    height: 180,
-                    width: double.infinity,
-                    fit: BoxFit.contain,
+          if (previewFile != null) ...[
+            NeoCard(
+              backgroundColor: isDark
+                  ? NeoColors.darkSurface
+                  : NeoColors.lightSurface,
+              shadowOffset: 4,
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                children: [
+                  Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.file(
+                          previewFile,
+                          height: 180,
+                          width: double.infinity,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: NeoBadge(
+                          label: isBatch
+                              ? '$currentScaledW x $currentScaledH px (${state.percentage.round()}%)'
+                              : '${state.targetWidth} x ${state.targetHeight} px',
+                          backgroundColor: NeoColors.cyan,
+                          fontSize: 11,
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 8,
+                        left: 8,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.7),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            path.basename(previewFile.path),
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 11,
+                              color: NeoColors.lightSurface,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: NeoBadge(
-                    label: '${state.targetWidth} x ${state.targetHeight} px',
-                    backgroundColor: NeoColors.cyan,
-                    fontSize: 11,
-                  ),
-                ),
-              ],
+                  if (isBatch) ...[
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 64,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: state.files.length,
+                        separatorBuilder: (_, _) => const SizedBox(width: 8),
+                        itemBuilder: (context, index) {
+                          final file = state.files[index];
+                          final isSelected = index == safeIndex;
+                          return GestureDetector(
+                            onTap: () =>
+                                setState(() => _selectedPreviewIndex = index),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? NeoColors.cyan
+                                      : (isDark
+                                            ? NeoColors.borderDark
+                                            : NeoColors.borderLight),
+                                  width: isSelected ? 3 : 1.5,
+                                ),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(6),
+                                child: Image.file(
+                                  file,
+                                  width: 56,
+                                  height: 56,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
+          ],
 
           // Header summary card
           NeoCard(
@@ -281,7 +558,9 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Original: ${state.originalWidth} x ${state.originalHeight} px',
+                        isBatch
+                            ? 'Batch Mode: ${state.files.length} Photos Selected'
+                            : 'Original: ${origSize.width.round()} x ${origSize.height.round()} px',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 14,
                           fontWeight: FontWeight.w900,
@@ -289,7 +568,9 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                         ),
                       ),
                       Text(
-                        '${state.files.length} photo(s) selected',
+                        isBatch
+                            ? 'Photo ${safeIndex + 1}: ${origSize.width.round()} x ${origSize.height.round()} px'
+                            : 'Single image resize mode',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 11,
                           color: NeoColors.borderLight.withValues(alpha: 0.8),
@@ -301,101 +582,166 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                 NeoButton(
                   label: 'CHANGE',
                   backgroundColor: NeoColors.cyan,
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  onPressed: () => bloc.add(ResetResizerEvent()),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  onPressed: () {
+                    setState(() => _selectedPreviewIndex = 0);
+                    bloc.add(ResetResizerEvent());
+                  },
                 ),
               ],
             ),
           ),
           const SizedBox(height: 24),
 
-          // Custom Dimension Inputs
+          // Custom Dimension Inputs (Only for Single Image Mode)
+          if (!isBatch) ...[
+            Text(
+              'Target Dimensions (Pixels)',
+              style: GoogleFonts.spaceGrotesk(
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: NeoTextField(
+                    labelText: 'Width (px)',
+                    controller: _widthController,
+                    keyboardType: TextInputType.number,
+                    onChanged: (val) {
+                      final w = int.tryParse(val) ?? state.targetWidth;
+                      int h = state.targetHeight;
+                      if (state.maintainAspectRatio &&
+                          state.originalWidth > 0) {
+                        h = ((w / state.originalWidth) * state.originalHeight)
+                            .round();
+                        _heightController.text = h.toString();
+                      }
+                      bloc.add(UpdateDimensionsEvent(w, h));
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: NeoTextField(
+                    labelText: 'Height (px)',
+                    controller: _heightController,
+                    keyboardType: TextInputType.number,
+                    onChanged: (val) {
+                      final h = int.tryParse(val) ?? state.targetHeight;
+                      int w = state.targetWidth;
+                      if (state.maintainAspectRatio &&
+                          state.originalHeight > 0) {
+                        w = ((h / state.originalHeight) * state.originalWidth)
+                            .round();
+                        _widthController.text = w.toString();
+                      }
+                      bloc.add(UpdateDimensionsEvent(w, h));
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Aspect Ratio Lock Toggle
+            NeoCard(
+              backgroundColor: isDark
+                  ? NeoColors.darkSurface
+                  : NeoColors.lightSurface,
+              shadowOffset: 2,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        state.maintainAspectRatio
+                            ? Icons.lock_rounded
+                            : Icons.lock_open_rounded,
+                        color: state.maintainAspectRatio
+                            ? NeoColors.yellow
+                            : Colors.grey,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Maintain Aspect Ratio',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Switch(
+                    value: state.maintainAspectRatio,
+                    activeTrackColor: NeoColors.yellow,
+                    onChanged: (_) =>
+                        bloc.add(ToggleMaintainAspectRatioEvent()),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+          ] else ...[
+            // Batch Mode Info Banner
+            NeoCard(
+              backgroundColor: NeoColors.softCyan,
+              shadowOffset: 2,
+              padding: const EdgeInsets.all(14),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: NeoStyles.neoDecoration(
+                      backgroundColor: NeoColors.cyan,
+                      radius: 8,
+                      shadow: 1,
+                    ),
+                    child: const Icon(
+                      Icons.aspect_ratio_rounded,
+                      size: 20,
+                      color: NeoColors.borderLight,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Batch Mode: Photos have different aspect ratios. Scaling by percentage preserves each photo\'s proportions perfectly without stretching.',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: NeoColors.borderLight,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+          ],
+
+          // Percentage Resize Slider & Quick Presets
           Text(
-            'Target Dimensions (Pixels)',
+            'Percentage Scale',
             style: GoogleFonts.spaceGrotesk(
               fontSize: 16,
               fontWeight: FontWeight.w900,
             ),
           ),
           const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: NeoTextField(
-                  labelText: 'Width (px)',
-                  controller: _widthController,
-                  keyboardType: TextInputType.number,
-                  onChanged: (val) {
-                    final w = int.tryParse(val) ?? state.targetWidth;
-                    int h = state.targetHeight;
-                    if (state.maintainAspectRatio && state.originalWidth > 0) {
-                      h = ((w / state.originalWidth) * state.originalHeight).round();
-                      _heightController.text = h.toString();
-                    }
-                    bloc.add(UpdateDimensionsEvent(w, h));
-                  },
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: NeoTextField(
-                  labelText: 'Height (px)',
-                  controller: _heightController,
-                  keyboardType: TextInputType.number,
-                  onChanged: (val) {
-                    final h = int.tryParse(val) ?? state.targetHeight;
-                    int w = state.targetWidth;
-                    if (state.maintainAspectRatio && state.originalHeight > 0) {
-                      w = ((h / state.originalHeight) * state.originalWidth).round();
-                      _widthController.text = w.toString();
-                    }
-                    bloc.add(UpdateDimensionsEvent(w, h));
-                  },
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // Aspect Ratio Lock Toggle
           NeoCard(
-            backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
-            shadowOffset: 2,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      state.maintainAspectRatio ? Icons.lock_rounded : Icons.lock_open_rounded,
-                      color: state.maintainAspectRatio ? NeoColors.yellow : Colors.grey,
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Maintain Aspect Ratio',
-                      style: GoogleFonts.spaceGrotesk(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                Switch(
-                  value: state.maintainAspectRatio,
-                  activeTrackColor: NeoColors.yellow,
-                  onChanged: (_) => bloc.add(ToggleMaintainAspectRatioEvent()),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Percentage Resize Slider
-          NeoCard(
-            backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+            backgroundColor: isDark
+                ? NeoColors.darkSurface
+                : NeoColors.lightSurface,
             child: NeoSlider(
-              label: 'Percentage Scale',
+              label: 'Scale (${state.percentage.round()}%)',
               value: state.percentage,
               min: 10,
               max: 100,
@@ -403,63 +749,179 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
               activeColor: NeoColors.cyan,
               onChanged: (val) {
                 bloc.add(SetPercentageResizeEvent(val));
-                final newW = (state.originalWidth * (val / 100.0)).round();
-                final newH = (state.originalHeight * (val / 100.0)).round();
-                _widthController.text = newW.toString();
-                _heightController.text = newH.toString();
+                if (!isBatch) {
+                  final newW = (state.originalWidth * (val / 100.0)).round();
+                  final newH = (state.originalHeight * (val / 100.0)).round();
+                  _widthController.text = newW.toString();
+                  _heightController.text = newH.toString();
+                }
               },
             ),
           ),
-          const SizedBox(height: 24),
-
-          // Resolution Presets
-          Text(
-            'Common Presets',
-            style: GoogleFonts.spaceGrotesk(
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
           const SizedBox(height: 12),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
+          Row(
             children: [
-              _buildPresetChip(
-                label: '1080p (Full HD)',
-                w: 1920,
-                h: 1080,
-                bloc: bloc,
-                isDark: isDark,
+              Expanded(
+                child: NeoButton(
+                  label: '25%',
+                  backgroundColor: state.percentage == 25
+                      ? NeoColors.cyan
+                      : (isDark
+                            ? NeoColors.darkSurface
+                            : NeoColors.lightSurface),
+                  textColor: state.percentage == 25
+                      ? NeoColors.borderLight
+                      : (isDark
+                            ? NeoColors.textPrimaryDark
+                            : NeoColors.textPrimaryLight),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  onPressed: () {
+                    bloc.add(const SetPercentageResizeEvent(25));
+                    if (!isBatch) {
+                      final newW = (state.originalWidth * 0.25).round();
+                      final newH = (state.originalHeight * 0.25).round();
+                      _widthController.text = newW.toString();
+                      _heightController.text = newH.toString();
+                    }
+                  },
+                ),
               ),
-              _buildPresetChip(
-                label: '720p (HD)',
-                w: 1280,
-                h: 720,
-                bloc: bloc,
-                isDark: isDark,
+              const SizedBox(width: 8),
+              Expanded(
+                child: NeoButton(
+                  label: '50%',
+                  backgroundColor: state.percentage == 50
+                      ? NeoColors.cyan
+                      : (isDark
+                            ? NeoColors.darkSurface
+                            : NeoColors.lightSurface),
+                  textColor: state.percentage == 50
+                      ? NeoColors.borderLight
+                      : (isDark
+                            ? NeoColors.textPrimaryDark
+                            : NeoColors.textPrimaryLight),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  onPressed: () {
+                    bloc.add(const SetPercentageResizeEvent(50));
+                    if (!isBatch) {
+                      final newW = (state.originalWidth * 0.50).round();
+                      final newH = (state.originalHeight * 0.50).round();
+                      _widthController.text = newW.toString();
+                      _heightController.text = newH.toString();
+                    }
+                  },
+                ),
               ),
-              _buildPresetChip(
-                label: '4K Ultra HD',
-                w: 3840,
-                h: 2160,
-                bloc: bloc,
-                isDark: isDark,
+              const SizedBox(width: 8),
+              Expanded(
+                child: NeoButton(
+                  label: '75%',
+                  backgroundColor: state.percentage == 75
+                      ? NeoColors.cyan
+                      : (isDark
+                            ? NeoColors.darkSurface
+                            : NeoColors.lightSurface),
+                  textColor: state.percentage == 75
+                      ? NeoColors.borderLight
+                      : (isDark
+                            ? NeoColors.textPrimaryDark
+                            : NeoColors.textPrimaryLight),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  onPressed: () {
+                    bloc.add(const SetPercentageResizeEvent(75));
+                    if (!isBatch) {
+                      final newW = (state.originalWidth * 0.75).round();
+                      final newH = (state.originalHeight * 0.75).round();
+                      _widthController.text = newW.toString();
+                      _heightController.text = newH.toString();
+                    }
+                  },
+                ),
               ),
-              _buildPresetChip(
-                label: 'Web (800x600)',
-                w: 800,
-                h: 600,
-                bloc: bloc,
-                isDark: isDark,
+              const SizedBox(width: 8),
+              Expanded(
+                child: NeoButton(
+                  label: '100%',
+                  backgroundColor: state.percentage == 100
+                      ? NeoColors.cyan
+                      : (isDark
+                            ? NeoColors.darkSurface
+                            : NeoColors.lightSurface),
+                  textColor: state.percentage == 100
+                      ? NeoColors.borderLight
+                      : (isDark
+                            ? NeoColors.textPrimaryDark
+                            : NeoColors.textPrimaryLight),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  onPressed: () {
+                    bloc.add(const SetPercentageResizeEvent(100));
+                    if (!isBatch) {
+                      _widthController.text = state.originalWidth.toString();
+                      _heightController.text = state.originalHeight.toString();
+                    }
+                  },
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 36),
+          const SizedBox(height: 24),
+
+          // Resolution Presets (Only in Single Image Mode)
+          if (!isBatch) ...[
+            Text(
+              'Common Presets',
+              style: GoogleFonts.spaceGrotesk(
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                _buildPresetChip(
+                  label: '1080p (Full HD)',
+                  w: 1920,
+                  h: 1080,
+                  bloc: bloc,
+                  isDark: isDark,
+                ),
+                _buildPresetChip(
+                  label: '720p (HD)',
+                  w: 1280,
+                  h: 720,
+                  bloc: bloc,
+                  isDark: isDark,
+                ),
+                _buildPresetChip(
+                  label: '4K Ultra HD',
+                  w: 3840,
+                  h: 2160,
+                  bloc: bloc,
+                  isDark: isDark,
+                ),
+                _buildPresetChip(
+                  label: 'Web (800x600)',
+                  w: 800,
+                  h: 600,
+                  bloc: bloc,
+                  isDark: isDark,
+                ),
+              ],
+            ),
+            const SizedBox(height: 36),
+          ] else
+            const SizedBox(height: 24),
 
           NeoButton(
-            label: 'RESIZE IMAGE(S)',
-            icon: const Icon(Icons.aspect_ratio_rounded, color: NeoColors.borderLight),
+            label: isBatch
+                ? 'RESIZE ${state.files.length} IMAGES'
+                : 'RESIZE IMAGE',
+            icon: const Icon(
+              Icons.aspect_ratio_rounded,
+              color: NeoColors.borderLight,
+            ),
             backgroundColor: NeoColors.cyan,
             fullWidth: true,
             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -486,7 +948,9 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: NeoStyles.neoDecoration(
-          backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+          backgroundColor: isDark
+              ? NeoColors.darkSurface
+              : NeoColors.lightSurface,
           radius: 10,
           shadow: 2,
         ),
@@ -525,7 +989,9 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                 height: 44,
                 child: CircularProgressIndicator(
                   strokeWidth: 4,
-                  valueColor: AlwaysStoppedAnimation<Color>(NeoColors.borderLight),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    NeoColors.borderLight,
+                  ),
                 ),
               ),
             ),
@@ -543,7 +1009,9 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
             'Processing file ${state.currentIndex} of ${state.totalCount}',
             style: GoogleFonts.spaceGrotesk(
               fontSize: 14,
-              color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+              color: isDark
+                  ? NeoColors.textSecondaryDark
+                  : NeoColors.textSecondaryLight,
             ),
           ),
           const SizedBox(height: 24),
@@ -552,7 +1020,9 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
             child: LinearProgressIndicator(
               value: state.progress,
               minHeight: 12,
-              backgroundColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+              backgroundColor: isDark
+                  ? Colors.grey.shade800
+                  : Colors.grey.shade300,
               valueColor: const AlwaysStoppedAnimation<Color>(NeoColors.cyan),
             ),
           ),
@@ -605,7 +1075,16 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
             itemBuilder: (context, index) {
               final item = state.results[index];
               return NeoCard(
-                backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+                backgroundColor: isDark
+                    ? NeoColors.darkSurface
+                    : NeoColors.lightSurface,
+                onTap: () => _openImageViewerModal(
+                  context,
+                  item.resizedFile,
+                  width: item.resizedWidth,
+                  height: item.resizedHeight,
+                  sizeBytes: item.resizedSizeBytes,
+                ),
                 child: Row(
                   children: [
                     ClipRRect(
@@ -633,11 +1112,18 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                             '${FileUtils.formatBytes(item.originalSizeBytes)} ➔ ${FileUtils.formatBytes(item.resizedSizeBytes)}',
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 12,
-                              color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+                              color: isDark
+                                  ? NeoColors.textSecondaryDark
+                                  : NeoColors.textSecondaryLight,
                             ),
                           ),
                         ],
                       ),
+                    ),
+                    const Icon(
+                      Icons.visibility_rounded,
+                      size: 20,
+                      color: NeoColors.cyan,
                     ),
                   ],
                 ),
@@ -648,7 +1134,10 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
 
           NeoButton(
             label: 'SAVE TO DEVICE',
-            icon: const Icon(Icons.download_rounded, color: NeoColors.borderLight),
+            icon: const Icon(
+              Icons.download_rounded,
+              color: NeoColors.borderLight,
+            ),
             backgroundColor: NeoColors.green,
             fullWidth: true,
             onPressed: () async {
@@ -662,7 +1151,9 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Saved resized photo(s) to Downloads/PicsTools/Resized!'),
+                    content: Text(
+                      'Saved resized photo(s) to Downloads/PicsTools/Resized!',
+                    ),
                     backgroundColor: NeoColors.green,
                   ),
                 );
@@ -676,14 +1167,19 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
             backgroundColor: NeoColors.cyan,
             fullWidth: true,
             onPressed: () {
-              final xFiles = state.results.map((r) => XFile(r.resizedFile.path)).toList();
+              final xFiles = state.results
+                  .map((r) => XFile(r.resizedFile.path))
+                  .toList();
               Share.shareXFiles(xFiles, text: 'Resized with PicsTools!');
             },
           ),
           const SizedBox(height: 12),
           NeoButton(
             label: 'RESIZE ANOTHER IMAGE',
-            icon: const Icon(Icons.refresh_rounded, color: NeoColors.borderLight),
+            icon: const Icon(
+              Icons.refresh_rounded,
+              color: NeoColors.borderLight,
+            ),
             backgroundColor: NeoColors.yellow,
             fullWidth: true,
             onPressed: () => bloc.add(ResetResizerEvent()),

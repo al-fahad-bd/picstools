@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:image/image.dart' as img;
@@ -51,6 +52,7 @@ class ResizerInitialState extends ResizerState {}
 
 class ResizerConfiguredState extends ResizerState {
   final List<File> files;
+  final List<Size> originalSizes;
   final int originalWidth;
   final int originalHeight;
   final int targetWidth;
@@ -60,6 +62,7 @@ class ResizerConfiguredState extends ResizerState {
 
   const ResizerConfiguredState({
     required this.files,
+    required this.originalSizes,
     required this.originalWidth,
     required this.originalHeight,
     required this.targetWidth,
@@ -70,6 +73,7 @@ class ResizerConfiguredState extends ResizerState {
 
   ResizerConfiguredState copyWith({
     List<File>? files,
+    List<Size>? originalSizes,
     int? originalWidth,
     int? originalHeight,
     int? targetWidth,
@@ -79,6 +83,7 @@ class ResizerConfiguredState extends ResizerState {
   }) {
     return ResizerConfiguredState(
       files: files ?? this.files,
+      originalSizes: originalSizes ?? this.originalSizes,
       originalWidth: originalWidth ?? this.originalWidth,
       originalHeight: originalHeight ?? this.originalHeight,
       targetWidth: targetWidth ?? this.targetWidth,
@@ -91,6 +96,7 @@ class ResizerConfiguredState extends ResizerState {
   @override
   List<Object?> get props => [
         files,
+        originalSizes,
         originalWidth,
         originalHeight,
         targetWidth,
@@ -147,24 +153,32 @@ class ResizerBloc extends Bloc<ResizerEvent, ResizerState> {
 
   Future<void> _onSelectImages(SelectResizeImagesEvent event, Emitter<ResizerState> emit) async {
     if (event.files.isEmpty) return;
-    int origW = 1080;
-    int origH = 1080;
+    final sizes = <Size>[];
 
-    try {
-      final bytes = await event.files.first.readAsBytes();
-      final decoded = img.decodeImage(bytes);
-      if (decoded != null) {
-        origW = decoded.width;
-        origH = decoded.height;
+    for (final f in event.files) {
+      try {
+        final bytes = await f.readAsBytes();
+        final decoded = img.decodeImage(bytes);
+        if (decoded != null) {
+          sizes.add(Size(decoded.width.toDouble(), decoded.height.toDouble()));
+        } else {
+          sizes.add(const Size(1080, 1080));
+        }
+      } catch (_) {
+        sizes.add(const Size(1080, 1080));
       }
-    } catch (_) {}
+    }
+
+    final firstW = sizes.isNotEmpty ? sizes.first.width.round() : 1080;
+    final firstH = sizes.isNotEmpty ? sizes.first.height.round() : 1080;
 
     emit(ResizerConfiguredState(
       files: event.files,
-      originalWidth: origW,
-      originalHeight: origH,
-      targetWidth: origW,
-      targetHeight: origH,
+      originalSizes: sizes,
+      originalWidth: firstW,
+      originalHeight: firstH,
+      targetWidth: firstW,
+      targetHeight: firstH,
     ));
   }
 
@@ -209,6 +223,7 @@ class ResizerBloc extends Bloc<ResizerEvent, ResizerState> {
     ));
 
     final results = <ResizeResult>[];
+    final isBatch = current.files.length > 1;
 
     try {
       for (int i = 0; i < current.files.length; i++) {
@@ -222,7 +237,8 @@ class ResizerBloc extends Bloc<ResizerEvent, ResizerState> {
           imageFile: current.files[i],
           targetWidth: current.targetWidth,
           targetHeight: current.targetHeight,
-          maintainAspectRatio: current.maintainAspectRatio,
+          maintainAspectRatio: true,
+          percentage: isBatch ? current.percentage : null,
         );
 
         results.add(res);
