@@ -22,6 +22,11 @@ class NeoBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkAccent = backgroundColor == NeoColors.purple || backgroundColor == NeoColors.blue;
+    final effectiveTextColor = (textColor == NeoColors.borderLight && isDarkAccent)
+        ? NeoColors.lightSurface
+        : textColor;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
@@ -40,7 +45,7 @@ class NeoBadge extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: fontSize + 2, color: textColor),
+            Icon(icon, size: fontSize + 2, color: effectiveTextColor),
             const SizedBox(width: 4),
           ],
           Text(
@@ -48,7 +53,7 @@ class NeoBadge extends StatelessWidget {
             style: GoogleFonts.spaceGrotesk(
               fontSize: fontSize,
               fontWeight: FontWeight.w800,
-              color: textColor,
+              color: effectiveTextColor,
               letterSpacing: 0.6,
             ),
           ),

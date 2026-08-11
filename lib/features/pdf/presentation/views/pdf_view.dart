@@ -26,10 +26,8 @@ class PdfView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => PdfBloc(
-        pdfService: getIt(),
-        historyService: getIt(),
-      ),
+      create: (context) =>
+          PdfBloc(pdfService: getIt(), historyService: getIt()),
       child: const _PdfViewContent(),
     );
   }
@@ -38,7 +36,11 @@ class PdfView extends StatelessWidget {
 class _PdfViewContent extends StatelessWidget {
   const _PdfViewContent();
 
-  Future<void> _pickImage(BuildContext context, ImageSource source, {bool isAppend = false}) async {
+  Future<void> _pickImage(
+    BuildContext context,
+    ImageSource source, {
+    bool isAppend = false,
+  }) async {
     final picker = getIt<ImagePickerService>();
     final bloc = context.read<PdfBloc>();
 
@@ -63,7 +65,11 @@ class _PdfViewContent extends StatelessWidget {
     }
   }
 
-  void _openPageCropSheet(BuildContext context, File originalFile, int pageIndex) {
+  void _openPageCropSheet(
+    BuildContext context,
+    File originalFile,
+    int pageIndex,
+  ) {
     final bloc = context.read<PdfBloc>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
     Rect currentCropRect = const Rect.fromLTWH(0.05, 0.05, 0.9, 0.9);
@@ -80,87 +86,105 @@ class _PdfViewContent extends StatelessWidget {
               height: MediaQuery.of(context).size.height * 0.85,
               decoration: BoxDecoration(
                 color: isDark ? NeoColors.darkBg : NeoColors.lightBg,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
                 border: Border.all(color: NeoColors.borderLight, width: 3),
               ),
-              child: Column(
-                children: [
-                  // Sheet Header
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Crop Page ${pageIndex + 1}',
-                          style: GoogleFonts.spaceGrotesk(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
+              child: SafeArea(
+                top: false,
+                child: Column(
+                  children: [
+                    // Sheet Header
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Crop Page ${pageIndex + 1}',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                            ),
                           ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close_rounded),
-                          onPressed: () => Navigator.pop(modalContext),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Crop Canvas
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: NeoCropCanvas(
-                        imageFile: originalFile,
-                        rotationAngle: rotationAngle,
-                        onCropChanged: (rect) {
-                          currentCropRect = rect;
-                        },
+                          IconButton(
+                            icon: const Icon(Icons.close_rounded),
+                            onPressed: () => Navigator.pop(modalContext),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
 
-                  // Bottom Controls
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      children: [
-                        NeoButton(
-                          label: 'ROTATE 90°',
-                          icon: const Icon(Icons.rotate_right_rounded, size: 16),
-                          backgroundColor: NeoColors.cyan,
-                          onPressed: () {
-                            setSheetState(() {
-                              rotationAngle = (rotationAngle + 90) % 360;
-                            });
+                    // Crop Canvas
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: NeoCropCanvas(
+                          imageFile: originalFile,
+                          rotationAngle: rotationAngle,
+                          onCropChanged: (rect) {
+                            currentCropRect = rect;
                           },
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: NeoButton(
-                            label: 'APPLY PAGE CROP',
-                            icon: const Icon(Icons.check_rounded),
-                            backgroundColor: NeoColors.yellow,
-                            fullWidth: true,
-                            onPressed: () async {
-                              Navigator.pop(modalContext);
-                              final cropper = getIt<ImageCropperService>();
-                              final croppedRes = await cropper.processCrop(
-                                imageFile: originalFile,
-                                cropXRatio: currentCropRect.left,
-                                cropYRatio: currentCropRect.top,
-                                cropWidthRatio: currentCropRect.width,
-                                cropHeightRatio: currentCropRect.height,
-                                rotationAngle: rotationAngle,
-                              );
-                              bloc.add(UpdatePdfPageImageEvent(pageIndex, croppedRes.croppedFile));
+                      ),
+                    ),
+
+                    // Bottom Controls
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        children: [
+                          NeoButton(
+                            label: 'ROTATE 90°',
+                            icon: const Icon(
+                              Icons.rotate_right_rounded,
+                              size: 20,
+                              color: NeoColors.darkBg,
+                            ),
+                            backgroundColor: NeoColors.cyan,
+                            onPressed: () {
+                              setSheetState(() {
+                                rotationAngle = (rotationAngle + 90) % 360;
+                              });
                             },
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: NeoButton(
+                              label: 'APPLY PAGE CROP',
+                              icon: const Icon(
+                                Icons.check_rounded,
+                                size: 20,
+                                color: NeoColors.darkBg,
+                              ),
+                              backgroundColor: NeoColors.yellow,
+                              fullWidth: true,
+                              onPressed: () async {
+                                Navigator.pop(modalContext);
+                                final cropper = getIt<ImageCropperService>();
+                                final croppedRes = await cropper.processCrop(
+                                  imageFile: originalFile,
+                                  cropXRatio: currentCropRect.left,
+                                  cropYRatio: currentCropRect.top,
+                                  cropWidthRatio: currentCropRect.width,
+                                  cropHeightRatio: currentCropRect.height,
+                                  rotationAngle: rotationAngle,
+                                );
+                                bloc.add(
+                                  UpdatePdfPageImageEvent(
+                                    pageIndex,
+                                    croppedRes.croppedFile,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           },
@@ -179,7 +203,9 @@ class _PdfViewContent extends StatelessWidget {
           icon: Container(
             padding: const EdgeInsets.all(6),
             decoration: NeoStyles.neoDecoration(
-              backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+              backgroundColor: isDark
+                  ? NeoColors.darkSurface
+                  : NeoColors.lightSurface,
               radius: 10,
               shadow: 2,
             ),
@@ -241,7 +267,7 @@ class _PdfViewContent extends StatelessWidget {
             child: const Icon(
               Icons.picture_as_pdf_rounded,
               size: 50,
-              color: NeoColors.borderLight,
+              color: NeoColors.lightSurface,
             ),
           ),
           const SizedBox(height: 24),
@@ -259,13 +285,15 @@ class _PdfViewContent extends StatelessWidget {
             textAlign: TextAlign.center,
             style: GoogleFonts.spaceGrotesk(
               fontSize: 14,
-              color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+              color: isDark
+                  ? NeoColors.textSecondaryDark
+                  : NeoColors.textSecondaryLight,
             ),
           ),
           const SizedBox(height: 36),
 
           NeoCard(
-            backgroundColor: NeoColors.softPurple,
+            backgroundColor: NeoColors.purple,
             shadowOffset: 4,
             onTap: () => _pickImage(context, ImageSource.gallery),
             child: Row(
@@ -273,11 +301,14 @@ class _PdfViewContent extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: NeoStyles.neoDecoration(
-                    backgroundColor: NeoColors.purple,
+                    backgroundColor: NeoColors.lightSurface,
                     radius: 12,
                     shadow: 2,
                   ),
-                  child: const Icon(Icons.photo_library_rounded, color: NeoColors.borderLight),
+                  child: const Icon(
+                    Icons.photo_library_rounded,
+                    color: NeoColors.purple,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -289,20 +320,23 @@ class _PdfViewContent extends StatelessWidget {
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 16,
                           fontWeight: FontWeight.w900,
-                          color: NeoColors.borderLight,
+                          color: NeoColors.lightSurface,
                         ),
                       ),
                       Text(
                         'Pick multiple photos from device',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 12,
-                          color: NeoColors.borderLight.withValues(alpha: 0.8),
+                          color: NeoColors.lightSurface.withValues(alpha: 0.9),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right_rounded, color: NeoColors.borderLight),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: NeoColors.lightSurface,
+                ),
               ],
             ),
           ),
@@ -321,7 +355,10 @@ class _PdfViewContent extends StatelessWidget {
                     radius: 12,
                     shadow: 2,
                   ),
-                  child: const Icon(Icons.camera_alt_rounded, color: NeoColors.borderLight),
+                  child: const Icon(
+                    Icons.camera_alt_rounded,
+                    color: NeoColors.borderLight,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -346,7 +383,10 @@ class _PdfViewContent extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right_rounded, color: NeoColors.borderLight),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: NeoColors.borderLight,
+                ),
               ],
             ),
           ),
@@ -381,11 +421,19 @@ class _PdfViewContent extends StatelessWidget {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.add_a_photo_rounded, size: 20),
-                    onPressed: () => _pickImage(context, ImageSource.camera, isAppend: true),
+                    onPressed: () =>
+                        _pickImage(context, ImageSource.camera, isAppend: true),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.add_photo_alternate_rounded, size: 20),
-                    onPressed: () => _pickImage(context, ImageSource.gallery, isAppend: true),
+                    icon: const Icon(
+                      Icons.add_photo_alternate_rounded,
+                      size: 20,
+                    ),
+                    onPressed: () => _pickImage(
+                      context,
+                      ImageSource.gallery,
+                      isAppend: true,
+                    ),
                   ),
                 ],
               ),
@@ -403,7 +451,9 @@ class _PdfViewContent extends StatelessWidget {
                 return GestureDetector(
                   onTap: () => _openPageCropSheet(context, file, index),
                   child: NeoCard(
-                    backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+                    backgroundColor: isDark
+                        ? NeoColors.darkSurface
+                        : NeoColors.lightSurface,
                     padding: const EdgeInsets.all(6),
                     shadowOffset: 3,
                     child: Stack(
@@ -435,7 +485,11 @@ class _PdfViewContent extends StatelessWidget {
                               color: NeoColors.yellow,
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.crop, size: 14, color: NeoColors.borderLight),
+                            child: const Icon(
+                              Icons.crop,
+                              size: 14,
+                              color: NeoColors.borderLight,
+                            ),
                           ),
                         ),
                         Positioned(
@@ -449,7 +503,11 @@ class _PdfViewContent extends StatelessWidget {
                                 color: NeoColors.red,
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.close, size: 12, color: Colors.white),
+                              child: const Icon(
+                                Icons.close,
+                                size: 12,
+                                color: NeoColors.borderLight,
+                              ),
                             ),
                           ),
                         ),
@@ -463,7 +521,7 @@ class _PdfViewContent extends StatelessWidget {
           const SizedBox(height: 16),
 
           NeoCard(
-            backgroundColor: NeoColors.softPurple,
+            backgroundColor: NeoColors.purple,
             shadowOffset: 3,
             child: Row(
               children: [
@@ -471,7 +529,7 @@ class _PdfViewContent extends StatelessWidget {
                   width: 44,
                   height: 44,
                   decoration: NeoStyles.neoDecoration(
-                    backgroundColor: NeoColors.purple,
+                    backgroundColor: NeoColors.lightSurface,
                     radius: 10,
                     shadow: 2,
                   ),
@@ -481,7 +539,7 @@ class _PdfViewContent extends StatelessWidget {
                       style: GoogleFonts.spaceGrotesk(
                         fontSize: 18,
                         fontWeight: FontWeight.w900,
-                        color: NeoColors.borderLight,
+                        color: NeoColors.purple,
                       ),
                     ),
                   ),
@@ -493,14 +551,18 @@ class _PdfViewContent extends StatelessWidget {
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 15,
                       fontWeight: FontWeight.w900,
-                      color: NeoColors.borderLight,
+                      color: NeoColors.lightSurface,
                     ),
                   ),
                 ),
                 NeoButton(
                   label: 'CLEAR',
                   backgroundColor: NeoColors.yellow,
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  textColor: NeoColors.borderLight,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   onPressed: () => bloc.add(ResetPdfEvent()),
                 ),
               ],
@@ -524,7 +586,9 @@ class _PdfViewContent extends StatelessWidget {
                   label: 'A4 Page',
                   isSelected: state.pageFormat == PdfPageFormatType.a4,
                   color: NeoColors.purple,
-                  onTap: () => bloc.add(const SetPdfPageFormatEvent(PdfPageFormatType.a4)),
+                  onTap: () => bloc.add(
+                    const SetPdfPageFormatEvent(PdfPageFormatType.a4),
+                  ),
                   isDark: isDark,
                 ),
               ),
@@ -534,7 +598,9 @@ class _PdfViewContent extends StatelessWidget {
                   label: 'US Letter',
                   isSelected: state.pageFormat == PdfPageFormatType.letter,
                   color: NeoColors.purple,
-                  onTap: () => bloc.add(const SetPdfPageFormatEvent(PdfPageFormatType.letter)),
+                  onTap: () => bloc.add(
+                    const SetPdfPageFormatEvent(PdfPageFormatType.letter),
+                  ),
                   isDark: isDark,
                 ),
               ),
@@ -544,7 +610,9 @@ class _PdfViewContent extends StatelessWidget {
                   label: 'Original',
                   isSelected: state.pageFormat == PdfPageFormatType.original,
                   color: NeoColors.purple,
-                  onTap: () => bloc.add(const SetPdfPageFormatEvent(PdfPageFormatType.original)),
+                  onTap: () => bloc.add(
+                    const SetPdfPageFormatEvent(PdfPageFormatType.original),
+                  ),
                   isDark: isDark,
                 ),
               ),
@@ -572,9 +640,14 @@ class _PdfViewContent extends StatelessWidget {
                         Expanded(
                           child: _buildChoiceChip(
                             label: 'Portrait',
-                            isSelected: state.orientation == PdfOrientation.portrait,
+                            isSelected:
+                                state.orientation == PdfOrientation.portrait,
                             color: NeoColors.cyan,
-                            onTap: () => bloc.add(const SetPdfOrientationEvent(PdfOrientation.portrait)),
+                            onTap: () => bloc.add(
+                              const SetPdfOrientationEvent(
+                                PdfOrientation.portrait,
+                              ),
+                            ),
                             isDark: isDark,
                           ),
                         ),
@@ -582,9 +655,14 @@ class _PdfViewContent extends StatelessWidget {
                         Expanded(
                           child: _buildChoiceChip(
                             label: 'Landscape',
-                            isSelected: state.orientation == PdfOrientation.landscape,
+                            isSelected:
+                                state.orientation == PdfOrientation.landscape,
                             color: NeoColors.cyan,
-                            onTap: () => bloc.add(const SetPdfOrientationEvent(PdfOrientation.landscape)),
+                            onTap: () => bloc.add(
+                              const SetPdfOrientationEvent(
+                                PdfOrientation.landscape,
+                              ),
+                            ),
                             isDark: isDark,
                           ),
                         ),
@@ -612,7 +690,8 @@ class _PdfViewContent extends StatelessWidget {
                   label: 'None',
                   isSelected: state.margin == PdfMarginType.none,
                   color: NeoColors.yellow,
-                  onTap: () => bloc.add(const SetPdfMarginEvent(PdfMarginType.none)),
+                  onTap: () =>
+                      bloc.add(const SetPdfMarginEvent(PdfMarginType.none)),
                   isDark: isDark,
                 ),
               ),
@@ -622,7 +701,8 @@ class _PdfViewContent extends StatelessWidget {
                   label: 'Small',
                   isSelected: state.margin == PdfMarginType.small,
                   color: NeoColors.yellow,
-                  onTap: () => bloc.add(const SetPdfMarginEvent(PdfMarginType.small)),
+                  onTap: () =>
+                      bloc.add(const SetPdfMarginEvent(PdfMarginType.small)),
                   isDark: isDark,
                 ),
               ),
@@ -632,7 +712,8 @@ class _PdfViewContent extends StatelessWidget {
                   label: 'Medium',
                   isSelected: state.margin == PdfMarginType.medium,
                   color: NeoColors.yellow,
-                  onTap: () => bloc.add(const SetPdfMarginEvent(PdfMarginType.medium)),
+                  onTap: () =>
+                      bloc.add(const SetPdfMarginEvent(PdfMarginType.medium)),
                   isDark: isDark,
                 ),
               ),
@@ -640,10 +721,15 @@ class _PdfViewContent extends StatelessWidget {
           ),
           const SizedBox(height: 36),
 
+          // Build Action Button
           NeoButton(
-            label: 'GENERATE PDF DOCUMENT',
-            icon: const Icon(Icons.picture_as_pdf_rounded, color: NeoColors.borderLight),
+            label: 'CREATE PDF DOCUMENT',
+            icon: const Icon(
+              Icons.picture_as_pdf_rounded,
+              color: NeoColors.lightSurface,
+            ),
             backgroundColor: NeoColors.purple,
+            textColor: NeoColors.lightSurface,
             fullWidth: true,
             padding: const EdgeInsets.symmetric(vertical: 16),
             onPressed: () => bloc.add(StartPdfGenerationEvent()),
@@ -660,13 +746,18 @@ class _PdfViewContent extends StatelessWidget {
     required VoidCallback onTap,
     required bool isDark,
   }) {
+    final isDarkAccent =
+        isSelected && (color == NeoColors.purple || color == NeoColors.blue);
+
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: NeoStyles.neoDecoration(
-          backgroundColor: isSelected ? color : (isDark ? NeoColors.darkSurface : NeoColors.lightSurface),
+          backgroundColor: isSelected
+              ? color
+              : (isDark ? NeoColors.darkSurface : NeoColors.lightSurface),
           radius: 10,
           shadow: isSelected ? 3 : 1,
         ),
@@ -676,7 +767,13 @@ class _PdfViewContent extends StatelessWidget {
             style: GoogleFonts.spaceGrotesk(
               fontSize: 12,
               fontWeight: FontWeight.w800,
-              color: isSelected ? NeoColors.borderLight : null,
+              color: isSelected
+                  ? (isDarkAccent
+                        ? NeoColors.lightSurface
+                        : NeoColors.borderLight)
+                  : (isDark
+                        ? NeoColors.textPrimaryDark
+                        : NeoColors.textPrimaryLight),
             ),
           ),
         ),
@@ -700,7 +797,9 @@ class _PdfViewContent extends StatelessWidget {
             child: const Center(
               child: CircularProgressIndicator(
                 strokeWidth: 3.5,
-                valueColor: AlwaysStoppedAnimation<Color>(NeoColors.borderLight),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  NeoColors.borderLight,
+                ),
               ),
             ),
           ),
@@ -729,14 +828,15 @@ class _PdfViewContent extends StatelessWidget {
       child: Column(
         children: [
           NeoCard(
-            backgroundColor: NeoColors.softPurple,
+            backgroundColor: NeoColors.purple,
             shadowOffset: 5,
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
                 const NeoBadge(
                   label: 'PDF READY',
-                  backgroundColor: NeoColors.purple,
+                  backgroundColor: NeoColors.yellow,
+                  textColor: NeoColors.borderLight,
                   fontSize: 12,
                 ),
                 const SizedBox(height: 12),
@@ -745,14 +845,15 @@ class _PdfViewContent extends StatelessWidget {
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 24,
                     fontWeight: FontWeight.w900,
-                    color: NeoColors.borderLight,
+                    color: NeoColors.lightSurface,
                   ),
                 ),
+                const SizedBox(height: 4),
                 Text(
                   'File Size: ${FileUtils.formatBytes(state.result.fileSizeBytes)}',
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 13,
-                    color: NeoColors.borderLight.withValues(alpha: 0.8),
+                    color: NeoColors.lightSurface.withValues(alpha: 0.9),
                   ),
                 ),
               ],
@@ -762,7 +863,10 @@ class _PdfViewContent extends StatelessWidget {
 
           NeoButton(
             label: 'SAVE TO DEVICE',
-            icon: const Icon(Icons.download_rounded, color: NeoColors.borderLight),
+            icon: const Icon(
+              Icons.download_rounded,
+              color: NeoColors.borderLight,
+            ),
             backgroundColor: NeoColors.green,
             fullWidth: true,
             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -785,17 +889,26 @@ class _PdfViewContent extends StatelessWidget {
           const SizedBox(height: 12),
           NeoButton(
             label: 'SHARE PDF DOCUMENT',
-            icon: const Icon(Icons.share_rounded, color: NeoColors.borderLight),
+            icon: const Icon(
+              Icons.share_rounded,
+              color: NeoColors.lightSurface,
+            ),
             backgroundColor: NeoColors.purple,
+            textColor: NeoColors.lightSurface,
             fullWidth: true,
             onPressed: () {
-              Share.shareXFiles([XFile(state.result.pdfFile.path)], text: 'Created with PicsTools!');
+              Share.shareXFiles([
+                XFile(state.result.pdfFile.path),
+              ], text: 'Created with PicsTools!');
             },
           ),
           const SizedBox(height: 12),
           NeoButton(
             label: 'CREATE ANOTHER PDF',
-            icon: const Icon(Icons.refresh_rounded, color: NeoColors.borderLight),
+            icon: const Icon(
+              Icons.refresh_rounded,
+              color: NeoColors.borderLight,
+            ),
             backgroundColor: NeoColors.yellow,
             fullWidth: true,
             onPressed: () => bloc.add(ResetPdfEvent()),

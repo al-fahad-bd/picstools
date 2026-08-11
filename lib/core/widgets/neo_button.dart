@@ -60,7 +60,8 @@ class _NeoButtonState extends State<NeoButton> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultBg = widget.backgroundColor ?? NeoColors.yellow;
-    final defaultText = widget.textColor ?? NeoColors.borderLight;
+    final isDarkAccent = defaultBg == NeoColors.purple || defaultBg == NeoColors.blue;
+    final defaultText = widget.textColor ?? (isDarkAccent ? NeoColors.lightSurface : NeoColors.borderLight);
     final defaultBorder = widget.borderColor ?? (isDark ? NeoColors.borderDark : NeoColors.borderLight);
 
     final currentOffset = _isPressed ? 1.0 : widget.shadowOffset;

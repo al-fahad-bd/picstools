@@ -23,7 +23,9 @@ class PrivacyPolicyView extends StatelessWidget {
           icon: Container(
             padding: const EdgeInsets.all(6),
             decoration: NeoStyles.neoDecoration(
-              backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+              backgroundColor: isDark
+                  ? NeoColors.darkSurface
+                  : NeoColors.lightSurface,
               radius: 10,
               shadow: 2,
             ),
@@ -84,7 +86,7 @@ class PrivacyPolicyView extends StatelessWidget {
               // Policy Section 1: Zero Personal Data Collection
               _buildPolicySection(
                 title: '1. Zero Data Collection',
-                icon: Icons.shield_rounded,
+                icon: Icons.shield_sharp,
                 color: NeoColors.cyan,
                 isDark: isDark,
                 content:
@@ -129,7 +131,10 @@ class PrivacyPolicyView extends StatelessWidget {
               // Clear History Action
               NeoButton(
                 label: 'CLEAR ALL LOCAL HISTORY LOGS',
-                icon: const Icon(Icons.delete_sweep_rounded, color: NeoColors.borderLight),
+                icon: const Icon(
+                  Icons.delete_sweep_rounded,
+                  color: NeoColors.borderLight,
+                ),
                 backgroundColor: NeoColors.red,
                 fullWidth: true,
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -139,7 +144,9 @@ class PrivacyPolicyView extends StatelessWidget {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('All local processing history cleared successfully!'),
+                        content: Text(
+                          'All local processing history cleared successfully!',
+                        ),
                         backgroundColor: NeoColors.green,
                       ),
                     );
@@ -153,7 +160,9 @@ class PrivacyPolicyView extends StatelessWidget {
                   'PicsTools v1.0.0 • Updated August 2026',
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 12,
-                    color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+                    color: isDark
+                        ? NeoColors.textSecondaryDark
+                        : NeoColors.textSecondaryLight,
                   ),
                 ),
               ),
@@ -207,7 +216,9 @@ class PrivacyPolicyView extends StatelessWidget {
             style: GoogleFonts.spaceGrotesk(
               fontSize: 13,
               height: 1.45,
-              color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+              color: isDark
+                  ? NeoColors.textSecondaryDark
+                  : NeoColors.textSecondaryLight,
             ),
           ),
         ],

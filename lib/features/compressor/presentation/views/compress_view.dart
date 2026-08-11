@@ -306,7 +306,7 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                             path.basename(previewFile.path),
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 11,
-                              color: Colors.white,
+                              color: NeoColors.lightSurface,
                               fontWeight: FontWeight.w600,
                             ),
                             maxLines: 1,

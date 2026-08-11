@@ -154,7 +154,7 @@ class PdfToolGraphic extends StatelessWidget {
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 8.5,
                     fontWeight: FontWeight.w900,
-                    color: Colors.white,
+                    color: NeoColors.borderLight,
                   ),
                 ),
               ),
@@ -196,7 +196,7 @@ class PdfToolGraphic extends StatelessWidget {
             child: const Icon(
               Icons.picture_as_pdf_rounded,
               size: 16,
-              color: Colors.white,
+              color: NeoColors.lightSurface,
             ),
           ),
         ),
@@ -320,7 +320,7 @@ class CropToolGraphic extends StatelessWidget {
                 style: GoogleFonts.spaceGrotesk(
                   fontSize: 8.5,
                   fontWeight: FontWeight.w900,
-                  color: Colors.white,
+                  color: NeoColors.borderLight,
                 ),
               ),
             ),
@@ -350,7 +350,7 @@ class CropToolGraphic extends StatelessWidget {
               child: const Icon(
                 Icons.crop_rounded,
                 size: 18,
-                color: Colors.white,
+                color: NeoColors.borderLight,
               ),
             ),
           ),
@@ -485,7 +485,7 @@ class IdPhotoToolGraphic extends StatelessWidget {
                 style: GoogleFonts.spaceGrotesk(
                   fontSize: 8.5,
                   fontWeight: FontWeight.w900,
-                  color: Colors.white,
+                  color: NeoColors.borderLight,
                 ),
               ),
             ),
@@ -519,7 +519,7 @@ class IdPhotoToolGraphic extends StatelessWidget {
                 child: const Icon(
                   Icons.person_rounded,
                   size: 15,
-                  color: Colors.white,
+                  color: NeoColors.lightSurface,
                 ),
               ),
               const SizedBox(width: 6),
@@ -622,7 +622,7 @@ class SignatureToolGraphic extends StatelessWidget {
                 child: const Icon(
                   Icons.edit_outlined,
                   size: 14,
-                  color: Colors.white,
+                  color: NeoColors.lightSurface,
                 ),
               ),
             ],
@@ -664,7 +664,7 @@ class SocialToolGraphic extends StatelessWidget {
                 style: GoogleFonts.spaceGrotesk(
                   fontSize: 8.5,
                   fontWeight: FontWeight.w900,
-                  color: Colors.white,
+                  color: NeoColors.borderLight,
                 ),
               ),
             ),
