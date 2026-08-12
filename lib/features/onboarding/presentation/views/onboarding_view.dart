@@ -127,22 +127,11 @@ class _OnboardingViewState extends State<OnboardingView> {
                       ),
                       child: Row(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(3),
-                            decoration: BoxDecoration(
-                              color: NeoColors.yellow,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: NeoColors.borderLight,
-                                width: 2,
-                              ),
-                            ),
-                            child: Image.asset(
-                              'assets/icon/app_icon.png',
-                              width: 22,
-                              height: 22,
-                              fit: BoxFit.cover,
-                            ),
+                          Image.asset(
+                            'assets/icon/app_icon.png',
+                            width: 36,
+                            height: 36,
+                            fit: BoxFit.cover,
                           ),
                           const SizedBox(width: 8),
                           Text(
