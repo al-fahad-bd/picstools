@@ -965,9 +965,12 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                     ),
                     onTap: () {
                       Navigator.pop(ctx);
+                      final box = context.findRenderObject() as RenderBox?;
+                      final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
                       Share.shareXFiles(
                         [XFile(res.transparentPngFile.path)],
                         text: 'Transparent Digital Signature',
+                        sharePositionOrigin: origin,
                       );
                     },
                   ),
@@ -995,9 +998,12 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                     ),
                     onTap: () {
                       Navigator.pop(ctx);
+                      final box = context.findRenderObject() as RenderBox?;
+                      final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
                       Share.shareXFiles(
                         [XFile(res.solidBackgroundFile.path)],
                         text: 'White Background Signature',
+                        sharePositionOrigin: origin,
                       );
                     },
                   ),
@@ -1025,12 +1031,15 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                     ),
                     onTap: () {
                       Navigator.pop(ctx);
+                      final box = context.findRenderObject() as RenderBox?;
+                      final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
                       Share.shareXFiles(
                         [
                           XFile(res.transparentPngFile.path),
                           XFile(res.solidBackgroundFile.path),
                         ],
                         text: 'Digital Signatures (Transparent & White BG)',
+                        sharePositionOrigin: origin,
                       );
                     },
                   ),

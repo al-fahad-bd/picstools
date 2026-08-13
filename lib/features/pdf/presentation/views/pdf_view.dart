@@ -1031,9 +1031,11 @@ class _PdfViewContent extends StatelessWidget {
                 textColor: NeoColors.lightSurface,
                 fullWidth: true,
                 onPressed: () {
+                  final box = context.findRenderObject() as RenderBox?;
+                  final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
                   Share.shareXFiles([
                     XFile(state.result.pdfFile.path),
-                  ], text: 'Created with PicsTools!');
+                  ], text: 'Created with PicsTools!', sharePositionOrigin: origin);
                 },
               ),
               const SizedBox(height: 12),

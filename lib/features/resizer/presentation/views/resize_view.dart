@@ -395,9 +395,11 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                             vertical: 12,
                           ),
                           onPressed: () {
+                            final box = context.findRenderObject() as RenderBox?;
+                            final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
                             Share.shareXFiles([
                               XFile(imageFile.path),
-                            ], text: 'Resized with PicsTools!');
+                            ], text: 'Resized with PicsTools!', sharePositionOrigin: origin);
                           },
                         ),
                       ),
@@ -1218,7 +1220,9 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
               final xFiles = state.results
                   .map((r) => XFile(r.resizedFile.path))
                   .toList();
-              Share.shareXFiles(xFiles, text: 'Resized with PicsTools!');
+              final box = context.findRenderObject() as RenderBox?;
+              final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
+              Share.shareXFiles(xFiles, text: 'Resized with PicsTools!', sharePositionOrigin: origin);
             },
           ),
           const SizedBox(height: 12),

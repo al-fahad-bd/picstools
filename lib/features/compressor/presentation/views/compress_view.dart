@@ -376,9 +376,11 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                           backgroundColor: NeoColors.yellow,
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                           onPressed: () {
+                            final box = context.findRenderObject() as RenderBox?;
+                            final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
                             Share.shareXFiles([
                               XFile(imageFile.path),
-                            ], text: 'Compressed with PicsTools!');
+                            ], text: 'Compressed with PicsTools!', sharePositionOrigin: origin);
                           },
                         ),
                       ),
@@ -1019,7 +1021,9 @@ class _CompressViewContentState extends State<_CompressViewContent> {
             fullWidth: true,
             onPressed: () {
               final xFiles = state.results.map((r) => XFile(r.compressedFile.path)).toList();
-              Share.shareXFiles(xFiles, text: 'Compressed with PicsTools!');
+              final box = context.findRenderObject() as RenderBox?;
+              final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
+              Share.shareXFiles(xFiles, text: 'Compressed with PicsTools!', sharePositionOrigin: origin);
             },
           ),
           const SizedBox(height: 12),

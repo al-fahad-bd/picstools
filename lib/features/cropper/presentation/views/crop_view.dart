@@ -548,9 +548,11 @@ class _CropViewContent extends StatelessWidget {
             backgroundColor: NeoColors.pink,
             fullWidth: true,
             onPressed: () {
+              final box = context.findRenderObject() as RenderBox?;
+              final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
               Share.shareXFiles([
                 XFile(state.result.croppedFile.path),
-              ], text: 'Cropped with PicsTools!');
+              ], text: 'Cropped with PicsTools!', sharePositionOrigin: origin);
             },
           ),
           const SizedBox(height: 12),

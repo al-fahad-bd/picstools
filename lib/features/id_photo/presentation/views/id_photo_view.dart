@@ -679,7 +679,9 @@ class _IdPhotoViewContent extends StatelessWidget {
                 XFile(res.singlePhotoFile.path),
                 if (res.printSheetPdfFile != null) XFile(res.printSheetPdfFile!.path),
               ];
-              Share.shareXFiles(files, text: 'Created with PicsTools!');
+              final box = context.findRenderObject() as RenderBox?;
+              final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
+              Share.shareXFiles(files, text: 'Created with PicsTools!', sharePositionOrigin: origin);
             },
           ),
           const SizedBox(height: 12),
