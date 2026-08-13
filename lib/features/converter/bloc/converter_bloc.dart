@@ -105,11 +105,38 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
   final ImageConverterService converterService;
   final HistoryService historyService;
 
-  ConverterBloc({
-    required this.converterService,
-    required this.historyService,
-  }) : super(ConverterInitialState()) {
-    on<SelectConvertImagesEvent>((event, emit) => emit(ConverterConfiguredState(files: event.files)));
+  ConverterBloc({required this.converterService, required this.historyService})
+    : super(ConverterInitialState()) {
+    on<SelectConvertImagesEvent>((event, emit) {
+      String defaultFormat = 'JPG';
+      if (event.files.isNotEmpty) {
+        bool allJpg = event.files.every(
+          (f) =>
+              f.path.toLowerCase().endsWith('.jpg') ||
+              f.path.toLowerCase().endsWith('.jpeg'),
+        );
+        bool allPng = event.files.every(
+          (f) => f.path.toLowerCase().endsWith('.png'),
+        );
+        bool allWebp = event.files.every(
+          (f) => f.path.toLowerCase().endsWith('.webp'),
+        );
+
+        if (allJpg) {
+          defaultFormat = 'PNG';
+        } else if (allPng) {
+          defaultFormat = 'JPG';
+        } else if (allWebp) {
+          defaultFormat = 'JPG';
+        }
+      }
+      emit(
+        ConverterConfiguredState(
+          files: event.files,
+          targetFormat: defaultFormat,
+        ),
+      );
+    });
     on<SetTargetFormatEvent>(_onSetFormat);
     on<SetConvertQualityEvent>(_onSetQuality);
     on<StartConversionEvent>(_onStartConversion);
@@ -123,32 +150,48 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
     }
   }
 
-  void _onSetQuality(SetConvertQualityEvent event, Emitter<ConverterState> emit) {
+  void _onSetQuality(
+    SetConvertQualityEvent event,
+    Emitter<ConverterState> emit,
+  ) {
     if (state is ConverterConfiguredState) {
       final current = state as ConverterConfiguredState;
       emit(current.copyWith(quality: event.quality));
     }
   }
 
-  Future<void> _onStartConversion(StartConversionEvent event, Emitter<ConverterState> emit) async {
+  Future<void> _onStartConversion(
+    StartConversionEvent event,
+    Emitter<ConverterState> emit,
+  ) async {
     if (state is! ConverterConfiguredState) return;
     final current = state as ConverterConfiguredState;
 
-    emit(ConverterProcessingState(
-      currentIndex: 0,
-      totalCount: current.files.length,
-      progress: 0.0,
-    ));
+    emit(
+      ConverterProcessingState(
+        currentIndex: 0,
+        totalCount: current.files.length,
+        progress: 0.0,
+      ),
+    );
+
+    // Yield to the event loop so the UI can render the loading state
+    await Future.delayed(const Duration(milliseconds: 50));
 
     final results = <ConvertResult>[];
 
     try {
       for (int i = 0; i < current.files.length; i++) {
-        emit(ConverterProcessingState(
-          currentIndex: i + 1,
-          totalCount: current.files.length,
-          progress: (i + 1) / current.files.length,
-        ));
+        emit(
+          ConverterProcessingState(
+            currentIndex: i + 1,
+            totalCount: current.files.length,
+            progress: (i + 1) / current.files.length,
+          ),
+        );
+
+        // Yield again so progress updates can render
+        await Future.delayed(const Duration(milliseconds: 50));
 
         final res = await converterService.convertImage(
           imageFile: current.files[i],
@@ -158,15 +201,17 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
 
         results.add(res);
 
-        await historyService.addHistoryItem(HistoryItem(
-          id: '${DateTime.now().millisecondsSinceEpoch}_$i',
-          toolName: 'Convert (${res.targetFormat})',
-          originalPath: res.originalFile.path,
-          processedPath: res.convertedFile.path,
-          originalSizeBytes: res.originalSizeBytes,
-          processedSizeBytes: res.convertedSizeBytes,
-          timestamp: DateTime.now(),
-        ));
+        await historyService.addHistoryItem(
+          HistoryItem(
+            id: '${DateTime.now().millisecondsSinceEpoch}_$i',
+            toolName: 'Convert (${res.targetFormat})',
+            originalPath: res.originalFile.path,
+            processedPath: res.convertedFile.path,
+            originalSizeBytes: res.originalSizeBytes,
+            processedSizeBytes: res.convertedSizeBytes,
+            timestamp: DateTime.now(),
+          ),
+        );
       }
 
       emit(ConverterSuccessState(results));

@@ -241,11 +241,22 @@ class _ConvertViewContent extends StatelessWidget {
     bool isDark,
   ) {
     final bloc = context.read<ConverterBloc>();
-    final formats = [
+    final allFormats = [
       {'name': 'JPG', 'sub': 'Standard Photo', 'color': NeoColors.yellow},
       {'name': 'PNG', 'sub': 'Lossless & Transparency', 'color': NeoColors.cyan},
       {'name': 'WEBP', 'sub': 'Modern Web Format', 'color': NeoColors.green},
     ];
+
+    bool allJpg = state.files.isNotEmpty && state.files.every((f) => f.path.toLowerCase().endsWith('.jpg') || f.path.toLowerCase().endsWith('.jpeg'));
+    bool allPng = state.files.isNotEmpty && state.files.every((f) => f.path.toLowerCase().endsWith('.png'));
+    bool allWebp = state.files.isNotEmpty && state.files.every((f) => f.path.toLowerCase().endsWith('.webp'));
+
+    final formats = allFormats.where((fmt) {
+      if (allJpg && fmt['name'] == 'JPG') return false;
+      if (allPng && fmt['name'] == 'PNG') return false;
+      if (allWebp && fmt['name'] == 'WEBP') return false;
+      return true;
+    }).toList();
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -590,7 +601,13 @@ class _ConvertViewContent extends StatelessWidget {
             fullWidth: true,
             onPressed: () {
               final xFiles = state.results.map((r) => XFile(r.convertedFile.path)).toList();
-              Share.shareXFiles(xFiles, text: 'Converted with PicsTools!');
+              final box = context.findRenderObject() as RenderBox?;
+              final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
+              Share.shareXFiles(
+                xFiles, 
+                text: 'Converted with PicsTools!',
+                sharePositionOrigin: origin,
+              );
             },
           ),
           const SizedBox(height: 12),
