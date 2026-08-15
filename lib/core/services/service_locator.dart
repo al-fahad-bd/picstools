@@ -50,9 +50,9 @@ Future<void> initServiceLocator() async {
   getIt.registerLazySingleton<FileSaveService>(() => FileSaveServiceImpl());
   getIt.registerLazySingleton<SoundService>(() => SoundServiceImpl());
   getIt.registerLazySingleton<AdService>(() => MockAdServiceImpl());
-  getIt.registerLazySingleton<InAppPurchaseService>(
-    () => MockInAppPurchaseServiceImpl(),
-  );
+  final iapService = InAppPurchaseServiceImpl(prefs);
+  await iapService.initialize();
+  getIt.registerSingleton<InAppPurchaseService>(iapService);
 
   // Feature Processing Services
   getIt.registerLazySingleton<ImageCompressorService>(

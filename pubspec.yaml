@@ -32,6 +32,7 @@ dependencies:
   dio: ^5.11.0
   crypto: ^3.0.7
   flutter_onnxruntime: ^1.8.3
+  in_app_purchase: ^3.3.0
 
 dev_dependencies:
   flutter_test:

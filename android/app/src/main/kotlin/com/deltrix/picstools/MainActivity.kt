@@ -1,4 +1,4 @@
-package com.example.picstools
+package com.deltrix.picstools
 
 import io.flutter.embedding.android.FlutterActivity
 
