@@ -74,7 +74,7 @@ class PrivacyPolicyView extends StatelessWidget {
               // Policy Section 1: Anonymous & Account-Free Access
               _buildPolicySection(
                 title: '1. Anonymous & Account-Free Access',
-                icon: Icons.shield_sharp,
+                icon: Icons.no_accounts_rounded,
                 color: NeoColors.cyan,
                 isDark: isDark,
                 content:
@@ -99,6 +99,7 @@ class PrivacyPolicyView extends StatelessWidget {
                 title: '3. Third-Party Ad Services',
                 icon: Icons.ad_units_rounded,
                 color: NeoColors.pink,
+                iconColor: Colors.white,
                 isDark: isDark,
                 content:
                     'PicsTools uses standard non-intrusive mobile advertising networks (such as Google AdMob) to support free app maintenance. These networks may collect anonymized device identifiers in accordance with standard privacy laws.',
@@ -110,6 +111,7 @@ class PrivacyPolicyView extends StatelessWidget {
                 title: '4. Local Storage & Data Control',
                 icon: Icons.folder_special_rounded,
                 color: NeoColors.purple,
+                iconColor: Colors.white,
                 isDark: isDark,
                 content:
                     'All history logs and app preferences are stored locally in your phone\'s private app directory. You can clear your processing history at any time using the button below.',
@@ -164,6 +166,7 @@ class PrivacyPolicyView extends StatelessWidget {
     required Color color,
     required bool isDark,
     required String content,
+    Color? iconColor,
   }) {
     return NeoCard(
       backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
@@ -181,7 +184,11 @@ class PrivacyPolicyView extends StatelessWidget {
                   radius: 8,
                   shadow: 2,
                 ),
-                child: Icon(icon, size: 18, color: NeoColors.borderLight),
+                child: Icon(
+                  icon,
+                  size: 18,
+                  color: iconColor ?? NeoColors.borderLight,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
