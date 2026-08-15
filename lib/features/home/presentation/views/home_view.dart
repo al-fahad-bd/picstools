@@ -1246,11 +1246,18 @@ class _HomeViewState extends State<HomeView> {
                                   'Delete AI Model?',
                                   style: GoogleFonts.spaceGrotesk(
                                     fontWeight: FontWeight.w900,
+                                    color: isDark
+                                        ? NeoColors.textPrimaryDark
+                                        : NeoColors.textPrimaryLight,
                                   ),
                                 ),
                                 content: Text(
                                   'The BiRefNet Lite model file will be removed from your device. You can download it again whenever you use the Background Remover.',
-                                  style: GoogleFonts.spaceGrotesk(),
+                                  style: GoogleFonts.spaceGrotesk(
+                                    color: isDark
+                                        ? NeoColors.textSecondaryDark
+                                        : NeoColors.textSecondaryLight,
+                                  ),
                                 ),
                                 actions: [
                                   TextButton(
@@ -1259,7 +1266,9 @@ class _HomeViewState extends State<HomeView> {
                                       'Cancel',
                                       style: GoogleFonts.spaceGrotesk(
                                         fontWeight: FontWeight.bold,
-                                        color: NeoColors.darkSurface,
+                                        color: isDark
+                                            ? NeoColors.textSecondaryDark
+                                            : NeoColors.textSecondaryLight,
                                       ),
                                     ),
                                   ),
@@ -1267,6 +1276,7 @@ class _HomeViewState extends State<HomeView> {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: NeoColors.red,
                                       foregroundColor: Colors.white,
+                                      elevation: 0,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(8),
                                       ),
@@ -1276,6 +1286,7 @@ class _HomeViewState extends State<HomeView> {
                                       'Delete',
                                       style: GoogleFonts.spaceGrotesk(
                                         fontWeight: FontWeight.w900,
+                                        color: Colors.white,
                                       ),
                                     ),
                                   ),
