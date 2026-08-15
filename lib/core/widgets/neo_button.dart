@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/neo_colors.dart';
 import '../constants/neo_styles.dart';
+import '../services/service_locator.dart';
+import '../services/sound_service.dart';
 
 class NeoButton extends StatefulWidget {
   final String? label;
@@ -40,6 +42,9 @@ class _NeoButtonState extends State<NeoButton> {
 
   void _onTapDown(TapDownDetails details) {
     if (widget.onPressed != null && !widget.isLoading) {
+      try {
+        getIt<SoundService>().playClickSound();
+      } catch (_) {}
       setState(() => _isPressed = true);
     }
   }

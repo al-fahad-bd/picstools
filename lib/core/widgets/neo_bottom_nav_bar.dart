@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/neo_colors.dart';
 import '../constants/neo_styles.dart';
+import '../services/service_locator.dart';
+import '../services/sound_service.dart';
 
 class NeoNavItem {
   final IconData icon;
@@ -53,7 +55,12 @@ class NeoBottomNavBar extends StatelessWidget {
           final isSelected = index == currentIndex;
 
           return GestureDetector(
-            onTap: () => onTap(index),
+            onTap: () {
+              try {
+                getIt<SoundService>().playClickSound();
+              } catch (_) {}
+              onTap(index);
+            },
             behavior: HitTestBehavior.opaque,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),

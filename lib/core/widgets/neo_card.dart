@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../constants/neo_colors.dart';
 import '../constants/neo_styles.dart';
+import '../services/service_locator.dart';
+import '../services/sound_service.dart';
 
-class NeoCard extends StatelessWidget {
+class NeoCard extends StatefulWidget {
   final Widget child;
   final Color? backgroundColor;
   final Color? borderColor;
@@ -27,27 +29,65 @@ class NeoCard extends StatelessWidget {
   });
 
   @override
+  State<NeoCard> createState() => _NeoCardState();
+}
+
+class _NeoCardState extends State<NeoCard> {
+  bool _isPressed = false;
+
+  void _onTapDown(TapDownDetails details) {
+    if (widget.onTap != null) {
+      setState(() => _isPressed = true);
+    }
+  }
+
+  void _onTapUp(TapUpDetails details) {
+    if (_isPressed) {
+      setState(() => _isPressed = false);
+    }
+  }
+
+  void _onTapCancel() {
+    if (_isPressed) {
+      setState(() => _isPressed = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultBg = isDark ? NeoColors.darkSurface : NeoColors.lightSurface;
     final defaultBorder = isDark ? NeoColors.borderDark : NeoColors.borderLight;
 
-    final card = Container(
-      margin: margin,
-      padding: padding,
+    final currentOffset = _isPressed ? 1.0 : widget.shadowOffset;
+    final transformTranslation = _isPressed ? widget.shadowOffset - 1.0 : 0.0;
+
+    final card = AnimatedContainer(
+      duration: const Duration(milliseconds: 80),
+      transform: Matrix4.translationValues(transformTranslation, transformTranslation, 0),
+      margin: widget.margin,
+      padding: widget.padding,
       decoration: NeoStyles.neoDecoration(
-        backgroundColor: backgroundColor ?? defaultBg,
-        borderColor: borderColor ?? defaultBorder,
-        radius: borderRadius,
-        shadow: shadowOffset,
-        showShadow: showShadow,
+        backgroundColor: widget.backgroundColor ?? defaultBg,
+        borderColor: widget.borderColor ?? defaultBorder,
+        radius: widget.borderRadius,
+        shadow: currentOffset,
+        showShadow: widget.showShadow,
       ),
-      child: child,
+      child: widget.child,
     );
 
-    if (onTap != null) {
+    if (widget.onTap != null) {
       return GestureDetector(
-        onTap: onTap,
+        onTapDown: _onTapDown,
+        onTapUp: _onTapUp,
+        onTapCancel: _onTapCancel,
+        onTap: () {
+          try {
+            getIt<SoundService>().playClickSound();
+          } catch (_) {}
+          widget.onTap!();
+        },
         child: card,
       );
     }
