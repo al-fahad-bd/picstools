@@ -14,6 +14,17 @@ import '../../features/converter/services/image_converter_service.dart';
 import '../../features/pdf/services/image_pdf_service.dart';
 import '../../features/id_photo/services/id_photo_service.dart';
 import '../../features/signature/services/signature_service.dart';
+import '../../features/background_remover/data/datasources/model_storage_datasource.dart';
+import '../../features/background_remover/data/datasources/model_downloader_datasource.dart';
+import '../../features/background_remover/data/datasources/onnx_inference_datasource.dart';
+import '../../features/background_remover/data/repositories/background_remover_repository_impl.dart';
+import '../../features/background_remover/domain/repositories/background_remover_repository.dart';
+import '../../features/background_remover/domain/usecases/check_model_status_usecase.dart';
+import '../../features/background_remover/domain/usecases/download_model_usecase.dart';
+import '../../features/background_remover/domain/usecases/cancel_model_download_usecase.dart';
+import '../../features/background_remover/domain/usecases/delete_model_usecase.dart';
+import '../../features/background_remover/domain/usecases/remove_background_usecase.dart';
+import '../../features/background_remover/presentation/bloc/background_remover_bloc.dart';
 
 final getIt = GetIt.instance;
 
@@ -51,4 +62,49 @@ Future<void> initServiceLocator() async {
   getIt.registerLazySingleton<ImagePdfService>(() => ImagePdfService());
   getIt.registerLazySingleton<IdPhotoService>(() => IdPhotoService());
   getIt.registerLazySingleton<SignatureService>(() => SignatureService());
+
+  // Background Remover Feature
+  getIt.registerLazySingleton<ModelStorageDataSource>(
+    () => ModelStorageDataSourceImpl(),
+  );
+  getIt.registerLazySingleton<ModelDownloaderDataSource>(
+    () => ModelDownloaderDataSourceImpl(
+      storageDataSource: getIt<ModelStorageDataSource>(),
+    ),
+  );
+  getIt.registerLazySingleton<OnnxInferenceDataSource>(
+    () => OnnxInferenceDataSourceImpl(),
+  );
+  getIt.registerLazySingleton<BackgroundRemoverRepository>(
+    () => BackgroundRemoverRepositoryImpl(
+      storageDataSource: getIt<ModelStorageDataSource>(),
+      downloaderDataSource: getIt<ModelDownloaderDataSource>(),
+      inferenceDataSource: getIt<OnnxInferenceDataSource>(),
+    ),
+  );
+  getIt.registerLazySingleton<CheckModelStatusUseCase>(
+    () => CheckModelStatusUseCase(getIt<BackgroundRemoverRepository>()),
+  );
+  getIt.registerLazySingleton<DownloadModelUseCase>(
+    () => DownloadModelUseCase(getIt<BackgroundRemoverRepository>()),
+  );
+  getIt.registerLazySingleton<CancelModelDownloadUseCase>(
+    () => CancelModelDownloadUseCase(getIt<BackgroundRemoverRepository>()),
+  );
+  getIt.registerLazySingleton<DeleteModelUseCase>(
+    () => DeleteModelUseCase(getIt<BackgroundRemoverRepository>()),
+  );
+  getIt.registerLazySingleton<RemoveBackgroundUseCase>(
+    () => RemoveBackgroundUseCase(getIt<BackgroundRemoverRepository>()),
+  );
+  getIt.registerFactory<BackgroundRemoverBloc>(
+    () => BackgroundRemoverBloc(
+      checkModelStatusUseCase: getIt<CheckModelStatusUseCase>(),
+      downloadModelUseCase: getIt<DownloadModelUseCase>(),
+      cancelModelDownloadUseCase: getIt<CancelModelDownloadUseCase>(),
+      deleteModelUseCase: getIt<DeleteModelUseCase>(),
+      removeBackgroundUseCase: getIt<RemoveBackgroundUseCase>(),
+      historyService: getIt<HistoryService>(),
+    ),
+  );
 }

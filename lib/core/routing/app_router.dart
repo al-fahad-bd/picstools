@@ -9,6 +9,7 @@ import '../../features/converter/presentation/views/convert_view.dart';
 import '../../features/pdf/presentation/views/pdf_view.dart';
 import '../../features/id_photo/presentation/views/id_photo_view.dart';
 import '../../features/signature/presentation/views/signature_view.dart';
+import '../../features/background_remover/presentation/views/background_remover_view.dart';
 import '../../features/settings/presentation/views/privacy_policy_view.dart';
 import '../../features/settings/presentation/views/developer_details_view.dart';
 import '../../features/tool_placeholder_view.dart';
@@ -66,10 +67,15 @@ abstract class AppRouter {
         builder: (context, state) => const SignatureView(),
       ),
       GoRoute(
+        path: '/tool/remove_bg',
+        builder: (context, state) => const BackgroundRemoverView(),
+      ),
+      GoRoute(
         path: '/tool/:name',
         builder: (context, state) {
           final name = state.pathParameters['name'] ?? 'Tool';
           final titleMap = {
+            'remove_bg': 'Remove Background',
             'social': 'Social Media Resize',
           };
           return ToolPlaceholderView(title: titleMap[name] ?? 'Image Tool');

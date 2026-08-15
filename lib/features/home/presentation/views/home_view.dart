@@ -16,6 +16,8 @@ import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/history_service.dart';
 import '../../../../core/services/audio_service.dart';
 import '../../../../core/utils/file_utils.dart';
+import '../../../background_remover/data/datasources/model_storage_datasource.dart';
+import '../../../background_remover/domain/entities/ai_model_info.dart';
 
 class ToolItem {
   final String id;
@@ -160,15 +162,15 @@ class _HomeViewState extends State<HomeView> {
       tag: 'VECTOR',
     ),
     ToolItem(
-      id: 'social',
-      title: 'Social Presets',
-      subtitle: 'IG, FB, YT & TikTok crop',
-      icon: Icons.share_rounded,
-      accentColor: NeoColors.yellow,
-      softColor: NeoColors.softYellow,
-      route: '/tool/social',
+      id: 'remove_bg',
+      title: 'Remove Background',
+      subtitle: '100% on-device AI cutout',
+      icon: Icons.auto_fix_high_rounded,
+      accentColor: NeoColors.purple,
+      softColor: NeoColors.softPurple,
+      route: '/tool/remove_bg',
       category: 'edit',
-      tag: 'PRESETS',
+      tag: '🤖 AI OFFLINE',
     ),
   ];
 
@@ -585,6 +587,9 @@ class _HomeViewState extends State<HomeView> {
       return Icons.badge_rounded;
     }
     if (name.contains('signature')) return Icons.draw_rounded;
+    if (name.contains('remove') || name.contains('background') || name.contains('bg')) {
+      return Icons.auto_fix_high_rounded;
+    }
     if (name.contains('social')) return Icons.share_rounded;
     return Icons.compress_rounded;
   }
@@ -599,6 +604,9 @@ class _HomeViewState extends State<HomeView> {
       return NeoColors.orange;
     }
     if (name.contains('signature')) return NeoColors.blue;
+    if (name.contains('remove') || name.contains('background') || name.contains('bg')) {
+      return NeoColors.purple;
+    }
     if (name.contains('social')) return NeoColors.yellow;
     return NeoColors.yellow;
   }
@@ -1097,6 +1105,194 @@ class _HomeViewState extends State<HomeView> {
               ],
             ),
           ),
+          const SizedBox(height: 24),
+
+          // AI Models Section
+          Text(
+            'AI Models (On-Device)',
+            style: GoogleFonts.spaceGrotesk(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 12),
+          FutureBuilder<AiModelInfo>(
+            future: getIt<ModelStorageDataSource>().getStoredModelInfo(),
+            builder: (context, snapshot) {
+              final info = snapshot.data;
+              final isInstalled = info?.isDownloaded ?? false;
+              final sizeText = info?.formattedActualSize ?? '~213 MB';
+
+              return NeoCard(
+                backgroundColor: isDark
+                    ? NeoColors.darkSurface
+                    : NeoColors.lightSurface,
+                child: Column(
+                  children: [
+                    Material(
+                      color: Colors.transparent,
+                      child: ListTile(
+                        leading: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: NeoColors.purple,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: NeoColors.borderLight, width: 1.2),
+                          ),
+                          child: const Icon(
+                            Icons.auto_fix_high_rounded,
+                            size: 20,
+                            color: NeoColors.lightSurface,
+                          ),
+                        ),
+                        title: Text(
+                          'Background Remover',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                        subtitle: Text(
+                          'BiRefNet General Lite (v1.0.0)',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 12,
+                            color: isDark
+                                ? NeoColors.textSecondaryDark
+                                : NeoColors.textSecondaryLight,
+                          ),
+                        ),
+                        trailing: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isInstalled
+                                ? NeoColors.softGreen
+                                : (isDark ? const Color(0xFF2E2E34) : const Color(0xFFEEEEF0)),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: isInstalled ? NeoColors.green : NeoColors.borderLight,
+                              width: 1.2,
+                            ),
+                          ),
+                          child: Text(
+                            isInstalled ? '✓ Downloaded ($sizeText)' : 'Not Installed',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.w900,
+                              color: isInstalled ? NeoColors.borderLight : (isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (isInstalled) ...[
+                      const Divider(),
+                      Material(
+                        color: Colors.transparent,
+                        child: ListTile(
+                          leading: const Icon(
+                            Icons.delete_outline_rounded,
+                            color: NeoColors.red,
+                          ),
+                          title: Text(
+                            'Delete AI Model',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontWeight: FontWeight.bold,
+                              color: NeoColors.red,
+                            ),
+                          ),
+                          subtitle: Text(
+                            'Free up disk space. You can download it again anytime.',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 11,
+                              color: isDark
+                                  ? NeoColors.textSecondaryDark
+                                  : NeoColors.textSecondaryLight,
+                            ),
+                          ),
+                          trailing: const Icon(
+                            Icons.chevron_right_rounded,
+                            color: NeoColors.red,
+                          ),
+                          onTap: () async {
+                            final confirmed = await showDialog<bool>(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                backgroundColor: isDark
+                                    ? NeoColors.darkSurface
+                                    : NeoColors.lightSurface,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  side: BorderSide(
+                                    color: isDark
+                                        ? NeoColors.borderDark
+                                        : NeoColors.borderLight,
+                                    width: 2,
+                                  ),
+                                ),
+                                title: Text(
+                                  'Delete AI Model?',
+                                  style: GoogleFonts.spaceGrotesk(
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                                content: Text(
+                                  'The BiRefNet Lite model file will be removed from your device. You can download it again whenever you use the Background Remover.',
+                                  style: GoogleFonts.spaceGrotesk(),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx, false),
+                                    child: Text(
+                                      'Cancel',
+                                      style: GoogleFonts.spaceGrotesk(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: NeoColors.red,
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    onPressed: () => Navigator.pop(ctx, true),
+                                    child: Text(
+                                      'Delete',
+                                      style: GoogleFonts.spaceGrotesk(
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+
+                            if (confirmed == true) {
+                              await getIt<ModelStorageDataSource>().deleteModel();
+                              if (context.mounted) {
+                                _showDeveloperToast(
+                                  context,
+                                  '🗑️ AI Model deleted from disk',
+                                  color: NeoColors.pink,
+                                  icon: Icons.delete_forever_rounded,
+                                );
+                                setState(() {});
+                              }
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -1138,8 +1334,10 @@ class _ToolCardItemState extends State<_ToolCardItem> {
         return IdPhotoToolGraphic(isDark: widget.isDark);
       case 'signature':
         return SignatureToolGraphic(isDark: widget.isDark);
+      case 'remove_bg':
+      case 'remove':
       case 'social':
-        return SocialToolGraphic(isDark: widget.isDark);
+        return RemoveBgToolGraphic(isDark: widget.isDark);
       default:
         return CompressToolGraphic(isDark: widget.isDark);
     }

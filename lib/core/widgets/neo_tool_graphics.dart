@@ -633,23 +633,23 @@ class SignatureToolGraphic extends StatelessWidget {
   }
 }
 
-class SocialToolGraphic extends StatelessWidget {
+class RemoveBgToolGraphic extends StatelessWidget {
   final bool isDark;
-  const SocialToolGraphic({super.key, required this.isDark});
+  const RemoveBgToolGraphic({super.key, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Social presets label
+        // Top AI 1-TAP Badge
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: NeoColors.pink,
+                color: NeoColors.purple,
                 borderRadius: BorderRadius.circular(5),
                 border: Border.all(color: NeoColors.borderLight, width: 1.2),
                 boxShadow: const [
@@ -660,11 +660,11 @@ class SocialToolGraphic extends StatelessWidget {
                 ],
               ),
               child: Text(
-                '📱 IG • YT • TIKTOK',
+                '🤖 AI 1-TAP',
                 style: GoogleFonts.spaceGrotesk(
                   fontSize: 8.5,
                   fontWeight: FontWeight.w900,
-                  color: NeoColors.borderLight,
+                  color: NeoColors.lightSurface,
                 ),
               ),
             ),
@@ -672,55 +672,69 @@ class SocialToolGraphic extends StatelessWidget {
         ),
         const SizedBox(height: 5),
 
-        // Aspect ratio frames
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // 1:1 Instagram box
-            Container(
-              width: 34,
-              height: 34,
-              decoration: BoxDecoration(
-                color: NeoColors.softYellow,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: NeoColors.borderLight, width: 1.5),
-              ),
-              child: Center(
-                child: Text(
-                  '1:1',
-                  style: GoogleFonts.spaceGrotesk(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w900,
-                    color: NeoColors.borderLight,
-                  ),
+        // Checkerboard Cutout Canvas Frame
+        Container(
+          width: 82,
+          height: 44,
+          decoration: NeoStyles.neoDecoration(
+            backgroundColor: isDark
+                ? const Color(0xFF261D2E)
+                : NeoColors.softPurple,
+            radius: 10,
+            shadow: 2,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              // Magic Wand / Cutout Icon
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: NeoColors.purple,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: NeoColors.borderLight, width: 1.2),
+                ),
+                child: const Icon(
+                  Icons.auto_fix_high_rounded,
+                  size: 16,
+                  color: NeoColors.lightSurface,
                 ),
               ),
-            ),
-            const SizedBox(width: 8),
-
-            // 9:16 Story box
-            Container(
-              width: 24,
-              height: 38,
-              decoration: BoxDecoration(
-                color: NeoColors.yellow,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: NeoColors.borderLight, width: 1.5),
+              // Arrow
+              const Icon(
+                Icons.arrow_forward_rounded,
+                size: 12,
+                color: NeoColors.purple,
               ),
-              child: Center(
-                child: Text(
-                  '9:16',
-                  style: GoogleFonts.spaceGrotesk(
-                    fontSize: 8.5,
-                    fontWeight: FontWeight.w900,
-                    color: NeoColors.borderLight,
-                  ),
+              // Transparent Person Silhouette
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: NeoColors.yellow,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: NeoColors.borderLight, width: 1.2),
+                ),
+                child: const Icon(
+                  Icons.person_outline_rounded,
+                  size: 16,
+                  color: NeoColors.borderLight,
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
   }
 }
+
+class SocialToolGraphic extends StatelessWidget {
+  final bool isDark;
+  const SocialToolGraphic({super.key, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    return RemoveBgToolGraphic(isDark: isDark);
+  }
+}
+
