@@ -1,3 +1,4 @@
+import '../../../../core/widgets/neo_back_button.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -172,29 +173,7 @@ class _BackgroundRemoverViewContentState
             : NeoColors.lightSurface,
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: IconButton(
-          icon: Container(
-            padding: const EdgeInsets.all(6),
-            decoration: NeoStyles.neoDecoration(
-              backgroundColor: isDark
-                  ? NeoColors.darkSurface
-                  : NeoColors.lightSurface,
-              radius: 10,
-              shadow: 2,
-            ),
-            child: Icon(
-              Icons.arrow_back_rounded,
-              size: 18,
-              color: isDark
-                  ? NeoColors.textPrimaryDark
-                  : NeoColors.textPrimaryLight,
-            ),
-          ),
-          onPressed: () {
-            _playSound('click');
-            context.pop();
-          },
-        ),
+        leading: const NeoBackButton(),
         title: Row(
           children: [
             Text(

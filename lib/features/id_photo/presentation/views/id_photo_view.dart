@@ -1,3 +1,4 @@
+import '../../../../core/widgets/neo_back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -52,18 +53,7 @@ class _IdPhotoViewContent extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Container(
-            padding: const EdgeInsets.all(6),
-            decoration: NeoStyles.neoDecoration(
-              backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
-              radius: 10,
-              shadow: 2,
-            ),
-            child: const Icon(Icons.arrow_back_rounded, size: 18),
-          ),
-          onPressed: () => context.pop(),
-        ),
+        leading: const NeoBackButton(),
         title: Text(
           'Passport & ID Photo Maker',
           style: GoogleFonts.spaceGrotesk(

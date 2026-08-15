@@ -1,3 +1,4 @@
+import '../../../../core/widgets/neo_back_button.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -67,18 +68,7 @@ class _CompressViewContentState extends State<_CompressViewContent> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Container(
-            padding: const EdgeInsets.all(6),
-            decoration: NeoStyles.neoDecoration(
-              backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
-              radius: 10,
-              shadow: 2,
-            ),
-            child: const Icon(Icons.arrow_back_rounded, size: 18),
-          ),
-          onPressed: () => context.pop(),
-        ),
+        leading: const NeoBackButton(),
         title: Text(
           'Compress Image',
           style: GoogleFonts.spaceGrotesk(

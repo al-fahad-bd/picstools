@@ -1,3 +1,4 @@
+import '../../../../core/widgets/neo_back_button.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,10 +26,8 @@ class SignatureView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => SignatureBloc(
-        signatureService: getIt(),
-        historyService: getIt(),
-      ),
+      create: (context) =>
+          SignatureBloc(signatureService: getIt(), historyService: getIt()),
       child: const _SignatureViewContent(),
     );
   }
@@ -42,10 +41,14 @@ class _SignatureViewContent extends StatefulWidget {
 }
 
 class _SignatureViewContentState extends State<_SignatureViewContent> {
-  String? _selectedMode; // null = Selection screen, 'draw' = Draw Canvas, 'scan' = Scan Paper
+  String?
+  _selectedMode; // null = Selection screen, 'draw' = Draw Canvas, 'scan' = Scan Paper
   final GlobalKey _canvasKey = GlobalKey();
 
-  Future<void> _scanPaperSignature(BuildContext context, ImageSource source) async {
+  Future<void> _scanPaperSignature(
+    BuildContext context,
+    ImageSource source,
+  ) async {
     final picker = getIt<ImagePickerService>();
     final bloc = context.read<SignatureBloc>();
     final file = await picker.pickSingleImage(source: source);
@@ -67,16 +70,7 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Container(
-            padding: const EdgeInsets.all(6),
-            decoration: NeoStyles.neoDecoration(
-              backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
-              radius: 10,
-              shadow: 2,
-            ),
-            child: const Icon(Icons.arrow_back_rounded, size: 18),
-          ),
+        leading: NeoBackButton(
           onPressed: () {
             if (_selectedMode != null) {
               setState(() {
@@ -139,7 +133,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: NeoStyles.neoDecoration(
-              backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+              backgroundColor: isDark
+                  ? NeoColors.darkSurface
+                  : NeoColors.lightSurface,
               radius: 16,
               shadow: 3,
             ),
@@ -177,7 +173,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                             'Choose how you want to create your signature',
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 12,
-                              color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+                              color: isDark
+                                  ? NeoColors.textSecondaryDark
+                                  : NeoColors.textSecondaryLight,
                             ),
                           ),
                         ],
@@ -245,7 +243,10 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
                       decoration: NeoStyles.neoDecoration(
                         backgroundColor: NeoColors.borderLight,
                         radius: 10,
@@ -332,7 +333,10 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
                       decoration: NeoStyles.neoDecoration(
                         backgroundColor: NeoColors.borderLight,
                         radius: 10,
@@ -367,7 +371,11 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
     );
   }
 
-  Widget _buildDrawView(BuildContext context, SignatureInitialState state, bool isDark) {
+  Widget _buildDrawView(
+    BuildContext context,
+    SignatureInitialState state,
+    bool isDark,
+  ) {
     final bloc = context.read<SignatureBloc>();
     final inkColors = [
       {'name': 'Black', 'color': Colors.black},
@@ -430,7 +438,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                       style: GoogleFonts.spaceGrotesk(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
-                        color: isWhiteInk ? Colors.white70 : const Color(0xFF64748B),
+                        color: isWhiteInk
+                            ? Colors.white70
+                            : const Color(0xFF64748B),
                       ),
                     ),
                   ),
@@ -473,7 +483,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                             color: color,
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: isSelected ? NeoColors.yellow : NeoColors.borderLight,
+                              color: isSelected
+                                  ? NeoColors.yellow
+                                  : NeoColors.borderLight,
                               width: isSelected ? 3 : 1.5,
                             ),
                           ),
@@ -487,11 +499,18 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.undo_rounded),
-                        onPressed: state.strokes.isNotEmpty ? () => bloc.add(UndoStrokeEvent()) : null,
+                        onPressed: state.strokes.isNotEmpty
+                            ? () => bloc.add(UndoStrokeEvent())
+                            : null,
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete_outline_rounded, color: NeoColors.red),
-                        onPressed: state.strokes.isNotEmpty ? () => bloc.add(ClearCanvasEvent()) : null,
+                        icon: const Icon(
+                          Icons.delete_outline_rounded,
+                          color: NeoColors.red,
+                        ),
+                        onPressed: state.strokes.isNotEmpty
+                            ? () => bloc.add(ClearCanvasEvent())
+                            : null,
                       ),
                     ],
                   ),
@@ -518,11 +537,16 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                         onTap: () => bloc.add(SetStrokeWidthEvent(val)),
                         child: Container(
                           margin: const EdgeInsets.only(right: 8),
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
                           decoration: NeoStyles.neoDecoration(
                             backgroundColor: isSelected
                                 ? NeoColors.yellow
-                                : (isDark ? NeoColors.darkBg : NeoColors.lightBg),
+                                : (isDark
+                                      ? NeoColors.darkBg
+                                      : NeoColors.lightBg),
                             radius: 8,
                             shadow: isSelected ? 2 : 1,
                           ),
@@ -548,7 +572,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                 fullWidth: true,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 onPressed: () {
-                  final renderBox = _canvasKey.currentContext?.findRenderObject() as RenderBox?;
+                  final renderBox =
+                      _canvasKey.currentContext?.findRenderObject()
+                          as RenderBox?;
                   final size = renderBox?.size ?? const Size(350, 300);
                   bloc.add(StartExportSignatureEvent(size));
                 },
@@ -595,7 +621,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
             textAlign: TextAlign.center,
             style: GoogleFonts.spaceGrotesk(
               fontSize: 14,
-              color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+              color: isDark
+                  ? NeoColors.textSecondaryDark
+                  : NeoColors.textSecondaryLight,
             ),
           ),
           const SizedBox(height: 36),
@@ -613,7 +641,10 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                     radius: 12,
                     shadow: 2,
                   ),
-                  child: const Icon(Icons.camera_alt_rounded, color: NeoColors.borderLight),
+                  child: const Icon(
+                    Icons.camera_alt_rounded,
+                    color: NeoColors.borderLight,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -638,7 +669,10 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right_rounded, color: NeoColors.borderLight),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: NeoColors.borderLight,
+                ),
               ],
             ),
           ),
@@ -657,7 +691,10 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                     radius: 12,
                     shadow: 2,
                   ),
-                  child: const Icon(Icons.photo_library_rounded, color: NeoColors.borderLight),
+                  child: const Icon(
+                    Icons.photo_library_rounded,
+                    color: NeoColors.borderLight,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -682,7 +719,10 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right_rounded, color: NeoColors.borderLight),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: NeoColors.borderLight,
+                ),
               ],
             ),
           ),
@@ -707,7 +747,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
             child: const Center(
               child: CircularProgressIndicator(
                 strokeWidth: 3.5,
-                valueColor: AlwaysStoppedAnimation<Color>(NeoColors.borderLight),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  NeoColors.borderLight,
+                ),
               ),
             ),
           ),
@@ -739,9 +781,7 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Saved $label to Downloads/PicsTools/Signatures!',
-          ),
+          content: Text('Saved $label to Downloads/PicsTools/Signatures!'),
           backgroundColor: NeoColors.green,
         ),
       );
@@ -763,8 +803,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(24)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(24),
+              ),
               border: Border.all(
                 color: isDark ? NeoColors.borderDark : NeoColors.borderLight,
                 width: 2.5,
@@ -808,7 +849,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                     ),
                     title: Text(
                       'Transparent PNG',
-                      style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold),
+                      style: GoogleFonts.spaceGrotesk(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     subtitle: Text(
                       'Ideal for overlaying on documents & dark backgrounds',
@@ -816,11 +859,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                     ),
                     onTap: () {
                       Navigator.pop(ctx);
-                      _saveSignatureMultiple(
-                        context,
-                        [res.transparentPngFile],
-                        'Transparent PNG',
-                      );
+                      _saveSignatureMultiple(context, [
+                        res.transparentPngFile,
+                      ], 'Transparent PNG');
                     },
                   ),
                   const Divider(),
@@ -839,7 +880,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                     ),
                     title: Text(
                       'White Background Only (JPG)',
-                      style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold),
+                      style: GoogleFonts.spaceGrotesk(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     subtitle: Text(
                       'Ideal for forms, printing & official records',
@@ -847,11 +890,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                     ),
                     onTap: () {
                       Navigator.pop(ctx);
-                      _saveSignatureMultiple(
-                        context,
-                        [res.solidBackgroundFile],
-                        'White Background Signature',
-                      );
+                      _saveSignatureMultiple(context, [
+                        res.solidBackgroundFile,
+                      ], 'White Background Signature');
                     },
                   ),
                   const Divider(),
@@ -870,7 +911,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                     ),
                     title: Text(
                       'Save Both Versions (Transparent & White)',
-                      style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold),
+                      style: GoogleFonts.spaceGrotesk(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     subtitle: Text(
                       'Downloads Transparent PNG & White JPG',
@@ -878,14 +921,10 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                     ),
                     onTap: () {
                       Navigator.pop(ctx);
-                      _saveSignatureMultiple(
-                        context,
-                        [
-                          res.transparentPngFile,
-                          res.solidBackgroundFile,
-                        ],
-                        'Both Signature Formats',
-                      );
+                      _saveSignatureMultiple(context, [
+                        res.transparentPngFile,
+                        res.solidBackgroundFile,
+                      ], 'Both Signature Formats');
                     },
                   ),
                 ],
@@ -912,8 +951,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(24)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(24),
+              ),
               border: Border.all(
                 color: isDark ? NeoColors.borderDark : NeoColors.borderLight,
                 width: 2.5,
@@ -957,7 +997,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                     ),
                     title: Text(
                       'Share Transparent PNG Only',
-                      style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold),
+                      style: GoogleFonts.spaceGrotesk(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     subtitle: Text(
                       'Transparent background signature',
@@ -966,7 +1008,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                     onTap: () {
                       Navigator.pop(ctx);
                       final box = context.findRenderObject() as RenderBox?;
-                      final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
+                      final origin = box != null
+                          ? box.localToGlobal(Offset.zero) & box.size
+                          : null;
                       Share.shareXFiles(
                         [XFile(res.transparentPngFile.path)],
                         text: 'Transparent Digital Signature',
@@ -990,7 +1034,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                     ),
                     title: Text(
                       'Share White Background Only (JPG)',
-                      style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold),
+                      style: GoogleFonts.spaceGrotesk(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     subtitle: Text(
                       'Guaranteed visibility on all apps & documents',
@@ -999,7 +1045,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                     onTap: () {
                       Navigator.pop(ctx);
                       final box = context.findRenderObject() as RenderBox?;
-                      final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
+                      final origin = box != null
+                          ? box.localToGlobal(Offset.zero) & box.size
+                          : null;
                       Share.shareXFiles(
                         [XFile(res.solidBackgroundFile.path)],
                         text: 'White Background Signature',
@@ -1023,7 +1071,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                     ),
                     title: Text(
                       'Share Both Formats',
-                      style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold),
+                      style: GoogleFonts.spaceGrotesk(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     subtitle: Text(
                       'Shares Transparent PNG & White JPG',
@@ -1032,7 +1082,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                     onTap: () {
                       Navigator.pop(ctx);
                       final box = context.findRenderObject() as RenderBox?;
-                      final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
+                      final origin = box != null
+                          ? box.localToGlobal(Offset.zero) & box.size
+                          : null;
                       Share.shareXFiles(
                         [
                           XFile(res.transparentPngFile.path),
@@ -1071,11 +1123,15 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
             } else if (bgMode == 'white') {
               bgWidget = Container(color: Colors.white);
             } else {
-              bgWidget = CustomPaint(painter: CheckeredPatternPainter(squareSize: 12));
+              bgWidget = CustomPaint(
+                painter: CheckeredPatternPainter(squareSize: 12),
+              );
             }
 
             return Dialog(
-              backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+              backgroundColor: isDark
+                  ? NeoColors.darkSurface
+                  : NeoColors.lightSurface,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
                 side: BorderSide(
@@ -1124,15 +1180,22 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                             ),
                             const SizedBox(width: 4),
                             ChoiceChip(
-                              label: const Text('Checkered', style: TextStyle(fontSize: 10)),
+                              label: const Text(
+                                'Checkered',
+                                style: TextStyle(fontSize: 10),
+                              ),
                               selected: bgMode == 'checkered',
                               onSelected: (val) {
-                                if (val) setModalState(() => bgMode = 'checkered');
+                                if (val)
+                                  setModalState(() => bgMode = 'checkered');
                               },
                             ),
                             const SizedBox(width: 4),
                             ChoiceChip(
-                              label: const Text('Dark Mode', style: TextStyle(fontSize: 10)),
+                              label: const Text(
+                                'Dark Mode',
+                                style: TextStyle(fontSize: 10),
+                              ),
                               selected: bgMode == 'dark',
                               selectedColor: NeoColors.yellow,
                               onSelected: (val) {
@@ -1141,7 +1204,10 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                             ),
                             const SizedBox(width: 4),
                             ChoiceChip(
-                              label: const Text('White', style: TextStyle(fontSize: 10)),
+                              label: const Text(
+                                'White',
+                                style: TextStyle(fontSize: 10),
+                              ),
                               selected: bgMode == 'white',
                               onSelected: (val) {
                                 if (val) setModalState(() => bgMode = 'white');
@@ -1157,7 +1223,10 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                       width: double.infinity,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: NeoColors.borderLight, width: 1.5),
+                        border: Border.all(
+                          color: NeoColors.borderLight,
+                          width: 1.5,
+                        ),
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
@@ -1266,7 +1335,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                             children: [
                               Positioned.fill(
                                 child: CustomPaint(
-                                  painter: CheckeredPatternPainter(squareSize: 8),
+                                  painter: CheckeredPatternPainter(
+                                    squareSize: 8,
+                                  ),
                                 ),
                               ),
                               Positioned.fill(
@@ -1332,7 +1403,10 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
 
           NeoButton(
             label: 'SAVE TO DEVICE',
-            icon: const Icon(Icons.download_rounded, color: NeoColors.borderLight),
+            icon: const Icon(
+              Icons.download_rounded,
+              color: NeoColors.borderLight,
+            ),
             backgroundColor: NeoColors.green,
             fullWidth: true,
             onPressed: () => _showSaveOptionsModal(context, res, isDark),
@@ -1348,7 +1422,10 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
           const SizedBox(height: 12),
           NeoButton(
             label: 'CREATE NEW SIGNATURE',
-            icon: const Icon(Icons.refresh_rounded, color: NeoColors.borderLight),
+            icon: const Icon(
+              Icons.refresh_rounded,
+              color: NeoColors.borderLight,
+            ),
             backgroundColor: NeoColors.cyan,
             fullWidth: true,
             onPressed: () {
