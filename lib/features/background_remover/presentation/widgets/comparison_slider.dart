@@ -35,139 +35,156 @@ class _ComparisonSliderState extends State<ComparisonSlider> {
       child: SizedBox(
         height: widget.height,
         width: double.infinity,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final maxWidth = constraints.maxWidth;
-            final splitPixel = maxWidth * _splitPosition.clamp(0.05, 0.95);
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 0),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final maxWidth = constraints.maxWidth;
+              final splitPixel = maxWidth * _splitPosition.clamp(0.0, 1.0);
 
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                // 1. Full-size Transparent PNG on Checkerboard (Right side / base)
-                Image.file(
-                  widget.transparentImage,
-                  fit: BoxFit.contain,
-                ),
+              return Stack(
+                clipBehavior: Clip.none,
+                fit: StackFit.expand,
+                children: [
+                  // 1. Full-size Transparent PNG on Checkerboard (Right side / base)
+                  Image.file(widget.transparentImage, fit: BoxFit.contain),
 
-                // 2. Clipped Original Image (Left side)
-                ClipRect(
-                  clipper: _SplitClipper(splitPixel),
-                  child: Image.file(
-                    widget.originalImage,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-
-                // 3. Top Badges: 'ORIGINAL' & 'REMOVED'
-                Positioned(
-                  top: 12,
-                  left: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: NeoColors.yellow,
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: NeoColors.borderLight, width: 1.2),
+                  // 2. Clipped Original Image (Left side)
+                  ClipRect(
+                    clipper: _SplitClipper(splitPixel),
+                    child: Image.file(
+                      widget.originalImage,
+                      fit: BoxFit.contain,
                     ),
-                    child: Text(
-                      'ORIGINAL',
-                      style: GoogleFonts.spaceGrotesk(
-                        fontSize: 9.5,
-                        fontWeight: FontWeight.w900,
-                        color: NeoColors.borderLight,
+                  ),
+
+                  // 3. Vertical Divider Line
+                  Positioned(
+                    left: splitPixel - 1.5,
+                    top: -16,
+                    bottom: -16,
+                    child: Container(width: 3.0, color: NeoColors.borderLight),
+                  ),
+
+                  // 4. Top Badges: 'ORIGINAL' & 'REMOVED'
+                  Positioned(
+                    top: 12,
+                    left: -6,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
                       ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 12,
-                  right: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: NeoColors.green,
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: NeoColors.borderLight, width: 1.2),
-                    ),
-                    child: Text(
-                      'AI REMOVED',
-                      style: GoogleFonts.spaceGrotesk(
-                        fontSize: 9.5,
-                        fontWeight: FontWeight.w900,
-                        color: NeoColors.borderLight,
-                      ),
-                    ),
-                  ),
-                ),
-
-                // 4. Vertical Divider Line
-                Positioned(
-                  left: splitPixel - 1.5,
-                  top: 0,
-                  bottom: 0,
-                  child: Container(
-                    width: 3.0,
-                    color: NeoColors.borderLight,
-                  ),
-                ),
-
-                // 5. Central Slider Handle Button
-                Positioned(
-                  left: splitPixel - 18,
-                  top: (widget.height / 2) - 18,
-                  child: GestureDetector(
-                    onHorizontalDragStart: (_) => setState(() => _isDragging = true),
-                    onHorizontalDragEnd: (_) => setState(() => _isDragging = false),
-                    onHorizontalDragUpdate: (details) {
-                      setState(() {
-                        _splitPosition = (_splitPosition + details.delta.dx / maxWidth)
-                            .clamp(0.05, 0.95);
-                      });
-                    },
-                    child: AnimatedScale(
-                      scale: _isDragging ? 1.15 : 1.0,
-                      duration: const Duration(milliseconds: 100),
-                      child: Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: NeoColors.cyan,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: NeoColors.borderLight, width: 2),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: NeoColors.borderLight,
-                              offset: Offset(2, 2),
-                            ),
-                          ],
+                      decoration: BoxDecoration(
+                        color: NeoColors.yellow,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: NeoColors.borderLight,
+                          width: 1.2,
                         ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.compare_arrows_rounded,
-                            size: 20,
-                            color: NeoColors.borderLight,
+                      ),
+                      child: Text(
+                        'ORIGINAL',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.w900,
+                          color: NeoColors.borderLight,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 12,
+                    right: -6,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: NeoColors.green,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: NeoColors.borderLight,
+                          width: 1.2,
+                        ),
+                      ),
+                      child: Text(
+                        'AI REMOVED',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.w900,
+                          color: NeoColors.borderLight,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // 5. Central Slider Handle Button
+                  Positioned(
+                    left: splitPixel - 18,
+                    top: (widget.height / 2) - 18,
+                    child: GestureDetector(
+                      onHorizontalDragStart: (_) =>
+                          setState(() => _isDragging = true),
+                      onHorizontalDragEnd: (_) =>
+                          setState(() => _isDragging = false),
+                      onHorizontalDragUpdate: (details) {
+                        setState(() {
+                          _splitPosition =
+                              (_splitPosition + details.delta.dx / maxWidth)
+                                  .clamp(0.0, 1.0);
+                        });
+                      },
+                      child: AnimatedScale(
+                        scale: _isDragging ? 1.15 : 1.0,
+                        duration: const Duration(milliseconds: 100),
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: NeoColors.cyan,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: NeoColors.borderLight,
+                              width: 2,
+                            ),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: NeoColors.borderLight,
+                                offset: Offset(2, 2),
+                              ),
+                            ],
+                          ),
+                          child: const Center(
+                            child: Icon(
+                              Icons.compare_arrows_rounded,
+                              size: 20,
+                              color: NeoColors.borderLight,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
 
-                // Full drag area
-                Positioned.fill(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onHorizontalDragUpdate: (details) {
-                      setState(() {
-                        _splitPosition = (_splitPosition + details.delta.dx / maxWidth)
-                            .clamp(0.05, 0.95);
-                      });
-                    },
+                  // Full drag area
+                  Positioned.fill(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onHorizontalDragUpdate: (details) {
+                        setState(() {
+                          _splitPosition =
+                              (_splitPosition + details.delta.dx / maxWidth)
+                                  .clamp(0.0, 1.0);
+                        });
+                      },
+                    ),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -184,5 +201,6 @@ class _SplitClipper extends CustomClipper<Rect> {
   }
 
   @override
-  bool shouldReclip(covariant _SplitClipper oldClipper) => oldClipper.splitX != splitX;
+  bool shouldReclip(covariant _SplitClipper oldClipper) =>
+      oldClipper.splitX != splitX;
 }

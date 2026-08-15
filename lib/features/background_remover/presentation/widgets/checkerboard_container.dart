@@ -63,37 +63,33 @@ class CheckerboardContainer extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
+        color: c1,
         borderRadius: BorderRadius.circular(borderRadius),
+        border: Border.all(
+          color: effectiveBorder,
+          width: borderWidth,
+        ),
         boxShadow: NeoStyles.neoShadow(
           shadowColor: effectiveBorder,
           offset: shadowOffset,
         ),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(borderRadius),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: effectiveBorder,
-              width: borderWidth,
-            ),
-            borderRadius: BorderRadius.circular(borderRadius),
-          ),
-          child: Stack(
-            fit: StackFit.passthrough,
-            children: [
-              Positioned.fill(
-                child: CustomPaint(
-                  painter: CheckerboardPainter(
-                    cellSize: 10.0,
-                    color1: c1,
-                    color2: c2,
-                  ),
+        borderRadius: BorderRadius.circular((borderRadius - borderWidth).clamp(0.0, 999.0)),
+        child: Stack(
+          fit: StackFit.passthrough,
+          children: [
+            Positioned.fill(
+              child: CustomPaint(
+                painter: CheckerboardPainter(
+                  cellSize: 10.0,
+                  color1: c1,
+                  color2: c2,
                 ),
               ),
-              child,
-            ],
-          ),
+            ),
+            child,
+          ],
         ),
       ),
     );

@@ -29,7 +29,8 @@ class BackgroundRemoverView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => getIt<BackgroundRemoverBloc>()..add(CheckModelStatusEvent()),
+      create: (context) =>
+          getIt<BackgroundRemoverBloc>()..add(CheckModelStatusEvent()),
       child: const _BackgroundRemoverViewContent(),
     );
   }
@@ -45,7 +46,8 @@ class _BackgroundRemoverViewContent extends StatefulWidget {
 
 class _BackgroundRemoverViewContentState
     extends State<_BackgroundRemoverViewContent> {
-  int _previewMode = 0; // 0 = Split Slider, 1 = Transparent Only, 2 = Original Only
+  int _previewMode =
+      0; // 0 = Split Slider, 1 = Transparent Only, 2 = Original Only
   bool _isSaving = false;
 
   void _playSound(String type) {
@@ -151,10 +153,9 @@ class _BackgroundRemoverViewContentState
   Future<void> _shareResult(File pngFile) async {
     _playSound('click');
     try {
-      await Share.shareXFiles(
-        [XFile(pngFile.path, mimeType: 'image/png')],
-        text: 'Transparent PNG created with Pics Tools',
-      );
+      await Share.shareXFiles([
+        XFile(pngFile.path, mimeType: 'image/png'),
+      ], text: 'Transparent PNG created with Pics Tools');
     } catch (_) {}
   }
 
@@ -166,13 +167,28 @@ class _BackgroundRemoverViewContentState
     return Scaffold(
       backgroundColor: isDark ? NeoColors.darkBg : NeoColors.lightBg,
       appBar: AppBar(
-        backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+        backgroundColor: isDark
+            ? NeoColors.darkSurface
+            : NeoColors.lightSurface,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_rounded,
-            color: isDark ? NeoColors.textPrimaryDark : NeoColors.textPrimaryLight,
+          icon: Container(
+            padding: const EdgeInsets.all(6),
+            decoration: NeoStyles.neoDecoration(
+              backgroundColor: isDark
+                  ? NeoColors.darkSurface
+                  : NeoColors.lightSurface,
+              radius: 10,
+              shadow: 2,
+            ),
+            child: Icon(
+              Icons.arrow_back_rounded,
+              size: 18,
+              color: isDark
+                  ? NeoColors.textPrimaryDark
+                  : NeoColors.textPrimaryLight,
+            ),
           ),
           onPressed: () {
             _playSound('click');
@@ -210,13 +226,6 @@ class _BackgroundRemoverViewContentState
               ),
             ),
           ],
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(2.5),
-          child: Container(
-            color: borderColor,
-            height: 2.5,
-          ),
         ),
       ),
       body: SafeArea(
@@ -296,7 +305,9 @@ class _BackgroundRemoverViewContentState
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 60.0),
         child: NeoCard(
-          backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+          backgroundColor: isDark
+              ? NeoColors.darkSurface
+              : NeoColors.lightSurface,
           borderColor: borderColor,
           child: Column(
             children: [
@@ -334,7 +345,9 @@ class _BackgroundRemoverViewContentState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         NeoCard(
-          backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.softPurple,
+          backgroundColor: isDark
+              ? NeoColors.darkSurface
+              : NeoColors.softPurple,
           borderColor: borderColor,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -344,7 +357,10 @@ class _BackgroundRemoverViewContentState
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: NeoColors.green,
                       borderRadius: BorderRadius.circular(6),
@@ -424,8 +440,9 @@ class _BackgroundRemoverViewContentState
                       ? NeoColors.textPrimaryDark
                       : NeoColors.textPrimaryLight,
                 ),
-                backgroundColor:
-                    isDark ? const Color(0xFF26262B) : NeoColors.lightSurface,
+                backgroundColor: isDark
+                    ? const Color(0xFF26262B)
+                    : NeoColors.lightSurface,
                 textColor: isDark
                     ? NeoColors.textPrimaryDark
                     : NeoColors.textPrimaryLight,
@@ -449,7 +466,9 @@ class _BackgroundRemoverViewContentState
     return Column(
       children: [
         NeoCard(
-          backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.softYellow,
+          backgroundColor: isDark
+              ? NeoColors.darkSurface
+              : NeoColors.softYellow,
           borderColor: borderColor,
           child: Column(
             children: [
@@ -464,10 +483,7 @@ class _BackgroundRemoverViewContentState
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: Image.file(
-                    state.originalImage,
-                    fit: BoxFit.cover,
-                  ),
+                  child: Image.file(state.originalImage, fit: BoxFit.cover),
                 ),
               ),
               const SizedBox(height: 24),
@@ -556,10 +572,7 @@ class _BackgroundRemoverViewContentState
             child: SizedBox(
               height: 360,
               width: double.infinity,
-              child: Image.file(
-                result.transparentPngFile,
-                fit: BoxFit.contain,
-              ),
+              child: Image.file(result.transparentPngFile, fit: BoxFit.contain),
             ),
           ),
         ] else ...[
@@ -567,15 +580,17 @@ class _BackgroundRemoverViewContentState
             height: 360,
             width: double.infinity,
             decoration: BoxDecoration(
+              color: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: borderColor, width: 2),
+              boxShadow: NeoStyles.neoShadow(
+                shadowColor: isDark ? NeoColors.borderDark : borderColor,
+                offset: NeoStyles.shadowOffset,
+              ),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(14),
-              child: Image.file(
-                result.originalFile,
-                fit: BoxFit.contain,
-              ),
+              child: Image.file(result.originalFile, fit: BoxFit.contain),
             ),
           ),
         ],
@@ -594,7 +609,11 @@ class _BackgroundRemoverViewContentState
             children: [
               Row(
                 children: [
-                  const Icon(Icons.timer_outlined, size: 15, color: NeoColors.blue),
+                  const Icon(
+                    Icons.timer_outlined,
+                    size: 15,
+                    color: NeoColors.blue,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     '${durMs}ms inference',
@@ -672,16 +691,17 @@ class _BackgroundRemoverViewContentState
                       ? NeoColors.textPrimaryDark
                       : NeoColors.textPrimaryLight,
                 ),
-                backgroundColor:
-                    isDark ? const Color(0xFF26262B) : NeoColors.lightSurface,
+                backgroundColor: isDark
+                    ? const Color(0xFF26262B)
+                    : NeoColors.lightSurface,
                 textColor: isDark
                     ? NeoColors.textPrimaryDark
                     : NeoColors.textPrimaryLight,
                 onPressed: () {
                   _playSound('click');
-                  context
-                      .read<BackgroundRemoverBloc>()
-                      .add(ResetBackgroundRemoverEvent());
+                  context.read<BackgroundRemoverBloc>().add(
+                    ResetBackgroundRemoverEvent(),
+                  );
                 },
               ),
             ),
@@ -708,7 +728,9 @@ class _BackgroundRemoverViewContentState
             borderRadius: BorderRadius.circular(8),
             border: isSelected
                 ? Border.all(
-                    color: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+                    color: isDark
+                        ? NeoColors.borderDark
+                        : NeoColors.borderLight,
                     width: 1.5,
                   )
                 : null,
@@ -722,8 +744,8 @@ class _BackgroundRemoverViewContentState
                 color: isSelected
                     ? (isDark ? NeoColors.lightSurface : NeoColors.borderLight)
                     : (isDark
-                        ? NeoColors.textSecondaryDark
-                        : NeoColors.textSecondaryLight),
+                          ? NeoColors.textSecondaryDark
+                          : NeoColors.textSecondaryLight),
               ),
             ),
           ),
@@ -762,7 +784,9 @@ class _BackgroundRemoverViewContentState
             style: GoogleFonts.spaceGrotesk(
               fontSize: 18,
               fontWeight: FontWeight.w900,
-              color: isDark ? NeoColors.textPrimaryDark : NeoColors.textPrimaryLight,
+              color: isDark
+                  ? NeoColors.textPrimaryDark
+                  : NeoColors.textPrimaryLight,
             ),
           ),
           const SizedBox(height: 10),
@@ -770,7 +794,9 @@ class _BackgroundRemoverViewContentState
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              color: isDark ? Colors.black26 : Colors.white.withValues(alpha: 0.6),
+              color: isDark
+                  ? Colors.black26
+                  : Colors.white.withValues(alpha: 0.6),
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
                 color: borderColor.withValues(alpha: 0.25),
@@ -801,9 +827,9 @@ class _BackgroundRemoverViewContentState
             textColor: NeoColors.borderLight,
             onPressed: () {
               _playSound('click');
-              context
-                  .read<BackgroundRemoverBloc>()
-                  .add(ResetBackgroundRemoverEvent());
+              context.read<BackgroundRemoverBloc>().add(
+                ResetBackgroundRemoverEvent(),
+              );
             },
           ),
         ],
