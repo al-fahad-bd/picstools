@@ -1209,7 +1209,7 @@ class _HomeViewState extends State<HomeView> {
                           title: Text(
                             'Delete AI Model',
                             style: GoogleFonts.spaceGrotesk(
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w900,
                               color: NeoColors.red,
                             ),
                           ),
@@ -1461,13 +1461,15 @@ class _ToolCardItemState extends State<_ToolCardItem> {
                     ),
                   ),
                 ),
-                Icon(
-                  Icons.arrow_forward_rounded,
-                  size: 16,
-                  color: widget.isDark
-                      ? NeoColors.textPrimaryDark
-                      : NeoColors.borderLight,
-                ),
+                widget.tool.title == 'Remove Background'
+                    ? SizedBox.shrink()
+                    : Icon(
+                        Icons.arrow_forward_rounded,
+                        size: 16,
+                        color: widget.isDark
+                            ? NeoColors.textPrimaryDark
+                            : NeoColors.borderLight,
+                      ),
               ],
             ),
             const SizedBox(height: 2),
