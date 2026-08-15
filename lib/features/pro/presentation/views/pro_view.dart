@@ -45,6 +45,9 @@ class _ProViewContent extends StatelessWidget {
       },
       builder: (context, state) {
         final isLoading = state is ProLoadingState;
+        final isPro = (state is ProLoadedState && state.isPro) ||
+            (state is ProPurchaseSuccessState && state.isPro) ||
+            (state is ProErrorState && state.isPro);
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(20.0),
@@ -74,22 +77,27 @@ class _ProViewContent extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               NeoButton(
-                label: 'UPGRADE NOW - \$4.99 / MONTH',
-                backgroundColor: NeoColors.yellow,
+                label: isPro
+                    ? 'PRO MEMBERSHIP ACTIVE ✓'
+                    : 'UPGRADE NOW - \$2.99 / MONTH',
+                backgroundColor: isPro ? NeoColors.green : NeoColors.yellow,
                 fullWidth: true,
                 isLoading: isLoading,
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                onPressed: () {
-                  context.read<ProBloc>().add(PurchaseProEvent());
-                },
-              ),
-              const SizedBox(height: 12),
-              TextButton(
-                onPressed: isLoading
+                onPressed: (isLoading || isPro)
                     ? null
                     : () {
-                        context.read<ProBloc>().add(RestorePurchasesEvent());
+                        context.read<ProBloc>().add(PurchaseProEvent());
                       },
+              ),
+              const SizedBox(height: 12),
+              if (!isPro)
+                TextButton(
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          context.read<ProBloc>().add(RestorePurchasesEvent());
+                        },
                 child: Text(
                   'Restore Purchases',
                   style: GoogleFonts.spaceGrotesk(

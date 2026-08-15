@@ -2,7 +2,7 @@ name: picstools
 description: "A production-ready Flutter mobile application for an image utility app."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ^3.12.2
@@ -33,6 +33,7 @@ dependencies:
   crypto: ^3.0.7
   flutter_onnxruntime: ^1.8.3
   in_app_purchase: ^3.3.0
+  firebase_core: ^4.13.0
 
 dev_dependencies:
   flutter_test:

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "77843855143",
+    "project_id": "picstools-57173",
+    "storage_bucket": "picstools-57173.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:77843855143:android:f3398e4fa04acf8a79db02",
+        "android_client_info": {
+          "package_name": "com.deltrix.picstools"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCiwl2cKU9q3npbTv_GLIaQ3hCP96l4ls"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

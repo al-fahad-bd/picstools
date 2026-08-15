@@ -37,12 +37,21 @@ class InAppPurchaseServiceImpl implements InAppPurchaseService {
       onDone: () => _subscription?.cancel(),
       onError: (error) {
         debugPrint('InAppPurchaseService error: $error');
-        if (_pendingPurchaseCompleter != null &&
-            !_pendingPurchaseCompleter!.isCompleted) {
-          _pendingPurchaseCompleter!.complete(false);
-        }
+        _completePending(false);
       },
     );
+
+    // Initial silent check
+    try {
+      await _iap.restorePurchases();
+    } catch (_) {}
+  }
+
+  void _completePending(bool result) {
+    if (_pendingPurchaseCompleter != null &&
+        !_pendingPurchaseCompleter!.isCompleted) {
+      _pendingPurchaseCompleter!.complete(result);
+    }
   }
 
   Future<void> _onPurchaseDetails(List<PurchaseDetails> purchases) async {
@@ -56,16 +65,13 @@ class InAppPurchaseServiceImpl implements InAppPurchaseService {
             await _iap.completePurchase(purchase);
           }
 
-          if (_pendingPurchaseCompleter != null &&
-              !_pendingPurchaseCompleter!.isCompleted) {
-            _pendingPurchaseCompleter!.complete(true);
-          }
+          _completePending(true);
         } else if (purchase.status == PurchaseStatus.error ||
             purchase.status == PurchaseStatus.canceled) {
-          if (_pendingPurchaseCompleter != null &&
-              !_pendingPurchaseCompleter!.isCompleted) {
-            _pendingPurchaseCompleter!.complete(false);
+          if (purchase.pendingCompletePurchase) {
+            await _iap.completePurchase(purchase);
           }
+          _completePending(false);
         }
       }
     }
@@ -81,6 +87,11 @@ class InAppPurchaseServiceImpl implements InAppPurchaseService {
 
   @override
   Future<bool> purchaseProSubscription() async {
+    // If already Pro or previously purchased, restore first
+    if (_isPro) {
+      return true;
+    }
+
     final available = await _iap.isAvailable();
     if (!available) {
       return false;
@@ -101,18 +112,29 @@ class InAppPurchaseServiceImpl implements InAppPurchaseService {
     );
 
     _pendingPurchaseCompleter = Completer<bool>();
-    final buyStarted = await _iap.buyNonConsumable(
-      purchaseParam: purchaseParam,
-    );
 
-    if (!buyStarted) {
+    try {
+      final buyStarted = await _iap.buyNonConsumable(
+        purchaseParam: purchaseParam,
+      );
+
+      if (!buyStarted) {
+        return false;
+      }
+
+      // Safe timeout so UI spinner does not hang indefinitely if sheet is dismissed
+      return await _pendingPurchaseCompleter!.future.timeout(
+        const Duration(seconds: 45),
+        onTimeout: () {
+          // If timeout fires, check if restored in the meantime
+          return _isPro;
+        },
+      );
+    } catch (e) {
+      debugPrint('Purchase error: $e');
+      _completePending(false);
       return false;
     }
-
-    return _pendingPurchaseCompleter!.future.timeout(
-      const Duration(minutes: 3),
-      onTimeout: () => false,
-    );
   }
 
   @override
