@@ -9,6 +9,7 @@ import '../../../../core/widgets/neo_card.dart';
 import '../../../../core/widgets/neo_badge.dart';
 import '../../../../core/widgets/neo_doodles.dart';
 import '../../../../core/services/service_locator.dart';
+import '../../../../core/services/auth_service.dart';
 
 class OnboardingSlide {
   final String titlePrefix;
@@ -85,6 +86,14 @@ class _OnboardingViewState extends State<OnboardingView> {
   Future<void> _completeOnboarding() async {
     final prefs = getIt<SharedPreferences>();
     await prefs.setBool('onboarding_completed', true);
+
+    // Sign in anonymously with Firebase in background
+    try {
+      if (getIt.isRegistered<AuthService>()) {
+        await getIt<AuthService>().signInAnonymously();
+      }
+    } catch (_) {}
+
     if (mounted) {
       context.go('/home');
     }

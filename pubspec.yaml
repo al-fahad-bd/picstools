@@ -34,6 +34,7 @@ dependencies:
   flutter_onnxruntime: ^1.8.3
   in_app_purchase: ^3.3.0
   firebase_core: ^4.13.0
+  firebase_auth: ^6.5.7
 
 dev_dependencies:
   flutter_test:

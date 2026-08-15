@@ -71,14 +71,14 @@ class PrivacyPolicyView extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              // Policy Section 1: Zero Personal Data Collection
+              // Policy Section 1: Anonymous & Account-Free Access
               _buildPolicySection(
-                title: '1. Zero Data Collection',
+                title: '1. Anonymous & Account-Free Access',
                 icon: Icons.shield_sharp,
                 color: NeoColors.cyan,
                 isDark: isDark,
                 content:
-                    'We do not require user account creation, logins, names, email addresses, or phone numbers. PicsTools operates completely anonymously without collecting or profiling user identities.',
+                    'PicsTools does not require you to create an account, register, or provide personal information such as your real name, email address, password, or phone number. A randomized, anonymous identifier is generated solely to maintain your app preferences and secure service integrity. All image editing and file processing remain strictly offline on your device.',
               ),
               const SizedBox(height: 16),
 

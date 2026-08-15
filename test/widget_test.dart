@@ -9,6 +9,7 @@ import 'package:picstools/features/pro/presentation/bloc/pro_bloc.dart';
 import 'package:picstools/features/pro/presentation/views/pro_view.dart';
 import 'package:picstools/core/services/history_service.dart';
 import 'package:picstools/core/services/monetization/in_app_purchase_service.dart';
+import 'package:picstools/core/services/auth_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -19,6 +20,7 @@ void main() {
     getIt.registerSingleton<SharedPreferences>(prefs);
     getIt.registerLazySingleton<HistoryService>(() => HistoryServiceImpl(prefs));
     getIt.registerLazySingleton<InAppPurchaseService>(() => MockInAppPurchaseServiceImpl());
+    getIt.registerLazySingleton<AuthService>(() => MockAuthServiceImpl());
     getIt.registerFactory<HomeBloc>(() => HomeBloc());
     getIt.registerFactory<HistoryBloc>(() => HistoryBloc(historyService: getIt<HistoryService>()));
     getIt.registerFactory<ProBloc>(() => ProBloc(purchaseService: getIt<InAppPurchaseService>()));

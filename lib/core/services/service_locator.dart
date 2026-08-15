@@ -5,6 +5,7 @@ import 'history_service.dart';
 import 'file_save_service.dart';
 import 'sound_service.dart';
 import 'audio_service.dart';
+import 'auth_service.dart';
 import 'monetization/ad_service.dart';
 import 'monetization/in_app_purchase_service.dart';
 import '../../features/compressor/services/image_compressor_service.dart';
@@ -53,6 +54,14 @@ Future<void> initServiceLocator() async {
   final iapService = InAppPurchaseServiceImpl(prefs);
   await iapService.initialize();
   getIt.registerSingleton<InAppPurchaseService>(iapService);
+
+  final authService = FirebaseAuthServiceImpl();
+  await authService.initialize();
+  // Silently restore/sign-in anonymously if user already completed onboarding
+  if (prefs.getBool('onboarding_completed') == true) {
+    authService.signInAnonymously();
+  }
+  getIt.registerSingleton<AuthService>(authService);
 
   // Feature Processing Services
   getIt.registerLazySingleton<ImageCompressorService>(
