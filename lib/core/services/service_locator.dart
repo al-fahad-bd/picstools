@@ -14,6 +14,10 @@ import '../../features/converter/services/image_converter_service.dart';
 import '../../features/pdf/services/image_pdf_service.dart';
 import '../../features/id_photo/services/id_photo_service.dart';
 import '../../features/signature/services/signature_service.dart';
+import '../../features/home/presentation/bloc/home_bloc.dart';
+import '../../features/history/presentation/bloc/history_bloc.dart';
+import '../../features/pro/presentation/bloc/pro_bloc.dart';
+import '../../features/settings/presentation/bloc/settings_bloc.dart';
 import '../../features/background_remover/data/datasources/model_storage_datasource.dart';
 import '../../features/background_remover/data/datasources/model_downloader_datasource.dart';
 import '../../features/background_remover/data/datasources/onnx_inference_datasource.dart';
@@ -96,6 +100,22 @@ Future<void> initServiceLocator() async {
   );
   getIt.registerLazySingleton<RemoveBackgroundUseCase>(
     () => RemoveBackgroundUseCase(getIt<BackgroundRemoverRepository>()),
+  );
+
+  // Feature BLoCs
+  getIt.registerFactory<HomeBloc>(() => HomeBloc());
+  getIt.registerFactory<HistoryBloc>(
+    () => HistoryBloc(historyService: getIt<HistoryService>()),
+  );
+  getIt.registerFactory<ProBloc>(
+    () => ProBloc(purchaseService: getIt<InAppPurchaseService>()),
+  );
+  getIt.registerFactory<SettingsBloc>(
+    () => SettingsBloc(
+      audioService: getIt<AudioService>(),
+      prefs: getIt<SharedPreferences>(),
+      modelStorageDataSource: getIt<ModelStorageDataSource>(),
+    ),
   );
   getIt.registerFactory<BackgroundRemoverBloc>(
     () => BackgroundRemoverBloc(

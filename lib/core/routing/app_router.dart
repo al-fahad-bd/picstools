@@ -1,7 +1,7 @@
 import 'package:go_router/go_router.dart';
 import '../../features/splash/presentation/views/splash_view.dart';
 import '../../features/onboarding/presentation/views/onboarding_view.dart';
-import '../../features/home/presentation/views/home_view.dart';
+import '../../features/main_nav/presentation/views/main_nav_view.dart';
 import '../../features/compressor/presentation/views/compress_view.dart';
 import '../../features/resizer/presentation/views/resize_view.dart';
 import '../../features/cropper/presentation/views/crop_view.dart';
@@ -28,7 +28,19 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: '/home',
-        builder: (context, state) => const HomeView(),
+        builder: (context, state) => const MainNavView(initialIndex: 0),
+      ),
+      GoRoute(
+        path: '/history',
+        builder: (context, state) => const MainNavView(initialIndex: 1),
+      ),
+      GoRoute(
+        path: '/pro',
+        builder: (context, state) => const MainNavView(initialIndex: 2),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const MainNavView(initialIndex: 3),
       ),
       GoRoute(
         path: '/privacy_policy',

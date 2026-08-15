@@ -44,6 +44,7 @@ class HistoryItem {
 abstract class HistoryService {
   Future<List<HistoryItem>> getHistory();
   Future<void> addHistoryItem(HistoryItem item);
+  Future<void> deleteHistoryItem(String id);
   Future<void> clearHistory();
 }
 
@@ -67,6 +68,14 @@ class HistoryServiceImpl implements HistoryService {
     final list = await getHistory();
     list.insert(0, item);
     final jsonList = list.take(50).map((i) => jsonEncode(i.toJson())).toList();
+    await _prefs.setStringList(_key, jsonList);
+  }
+
+  @override
+  Future<void> deleteHistoryItem(String id) async {
+    final list = await getHistory();
+    list.removeWhere((item) => item.id == id);
+    final jsonList = list.map((i) => jsonEncode(i.toJson())).toList();
     await _prefs.setStringList(_key, jsonList);
   }
 

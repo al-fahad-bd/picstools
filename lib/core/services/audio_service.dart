@@ -100,4 +100,10 @@ class AudioService {
       await stopBackgroundSound();
     }
   }
+
+  Future<void> dispose() async {
+    try {
+      await _player.dispose();
+    } catch (_) {}
+  }
 }
