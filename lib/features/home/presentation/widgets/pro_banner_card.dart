@@ -7,14 +7,91 @@ import '../../../../core/widgets/neo_badge.dart';
 
 class ProBannerCard extends StatelessWidget {
   final VoidCallback onTap;
+  final bool isPro;
 
   const ProBannerCard({
     super.key,
     required this.onTap,
+    this.isPro = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    if (isPro) {
+      return NeoCard(
+        backgroundColor:
+            isDark ? const Color(0xFF1E293B) : const Color(0xFFE8F5E9),
+        shadowOffset: 4,
+        padding: const EdgeInsets.all(16),
+        onTap: onTap,
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: NeoStyles.neoDecoration(
+                backgroundColor: NeoColors.green,
+                radius: 12,
+                shadow: 2,
+              ),
+              child: const Icon(
+                Icons.verified_rounded,
+                size: 28,
+                color: NeoColors.borderLight,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        'PicsTools PRO',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: isDark
+                              ? NeoColors.textPrimaryDark
+                              : NeoColors.textPrimaryLight,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      const NeoBadge(
+                        label: 'VIP ACTIVE',
+                        backgroundColor: NeoColors.green,
+                        fontSize: 9,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'All 8 tools unlocked with Ultra HD & 0 ads.',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: isDark
+                          ? NeoColors.textSecondaryDark
+                          : NeoColors.textSecondaryLight,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: isDark
+                  ? NeoColors.textSecondaryDark
+                  : NeoColors.borderLight,
+              size: 16,
+            ),
+          ],
+        ),
+      );
+    }
+
     return NeoCard(
       backgroundColor: NeoColors.softYellow,
       shadowOffset: 5,
@@ -80,3 +157,4 @@ class ProBannerCard extends StatelessWidget {
     );
   }
 }
+

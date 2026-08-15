@@ -57,6 +57,16 @@ class _MainNavViewState extends State<MainNavView> {
     _startAudioIfEnabled();
   }
 
+  @override
+  void didUpdateWidget(covariant MainNavView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialIndex != oldWidget.initialIndex) {
+      setState(() {
+        _currentNavIndex = widget.initialIndex;
+      });
+    }
+  }
+
   void _startAudioIfEnabled() {
     try {
       final audio = getIt<AudioService>();
@@ -85,7 +95,9 @@ class _MainNavViewState extends State<MainNavView> {
               onNavigateToPro: () => setState(() => _currentNavIndex = 2),
             ),
             const HistoryView(),
-            const ProView(),
+            ProView(
+              onNavigateToHome: () => setState(() => _currentNavIndex = 0),
+            ),
             const SettingsView(),
           ],
         ),
@@ -93,3 +105,4 @@ class _MainNavViewState extends State<MainNavView> {
     );
   }
 }
+

@@ -7,6 +7,7 @@ import '../../../../core/constants/neo_styles.dart';
 import '../../../../core/widgets/neo_text_field.dart';
 import '../../../../core/widgets/neo_doodles.dart';
 import '../../../../core/services/service_locator.dart';
+import '../../../../core/services/monetization/in_app_purchase_service.dart';
 import '../bloc/home_bloc.dart';
 import '../widgets/home_header.dart';
 import '../widgets/category_selector.dart';
@@ -38,6 +39,7 @@ class _HomeViewContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isPro = getIt<InAppPurchaseService>().isProUser();
 
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
@@ -53,6 +55,7 @@ class _HomeViewContent extends StatelessWidget {
               // Header Row with App Icon and PRO badge
               HomeHeader(
                 isDark: isDark,
+                isPro: isPro,
                 onProTap: onNavigateToPro ?? () => context.push('/pro'),
               ),
               const SizedBox(height: 18),
@@ -197,6 +200,7 @@ class _HomeViewContent extends StatelessWidget {
 
               // Featured Pro Banner
               ProBannerCard(
+                isPro: isPro,
                 onTap: onNavigateToPro ?? () => context.push('/pro'),
               ),
             ],
@@ -206,3 +210,4 @@ class _HomeViewContent extends StatelessWidget {
     );
   }
 }
+

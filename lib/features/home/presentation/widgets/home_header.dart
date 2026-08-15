@@ -5,16 +5,21 @@ import '../../../../core/constants/neo_styles.dart';
 
 class HomeHeader extends StatelessWidget {
   final bool isDark;
+  final bool isPro;
   final VoidCallback onProTap;
 
   const HomeHeader({
     super.key,
     required this.isDark,
+    this.isPro = false,
     required this.onProTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final badgeColor = isPro ? NeoColors.green : NeoColors.pink;
+    final badgeTextColor = NeoColors.getContrastColor(badgeColor);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -64,24 +69,24 @@ class HomeHeader extends StatelessWidget {
               vertical: 8,
             ),
             decoration: NeoStyles.neoDecoration(
-              backgroundColor: NeoColors.pink,
+              backgroundColor: badgeColor,
               radius: 12,
               shadow: 3,
             ),
             child: Row(
               children: [
                 Icon(
-                  Icons.bolt_rounded,
+                  isPro ? Icons.verified_rounded : Icons.bolt_rounded,
                   size: 18,
-                  color: NeoColors.getContrastColor(NeoColors.pink),
+                  color: badgeTextColor,
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  'PRO',
+                  isPro ? 'PRO MEMBER' : 'PRO',
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 13,
                     fontWeight: FontWeight.w900,
-                    color: NeoColors.getContrastColor(NeoColors.pink),
+                    color: badgeTextColor,
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -93,3 +98,4 @@ class HomeHeader extends StatelessWidget {
     );
   }
 }
+

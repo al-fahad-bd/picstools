@@ -11,9 +11,13 @@ abstract class ProEvent extends Equatable {
 
 class LoadProStatusEvent extends ProEvent {}
 
+class RefreshProStatusEvent extends ProEvent {}
+
 class PurchaseProEvent extends ProEvent {}
 
 class RestorePurchasesEvent extends ProEvent {}
+
+class ManageSubscriptionEvent extends ProEvent {}
 
 // States
 abstract class ProState extends Equatable {
@@ -55,12 +59,35 @@ class ProBloc extends Bloc<ProEvent, ProState> {
 
   ProBloc({required this.purchaseService}) : super(ProInitialState()) {
     on<LoadProStatusEvent>(_onLoadProStatus);
+    on<RefreshProStatusEvent>(_onRefreshProStatus);
     on<PurchaseProEvent>(_onPurchasePro);
     on<RestorePurchasesEvent>(_onRestorePurchases);
+    on<ManageSubscriptionEvent>(_onManageSubscription);
   }
 
   void _onLoadProStatus(LoadProStatusEvent event, Emitter<ProState> emit) {
     emit(ProLoadedState(isPro: purchaseService.isProUser()));
+  }
+
+  Future<void> _onRefreshProStatus(
+    RefreshProStatusEvent event,
+    Emitter<ProState> emit,
+  ) async {
+    try {
+      final isPro = await purchaseService.checkSubscriptionStatus();
+      if (isPro) {
+        emit(
+          const ProPurchaseSuccessState(
+            '✓ Pro subscription is active.',
+            isPro: true,
+          ),
+        );
+      } else {
+        emit(const ProLoadedState(isPro: false));
+      }
+    } catch (_) {
+      emit(ProLoadedState(isPro: purchaseService.isProUser()));
+    }
   }
 
   Future<void> _onPurchasePro(
@@ -114,7 +141,7 @@ class ProBloc extends Bloc<ProEvent, ProState> {
       } else {
         emit(
           ProErrorState(
-            'No previous purchases found to restore.',
+            'No active subscription found to restore.',
             isPro: isPro,
           ),
         );
@@ -125,4 +152,12 @@ class ProBloc extends Bloc<ProEvent, ProState> {
       );
     }
   }
+
+  Future<void> _onManageSubscription(
+    ManageSubscriptionEvent event,
+    Emitter<ProState> emit,
+  ) async {
+    await purchaseService.openManageSubscriptions();
+  }
 }
+

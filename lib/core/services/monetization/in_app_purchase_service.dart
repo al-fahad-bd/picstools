@@ -2,17 +2,26 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 abstract class InAppPurchaseService {
   Future<void> initialize();
   bool isProUser();
   Future<bool> purchaseProSubscription();
   Future<bool> restorePurchases();
+  Future<bool> checkSubscriptionStatus();
+  Future<void> openManageSubscriptions();
 }
 
 class InAppPurchaseServiceImpl implements InAppPurchaseService {
   static const String proSubscriptionId = 'picstools_pro_monthly';
   static const String _proPrefKey = 'is_pro_user_cached';
+  static const String _playStoreSubUrl =
+      'https://play.google.com/store/account/subscriptions?package=com.deltrix.picstools&sku=picstools_pro_monthly';
+  static const String _playStoreSubFallbackUrl =
+      'https://play.google.com/store/account/subscriptions';
+  static const String _appleSubUrl =
+      'https://apps.apple.com/account/subscriptions';
 
   final InAppPurchase _iap = InAppPurchase.instance;
   final SharedPreferences _prefs;
@@ -41,9 +50,9 @@ class InAppPurchaseServiceImpl implements InAppPurchaseService {
       },
     );
 
-    // Initial silent check
+    // Initial silent check to verify active subscription status
     try {
-      await _iap.restorePurchases();
+      await checkSubscriptionStatus();
     } catch (_) {}
   }
 
@@ -86,8 +95,48 @@ class InAppPurchaseServiceImpl implements InAppPurchaseService {
   bool isProUser() => _isPro;
 
   @override
+  Future<bool> checkSubscriptionStatus() async {
+    final available = await _iap.isAvailable();
+    if (!available) {
+      return _isPro;
+    }
+
+    bool activeProFound = false;
+    StreamSubscription<List<PurchaseDetails>>? tempSub;
+
+    try {
+      tempSub = _iap.purchaseStream.listen((purchases) {
+        for (final purchase in purchases) {
+          if (purchase.productID == proSubscriptionId &&
+              (purchase.status == PurchaseStatus.purchased ||
+                  purchase.status == PurchaseStatus.restored)) {
+            activeProFound = true;
+          }
+        }
+      });
+
+      await _iap.restorePurchases();
+      // Allow Google Play / StoreKit billing stream time to emit active purchases
+      await Future.delayed(const Duration(milliseconds: 1500));
+      await tempSub.cancel();
+
+      if (activeProFound) {
+        await _setProUser(true);
+      } else {
+        // No active purchase returned from the store - update cache and state
+        await _setProUser(false);
+      }
+    } catch (e) {
+      debugPrint('Error checking subscription status: $e');
+      await tempSub?.cancel();
+    }
+
+    return _isPro;
+  }
+
+  @override
   Future<bool> purchaseProSubscription() async {
-    // If already Pro or previously purchased, restore first
+    // If already Pro or previously purchased, check status first
     if (_isPro) {
       return true;
     }
@@ -126,7 +175,6 @@ class InAppPurchaseServiceImpl implements InAppPurchaseService {
       return await _pendingPurchaseCompleter!.future.timeout(
         const Duration(seconds: 45),
         onTimeout: () {
-          // If timeout fires, check if restored in the meantime
           return _isPro;
         },
       );
@@ -139,17 +187,27 @@ class InAppPurchaseServiceImpl implements InAppPurchaseService {
 
   @override
   Future<bool> restorePurchases() async {
-    final available = await _iap.isAvailable();
-    if (!available) {
-      return false;
-    }
+    return await checkSubscriptionStatus();
+  }
 
+  @override
+  Future<void> openManageSubscriptions() async {
     try {
-      await _iap.restorePurchases();
-      return _isPro;
+      final Uri url;
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+        url = Uri.parse(_appleSubUrl);
+      } else {
+        url = Uri.parse(_playStoreSubUrl);
+      }
+
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } else {
+        final fallbackUrl = Uri.parse(_playStoreSubFallbackUrl);
+        await launchUrl(fallbackUrl, mode: LaunchMode.externalApplication);
+      }
     } catch (e) {
-      debugPrint('Failed to restore purchases: $e');
-      return false;
+      debugPrint('Failed to open subscription manager: $e');
     }
   }
 
@@ -168,6 +226,9 @@ class MockInAppPurchaseServiceImpl implements InAppPurchaseService {
   bool isProUser() => _isPro;
 
   @override
+  Future<bool> checkSubscriptionStatus() async => _isPro;
+
+  @override
   Future<bool> purchaseProSubscription() async {
     _isPro = true;
     return true;
@@ -177,4 +238,7 @@ class MockInAppPurchaseServiceImpl implements InAppPurchaseService {
   Future<bool> restorePurchases() async {
     return _isPro;
   }
+
+  @override
+  Future<void> openManageSubscriptions() async {}
 }
