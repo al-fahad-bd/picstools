@@ -12,6 +12,7 @@ import '../../../../core/constants/neo_styles.dart';
 import '../../../../core/widgets/neo_button.dart';
 import '../../../../core/widgets/neo_card.dart';
 import '../../../../core/widgets/neo_badge.dart';
+import '../../../../core/widgets/neo_toast.dart';
 import '../../../../core/utils/file_utils.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/image_picker_service.dart';
@@ -93,12 +94,7 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
         child: BlocConsumer<SignatureBloc, SignatureState>(
           listener: (context, state) {
             if (state is SignatureErrorState) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: NeoColors.red,
-                ),
-              );
+              NeoToast.showError(context, state.message);
             }
           },
           builder: (context, state) {
@@ -779,11 +775,10 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
       );
     }
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Saved $label to Downloads/PicsTools/Signatures!'),
-          backgroundColor: NeoColors.green,
-        ),
+      NeoToast.showSuccess(
+        context,
+        '🎉 Saved $label to Gallery & Files!',
+        icon: Icons.draw_rounded,
       );
     }
   }
@@ -1186,8 +1181,9 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
                               ),
                               selected: bgMode == 'checkered',
                               onSelected: (val) {
-                                if (val)
+                                if (val) {
                                   setModalState(() => bgMode = 'checkered');
+                                }
                               },
                             ),
                             const SizedBox(width: 4),

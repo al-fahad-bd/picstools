@@ -1,4 +1,8 @@
+import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AudioService {
@@ -6,9 +10,14 @@ class AudioService {
   final AudioPlayer _player = AudioPlayer();
   bool _isSoundEnabled = true;
   bool _isPlaying = false;
+  String? _localAudioPath;
 
   AudioService(this._prefs) {
     _isSoundEnabled = _prefs.getBool('bg_sound_enabled') ?? true;
+    _player.onPlayerStateChanged.listen((state) {
+      _isPlaying = (state == PlayerState.playing);
+      debugPrint('AudioService PlayerState: $state');
+    });
   }
 
   bool get isSoundEnabled => _isSoundEnabled;
@@ -16,11 +25,10 @@ class AudioService {
 
   Future<void> init() async {
     try {
-      await AudioPlayer.global.setAudioContext(AudioContext(
+      await _player.setAudioContext(AudioContext(
         iOS: AudioContextIOS(
           category: AVAudioSessionCategory.playback,
           options: {
-            AVAudioSessionOptions.defaultToSpeaker,
             AVAudioSessionOptions.mixWithOthers,
           },
         ),
@@ -31,24 +39,43 @@ class AudioService {
         ),
       ));
       await _player.setReleaseMode(ReleaseMode.loop);
-      await _player.setVolume(0.5);
-    } catch (_) {}
+      await _player.setVolume(1.0);
+
+      // Pre-extract asset to local file with proper .mp3 extension
+      final tempDir = await getTemporaryDirectory();
+      final file = File('${tempDir.path}/background_ambient.mp3');
+      if (!await file.exists() || await file.length() == 0) {
+        final byteData = await rootBundle.load('assets/audio/background_ambient.mp3');
+        await file.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
+      }
+      _localAudioPath = file.path;
+      debugPrint('AudioService: initialized with local audio at $_localAudioPath');
+    } catch (e) {
+      debugPrint('AudioService init error: $e');
+    }
   }
 
   Future<void> playBackgroundSound() async {
-    if (!_isSoundEnabled || _isPlaying) return;
+    if (!_isSoundEnabled) return;
     try {
       await _player.setReleaseMode(ReleaseMode.loop);
-      await _player.setVolume(0.5);
-      await _player.play(AssetSource('audio/background_ambient.mp3'));
-      _isPlaying = true;
-    } catch (_) {}
+      await _player.setVolume(1.0);
+
+      if (_localAudioPath != null && await File(_localAudioPath!).exists()) {
+        await _player.play(DeviceFileSource(_localAudioPath!));
+        debugPrint('AudioService: playing from DeviceFileSource ($_localAudioPath)');
+      } else {
+        await _player.play(AssetSource('audio/background_ambient.mp3'));
+        debugPrint('AudioService: playing from AssetSource');
+      }
+    } catch (e) {
+      debugPrint('Audio playback error: $e');
+    }
   }
 
   Future<void> stopBackgroundSound() async {
     try {
       await _player.stop();
-      _isPlaying = false;
     } catch (_) {}
   }
 

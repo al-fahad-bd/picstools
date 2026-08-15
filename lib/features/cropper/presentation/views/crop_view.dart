@@ -1,8 +1,8 @@
 import '../../../../core/widgets/neo_back_button.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -12,6 +12,7 @@ import '../../../../core/widgets/neo_button.dart';
 import '../../../../core/widgets/neo_card.dart';
 import '../../../../core/widgets/neo_badge.dart';
 import '../../../../core/widgets/neo_crop_canvas.dart';
+import '../../../../core/widgets/neo_toast.dart';
 import '../../../../core/utils/file_utils.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/image_picker_service.dart';
@@ -62,12 +63,7 @@ class _CropViewContent extends StatelessWidget {
         child: BlocConsumer<CropperBloc, CropperState>(
           listener: (context, state) {
             if (state is CropperErrorState) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: NeoColors.red,
-                ),
-              );
+              NeoToast.showError(context, state.message);
             }
           },
           builder: (context, state) {
@@ -520,11 +516,9 @@ class _CropViewContent extends StatelessWidget {
                 subFolder: 'Cropped',
               );
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Saved cropped photo to: ${saved.path}'),
-                    backgroundColor: NeoColors.green,
-                  ),
+                NeoToast.showSuccess(
+                  context,
+                  '🎉 Saved cropped photo to Gallery!\n${saved.path.split(Platform.pathSeparator).last}',
                 );
               }
             },

@@ -1,13 +1,13 @@
 import '../../../../core/widgets/neo_back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/constants/neo_styles.dart';
 import '../../../../core/widgets/neo_button.dart';
 import '../../../../core/widgets/neo_card.dart';
 import '../../../../core/widgets/neo_badge.dart';
+import '../../../../core/widgets/neo_toast.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/history_service.dart';
 
@@ -130,13 +130,10 @@ class PrivacyPolicyView extends StatelessWidget {
                   final history = getIt<HistoryService>();
                   await history.clearHistory();
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'All local processing history cleared successfully!',
-                        ),
-                        backgroundColor: NeoColors.green,
-                      ),
+                    NeoToast.showSuccess(
+                      context,
+                      'All local processing history cleared successfully!',
+                      icon: Icons.delete_outline_rounded,
                     );
                   }
                 },

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -13,6 +12,7 @@ import '../../../../core/services/file_save_service.dart';
 import '../../../../core/services/image_picker_service.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/sound_service.dart';
+import '../../../../core/widgets/neo_toast.dart';
 import '../../../../core/widgets/neo_button.dart';
 import '../../../../core/widgets/neo_card.dart';
 import '../bloc/background_remover_bloc.dart';
@@ -63,47 +63,7 @@ class _BackgroundRemoverViewContentState
     Color color = NeoColors.green,
     IconData icon = Icons.check_circle_rounded,
   }) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        behavior: SnackBarBehavior.floating,
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        margin: const EdgeInsets.only(bottom: 24, left: 16, right: 16),
-        duration: const Duration(milliseconds: 2500),
-        content: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: NeoStyles.neoDecoration(
-            backgroundColor: color,
-            radius: 16,
-            shadow: 4,
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.25),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, size: 18, color: NeoColors.darkSurface),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  message,
-                  style: GoogleFonts.spaceGrotesk(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w900,
-                    color: NeoColors.darkSurface,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    NeoToast.show(context, message, color: color, icon: icon);
   }
 
   Future<void> _pickImage(BuildContext context, ImageSource source) async {

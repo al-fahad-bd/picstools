@@ -2,7 +2,6 @@ import '../../../../core/widgets/neo_back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -12,6 +11,7 @@ import '../../../../core/widgets/neo_button.dart';
 import '../../../../core/widgets/neo_card.dart';
 import '../../../../core/widgets/neo_badge.dart';
 import '../../../../core/widgets/neo_crop_canvas.dart';
+import '../../../../core/widgets/neo_toast.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/image_picker_service.dart';
 import '../../../../core/services/file_save_service.dart';
@@ -66,12 +66,7 @@ class _IdPhotoViewContent extends StatelessWidget {
         child: BlocConsumer<IdPhotoBloc, IdPhotoState>(
           listener: (context, state) {
             if (state is IdPhotoErrorState) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: NeoColors.red,
-                ),
-              );
+              NeoToast.showError(context, state.message);
             }
           },
           builder: (context, state) {
@@ -649,11 +644,10 @@ class _IdPhotoViewContent extends StatelessWidget {
                 );
               }
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Saved Passport Photo & Print Sheet PDF to Downloads/PicsTools/ID_Photos!'),
-                    backgroundColor: NeoColors.green,
-                  ),
+                NeoToast.showSuccess(
+                  context,
+                  '🎉 Saved Passport Photo & Sheet to Device!',
+                  icon: Icons.badge_rounded,
                 );
               }
             },

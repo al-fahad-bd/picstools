@@ -12,6 +12,7 @@ import '../../../../core/widgets/neo_bottom_nav_bar.dart';
 import '../../../../core/widgets/neo_doodles.dart';
 import '../../../../core/widgets/neo_tool_graphics.dart';
 import '../../../../core/widgets/neo_switch.dart';
+import '../../../../core/widgets/neo_toast.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/history_service.dart';
 import '../../../../core/services/audio_service.dart';
@@ -587,7 +588,9 @@ class _HomeViewState extends State<HomeView> {
       return Icons.badge_rounded;
     }
     if (name.contains('signature')) return Icons.draw_rounded;
-    if (name.contains('remove') || name.contains('background') || name.contains('bg')) {
+    if (name.contains('remove') ||
+        name.contains('background') ||
+        name.contains('bg')) {
       return Icons.auto_fix_high_rounded;
     }
     if (name.contains('social')) return Icons.share_rounded;
@@ -604,7 +607,9 @@ class _HomeViewState extends State<HomeView> {
       return NeoColors.orange;
     }
     if (name.contains('signature')) return NeoColors.blue;
-    if (name.contains('remove') || name.contains('background') || name.contains('bg')) {
+    if (name.contains('remove') ||
+        name.contains('background') ||
+        name.contains('bg')) {
       return NeoColors.purple;
     }
     if (name.contains('social')) return NeoColors.yellow;
@@ -848,11 +853,10 @@ class _HomeViewState extends State<HomeView> {
             fullWidth: true,
             padding: const EdgeInsets.symmetric(vertical: 16),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Pro Subscription requested!'),
-                  backgroundColor: NeoColors.green,
-                ),
+              NeoToast.showSuccess(
+                context,
+                'Pro Subscription requested!',
+                icon: Icons.star_rounded,
               );
             },
           ),
@@ -915,54 +919,14 @@ class _HomeViewState extends State<HomeView> {
     Color color = NeoColors.purple,
     IconData icon = Icons.terminal_rounded,
   }) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        behavior: SnackBarBehavior.floating,
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        margin: const EdgeInsets.only(bottom: 24, left: 16, right: 16),
-        duration: const Duration(milliseconds: 1800),
-        content: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: NeoStyles.neoDecoration(
-            backgroundColor: color,
-            radius: 16,
-            shadow: 4,
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.25),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, size: 18, color: NeoColors.darkSurface),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  message,
-                  style: GoogleFonts.spaceGrotesk(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w900,
-                    color: NeoColors.darkSurface,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    NeoToast.show(context, message, color: color, icon: icon);
   }
 
   // Tab 4: Settings Screen
   Widget _buildSettingsTab(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1129,62 +1093,108 @@ class _HomeViewState extends State<HomeView> {
                     : NeoColors.lightSurface,
                 child: Column(
                   children: [
-                    Material(
-                      color: Colors.transparent,
-                      child: ListTile(
-                        leading: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: NeoColors.purple,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: NeoColors.borderLight, width: 1.2),
-                          ),
-                          child: const Icon(
-                            Icons.auto_fix_high_rounded,
-                            size: 20,
-                            color: NeoColors.lightSurface,
-                          ),
-                        ),
-                        title: Text(
-                          'Background Remover',
-                          style: GoogleFonts.spaceGrotesk(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                        ),
-                        subtitle: Text(
-                          'BiRefNet General Lite (v1.0.0)',
-                          style: GoogleFonts.spaceGrotesk(
-                            fontSize: 12,
-                            color: isDark
-                                ? NeoColors.textSecondaryDark
-                                : NeoColors.textSecondaryLight,
-                          ),
-                        ),
-                        trailing: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isInstalled
-                                ? NeoColors.softGreen
-                                : (isDark ? const Color(0xFF2E2E34) : const Color(0xFFEEEEF0)),
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                              color: isInstalled ? NeoColors.green : NeoColors.borderLight,
-                              width: 1.2,
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: NeoColors.purple,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: NeoColors.borderLight,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.auto_fix_high_rounded,
+                              size: 22,
+                              color: NeoColors.lightSurface,
                             ),
                           ),
-                          child: Text(
-                            isInstalled ? '✓ Downloaded ($sizeText)' : 'Not Installed',
-                            style: GoogleFonts.spaceGrotesk(
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w900,
-                              color: isInstalled ? NeoColors.borderLight : (isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Background Remover',
+                                  style: GoogleFonts.spaceGrotesk(
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  'BiRefNet General Lite (v1.0.0)',
+                                  style: GoogleFonts.spaceGrotesk(
+                                    fontSize: 12,
+                                    color: isDark
+                                        ? NeoColors.textSecondaryDark
+                                        : NeoColors.textSecondaryLight,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 9,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isInstalled
+                                        ? NeoColors.softGreen
+                                        : (isDark
+                                              ? const Color(0xFF2E2E34)
+                                              : const Color(0xFFEEEEF0)),
+                                    borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(
+                                      color: isInstalled
+                                          ? NeoColors.green
+                                          : NeoColors.borderLight,
+                                      width: 1.2,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        isInstalled
+                                            ? Icons.check_circle_rounded
+                                            : Icons.cloud_download_outlined,
+                                        size: 13,
+                                        color: isInstalled
+                                            ? NeoColors.borderLight
+                                            : (isDark
+                                                  ? NeoColors.textSecondaryDark
+                                                  : NeoColors
+                                                        .textSecondaryLight),
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        isInstalled
+                                            ? 'Downloaded ($sizeText)'
+                                            : 'Not Installed',
+                                        style: GoogleFonts.spaceGrotesk(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w800,
+                                          color: isInstalled
+                                              ? NeoColors.borderLight
+                                              : (isDark
+                                                    ? NeoColors
+                                                          .textSecondaryDark
+                                                    : NeoColors
+                                                          .textSecondaryLight),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
                     if (isInstalled) ...[
@@ -1249,6 +1259,7 @@ class _HomeViewState extends State<HomeView> {
                                       'Cancel',
                                       style: GoogleFonts.spaceGrotesk(
                                         fontWeight: FontWeight.bold,
+                                        color: NeoColors.darkSurface,
                                       ),
                                     ),
                                   ),
@@ -1273,7 +1284,8 @@ class _HomeViewState extends State<HomeView> {
                             );
 
                             if (confirmed == true) {
-                              await getIt<ModelStorageDataSource>().deleteModel();
+                              await getIt<ModelStorageDataSource>()
+                                  .deleteModel();
                               if (context.mounted) {
                                 _showDeveloperToast(
                                   context,

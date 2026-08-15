@@ -9,6 +9,7 @@ import '../../../../core/constants/neo_styles.dart';
 import '../../../../core/widgets/neo_card.dart';
 import '../../../../core/widgets/neo_badge.dart';
 import '../../../../core/widgets/neo_button.dart';
+import '../../../../core/widgets/neo_toast.dart';
 
 class DeveloperDetailsView extends StatelessWidget {
   const DeveloperDetailsView({super.key});
@@ -21,11 +22,9 @@ class DeveloperDetailsView extends StatelessWidget {
       }
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not open http://abdullahalfahad.vercel.app/'),
-            backgroundColor: NeoColors.red,
-          ),
+        NeoToast.showError(
+          context,
+          'Could not open http://abdullahalfahad.vercel.app/',
         );
       }
     }

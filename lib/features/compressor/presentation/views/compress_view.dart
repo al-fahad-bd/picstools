@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path/path.dart' as path;
@@ -14,6 +13,7 @@ import '../../../../core/widgets/neo_button.dart';
 import '../../../../core/widgets/neo_card.dart';
 import '../../../../core/widgets/neo_badge.dart';
 import '../../../../core/widgets/neo_slider.dart';
+import '../../../../core/widgets/neo_toast.dart';
 import '../../../../core/utils/file_utils.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/image_picker_service.dart';
@@ -81,12 +81,7 @@ class _CompressViewContentState extends State<_CompressViewContent> {
         child: BlocConsumer<CompressorBloc, CompressorState>(
           listener: (context, state) {
             if (state is CompressorErrorState) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: NeoColors.red,
-                ),
-              );
+              NeoToast.showError(context, state.message);
             }
           },
           builder: (context, state) {
@@ -392,11 +387,9 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                               subFolder: 'Compressed',
                             );
                             if (modalContext.mounted) {
-                              ScaffoldMessenger.of(modalContext).showSnackBar(
-                                SnackBar(
-                                  content: Text('Saved to ${saved.path}'),
-                                  backgroundColor: NeoColors.green,
-                                ),
+                              NeoToast.showSuccess(
+                                modalContext,
+                                '🎉 Saved to Gallery!\n${saved.path.split(Platform.pathSeparator).last}',
                               );
                             }
                           },
@@ -994,11 +987,9 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                 );
               }
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Saved compressed photo(s) to Downloads/PicsTools/Compressed!'),
-                    backgroundColor: NeoColors.green,
-                  ),
+                NeoToast.showSuccess(
+                  context,
+                  '🎉 Saved ${state.results.length} compressed photo(s) to Gallery!',
                 );
               }
             },
