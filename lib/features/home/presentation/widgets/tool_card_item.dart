@@ -86,16 +86,19 @@ class _ToolCardItemState extends State<ToolCardItem> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                NeoBadge(
-                  label: widget.tool.tag,
-                  backgroundColor: widget.isDark
-                      ? widget.tool.accentColor
-                      : NeoColors.lightSurface,
-                  textColor: widget.isDark
-                      ? NeoColors.getContrastColor(widget.tool.accentColor)
-                      : NeoColors.borderLight,
-                  fontSize: 8.5,
+                Flexible(
+                  child: NeoBadge(
+                    label: widget.tool.tag,
+                    backgroundColor: widget.isDark
+                        ? widget.tool.accentColor
+                        : NeoColors.lightSurface,
+                    textColor: widget.isDark
+                        ? NeoColors.getContrastColor(widget.tool.accentColor)
+                        : NeoColors.borderLight,
+                    fontSize: 8.5,
+                  ),
                 ),
+                const SizedBox(width: 4),
                 NeoSparkleDoodle(size: 16, color: widget.tool.accentColor),
               ],
             ),

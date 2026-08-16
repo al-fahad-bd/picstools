@@ -67,6 +67,34 @@ void main() {
     expect(find.text('Unlock maximum image productivity'), findsOneWidget);
   });
 
+  testWidgets('HomeView layout does not overflow on small viewports (320px)', (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(body: HomeView()),
+      ),
+    );
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('HistoryView layout does not overflow on small viewports (320px)', (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(body: HistoryView()),
+      ),
+    );
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+  });
+
   test('HomeBloc filters tools by search and category correctly', () {
     final bloc = HomeBloc();
     expect(bloc.state is HomeLoadedState, true);

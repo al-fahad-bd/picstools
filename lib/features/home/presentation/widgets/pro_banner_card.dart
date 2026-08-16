@@ -9,11 +9,7 @@ class ProBannerCard extends StatelessWidget {
   final VoidCallback onTap;
   final bool isPro;
 
-  const ProBannerCard({
-    super.key,
-    required this.onTap,
-    this.isPro = false,
-  });
+  const ProBannerCard({super.key, required this.onTap, this.isPro = false});
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +17,9 @@ class ProBannerCard extends StatelessWidget {
 
     if (isPro) {
       return NeoCard(
-        backgroundColor:
-            isDark ? const Color(0xFF1E293B) : const Color(0xFFE8F5E9),
+        backgroundColor: isDark
+            ? const Color(0xFF1E293B)
+            : const Color(0xFFE8F5E9),
         shadowOffset: 4,
         padding: const EdgeInsets.all(16),
         onTap: onTap,
@@ -48,14 +45,18 @@ class ProBannerCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(
-                        'PicsTools PRO',
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900,
-                          color: isDark
-                              ? NeoColors.textPrimaryDark
-                              : NeoColors.textPrimaryLight,
+                      Flexible(
+                        child: Text(
+                          'PicsTools PRO',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            color: isDark
+                                ? NeoColors.textPrimaryDark
+                                : NeoColors.textPrimaryLight,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       const SizedBox(width: 6),
@@ -119,12 +120,16 @@ class ProBannerCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(
-                      'PicsTools PRO',
-                      style: GoogleFonts.spaceGrotesk(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                        color: NeoColors.borderLight,
+                    Flexible(
+                      child: Text(
+                        'PicsTools PRO',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: NeoColors.borderLight,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     const SizedBox(width: 6),
@@ -157,4 +162,3 @@ class ProBannerCard extends StatelessWidget {
     );
   }
 }
-

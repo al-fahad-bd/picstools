@@ -24,39 +24,47 @@ class HomeHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         // Logo Pill
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: NeoStyles.neoDecoration(
-            backgroundColor: isDark
-                ? NeoColors.darkSurface
-                : NeoColors.lightSurface,
-            borderColor: isDark ? NeoColors.borderDark : NeoColors.borderLight,
-            radius: 14,
-            shadow: 3,
-          ),
-          child: Row(
-            children: [
-              Image.asset(
-                'assets/icon/app_icon.png',
-                width: 36,
-                height: 36,
-                fit: BoxFit.cover,
-              ),
-              const SizedBox(width: 10),
-              Text(
-                'PicsTools',
-                style: GoogleFonts.spaceGrotesk(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -0.5,
-                  color: isDark
-                      ? NeoColors.textPrimaryDark
-                      : NeoColors.textPrimaryLight,
+        Flexible(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: NeoStyles.neoDecoration(
+              backgroundColor: isDark
+                  ? NeoColors.darkSurface
+                  : NeoColors.lightSurface,
+              borderColor: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+              radius: 14,
+              shadow: 3,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(
+                  'assets/icon/app_icon.png',
+                  width: 36,
+                  height: 36,
+                  fit: BoxFit.cover,
                 ),
-              ),
-            ],
+                const SizedBox(width: 10),
+                Flexible(
+                  child: Text(
+                    'PicsTools',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: -0.5,
+                      color: isDark
+                          ? NeoColors.textPrimaryDark
+                          : NeoColors.textPrimaryLight,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
+        const SizedBox(width: 8),
 
         // PRO Badge
         GestureDetector(
