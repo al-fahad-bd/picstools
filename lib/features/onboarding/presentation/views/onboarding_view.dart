@@ -130,7 +130,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                         backgroundColor: isDark
                             ? NeoColors.darkSurface
                             : NeoColors.lightSurface,
-                        borderColor: NeoColors.borderLight,
+                        borderColor: isDark
+                            ? NeoColors.borderDark
+                            : NeoColors.borderLight,
                         radius: 12,
                         shadow: 3,
                       ),
@@ -171,6 +173,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                             backgroundColor: isDark
                                 ? NeoColors.darkSurface
                                 : NeoColors.lightSurface,
+                            borderColor: isDark
+                                ? NeoColors.borderDark
+                                : NeoColors.borderLight,
                             radius: 10,
                             shadow: 2.5,
                           ),
@@ -214,7 +219,10 @@ class _OnboardingViewState extends State<OnboardingView> {
                     itemBuilder: (context, index) {
                       final slide = _slides[index];
                       return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 4,
+                        ),
                         child: NeoCard(
                           backgroundColor: isDark
                               ? NeoColors.darkSurface
@@ -251,6 +259,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                                     backgroundColor: isDark
                                         ? const Color(0xFF27272A)
                                         : slide.softBgColor,
+                                    borderColor: isDark
+                                        ? NeoColors.borderDark
+                                        : NeoColors.borderLight,
                                     radius: 16,
                                     shadow: 4,
                                   ),
@@ -336,14 +347,20 @@ class _OnboardingViewState extends State<OnboardingView> {
                                                 borderRadius:
                                                     BorderRadius.circular(8),
                                                 border: Border.all(
-                                                  color: NeoColors.borderLight,
+                                                  color: isDark
+                                                      ? NeoColors.borderDark
+                                                      : NeoColors.borderLight,
                                                   width: 2.5,
                                                 ),
-                                                boxShadow: const [
+                                                boxShadow: [
                                                   BoxShadow(
-                                                    color:
-                                                        NeoColors.borderLight,
-                                                    offset: Offset(2.5, 2.5),
+                                                    color: isDark
+                                                        ? NeoColors.borderDark
+                                                        : NeoColors.borderLight,
+                                                    offset: const Offset(
+                                                      2.5,
+                                                      2.5,
+                                                    ),
                                                     blurRadius: 0,
                                                   ),
                                                 ],
@@ -409,6 +426,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                                 : (isDark
                                       ? Colors.grey.shade800
                                       : Colors.grey.shade300),
+                            borderColor: isDark
+                                ? NeoColors.borderDark
+                                : NeoColors.borderLight,
                             radius: 6,
                             shadow: isSelected ? 2.5 : 0,
                             showShadow: isSelected,
