@@ -14,6 +14,7 @@ import '../../../../core/widgets/neo_card.dart';
 import '../../../../core/widgets/neo_badge.dart';
 import '../../../../core/widgets/neo_crop_canvas.dart';
 import '../../../../core/widgets/neo_toast.dart';
+import '../../../../core/widgets/neo_loader.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/image_picker_service.dart';
 import '../../../../core/services/file_save_service.dart';
@@ -913,27 +914,29 @@ class _IdPhotoViewContent extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 80,
-            height: 80,
+            width: 84,
+            height: 84,
             decoration: NeoStyles.neoDecoration(
-              backgroundColor: NeoColors.orange,
-              radius: 40,
+              backgroundColor: isDark
+                  ? NeoColors.darkSurface
+                  : NeoColors.softYellow,
+              borderColor: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+              radius: 20,
               shadow: 4,
             ),
             child: const Center(
-              child: CircularProgressIndicator(
-                strokeWidth: 3.5,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  NeoColors.borderLight,
-                ),
+              child: NeoLoader.large(
+                size: 46,
+                color: NeoColors.orange,
+                secondaryColor: NeoColors.yellow,
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 22),
           Text(
             'Generating ID Photo & Print Sheet...',
             style: GoogleFonts.spaceGrotesk(
-              fontSize: 18,
+              fontSize: 17,
               fontWeight: FontWeight.w900,
             ),
           ),

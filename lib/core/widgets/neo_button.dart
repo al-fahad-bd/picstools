@@ -4,6 +4,7 @@ import '../constants/neo_colors.dart';
 import '../constants/neo_styles.dart';
 import '../services/service_locator.dart';
 import '../services/sound_service.dart';
+import 'neo_loader.dart';
 
 class NeoButton extends StatefulWidget {
   final String? label;
@@ -78,13 +79,11 @@ class _NeoButtonState extends State<NeoButton> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (widget.isLoading) ...[
-          SizedBox(
-            width: 18,
-            height: 18,
-            child: CircularProgressIndicator(
-              strokeWidth: 2.5,
-              valueColor: AlwaysStoppedAnimation<Color>(defaultText),
-            ),
+          NeoLoader.button(
+            size: 18,
+            color: defaultText,
+            secondaryColor: defaultText.withValues(alpha: 0.6),
+            borderColor: defaultBorder,
           ),
           if (widget.label != null) const SizedBox(width: 10),
         ] else if (widget.icon != null) ...[

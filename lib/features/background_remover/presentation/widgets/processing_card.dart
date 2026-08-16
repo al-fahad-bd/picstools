@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/widgets/neo_card.dart';
+import '../../../../core/widgets/neo_loader.dart';
 import 'privacy_badge.dart';
 
 class ProcessingCard extends StatelessWidget {
@@ -44,9 +45,10 @@ class ProcessingCard extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              const CircularProgressIndicator(
-                strokeWidth: 3.5,
+              const NeoLoader.large(
+                size: 44,
                 color: NeoColors.purple,
+                secondaryColor: NeoColors.yellow,
               ),
               const SizedBox(height: 18),
 

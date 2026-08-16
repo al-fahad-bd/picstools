@@ -15,6 +15,7 @@ import '../../../../core/widgets/neo_badge.dart';
 import '../../../../core/widgets/neo_text_field.dart';
 import '../../../../core/widgets/neo_slider.dart';
 import '../../../../core/widgets/neo_toast.dart';
+import '../../../../core/widgets/neo_loader.dart';
 import '../../../../core/utils/file_utils.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/image_picker_service.dart';
@@ -1007,23 +1008,19 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 90,
-            height: 90,
+            width: 84,
+            height: 84,
             decoration: NeoStyles.neoDecoration(
-              backgroundColor: NeoColors.cyan,
-              radius: 45,
+              backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.softCyan,
+              borderColor: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+              radius: 20,
               shadow: 4,
             ),
             child: const Center(
-              child: SizedBox(
-                width: 44,
-                height: 44,
-                child: CircularProgressIndicator(
-                  strokeWidth: 4,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    NeoColors.borderLight,
-                  ),
-                ),
+              child: NeoLoader.large(
+                size: 46,
+                color: NeoColors.cyan,
+                secondaryColor: NeoColors.yellow,
               ),
             ),
           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/widgets/neo_card.dart';
+import '../../../../core/widgets/neo_loader.dart';
 import '../../../background_remover/domain/entities/ai_model_info.dart';
 
 class AiModelCard extends StatelessWidget {
@@ -156,13 +157,11 @@ class AiModelCard extends StatelessWidget {
                   ),
                 ),
                 trailing: isDeleting
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: NeoColors.red,
-                        ),
+                    ? const NeoLoader.button(
+                        size: 16,
+                        color: NeoColors.red,
+                        secondaryColor: NeoColors.pink,
+                        borderColor: NeoColors.red,
                       )
                     : const Icon(
                         Icons.chevron_right_rounded,

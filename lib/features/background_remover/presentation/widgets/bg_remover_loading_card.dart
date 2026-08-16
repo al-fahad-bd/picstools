@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/widgets/neo_card.dart';
+import '../../../../core/widgets/neo_loader.dart';
 
 class BgRemoverLoadingCard extends StatelessWidget {
   final String message;
@@ -28,9 +29,10 @@ class BgRemoverLoadingCard extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 12),
-              const CircularProgressIndicator(
-                strokeWidth: 3,
+              const NeoLoader.large(
+                size: 38,
                 color: NeoColors.purple,
+                secondaryColor: NeoColors.yellow,
               ),
               const SizedBox(height: 20),
               Text(

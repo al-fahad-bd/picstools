@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/neo_colors.dart';
+import '../../../../core/widgets/neo_loader.dart';
 import '../../../../core/services/service_locator.dart';
 import '../bloc/history_bloc.dart';
 import '../widgets/history_item_card.dart';
@@ -69,8 +70,10 @@ class _HistoryViewContent extends StatelessWidget {
               builder: (context, state) {
                 if (state is HistoryLoadingState) {
                   return const Center(
-                    child: CircularProgressIndicator(
+                    child: NeoLoader.large(
+                      size: 38,
                       color: NeoColors.cyan,
+                      secondaryColor: NeoColors.yellow,
                     ),
                   );
                 }

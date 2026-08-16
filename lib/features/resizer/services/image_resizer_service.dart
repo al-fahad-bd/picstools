@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
@@ -34,63 +35,100 @@ class ImageResizerService {
     double? percentage,
   }) async {
     final originalBytes = await imageFile.readAsBytes();
-    final decoded = img.decodeImage(originalBytes);
-    if (decoded == null) {
-      throw Exception('Failed to decode image file.');
-    }
-
-    final int origW = decoded.width;
-    final int origH = decoded.height;
-
-    int finalW = targetWidth;
-    int finalH = targetHeight;
-
-    if (percentage != null) {
-      finalW = (origW * (percentage / 100.0)).round();
-      finalH = (origH * (percentage / 100.0)).round();
-    } else if (maintainAspectRatio && origW > 0 && origH > 0) {
-      final double ratio = origW / origH;
-      if (finalW / finalH > ratio) {
-        finalW = (finalH * ratio).round();
-      } else {
-        finalH = (finalW / ratio).round();
-      }
-    }
-
-    final resized = img.copyResize(
-      decoded,
-      width: finalW.clamp(10, 10000),
-      height: finalH.clamp(10, 10000),
-      interpolation: img.Interpolation.average,
-    );
-
-    final ext = p.extension(imageFile.path).toLowerCase();
-    List<int> encodedBytes;
-    if (ext == '.png') {
-      encodedBytes = img.encodePng(resized);
-    } else if (ext == '.webp') {
-      encodedBytes = img.encodeWebP(resized);
-    } else {
-      encodedBytes = img.encodeJpg(resized, quality: 90);
-    }
-
     final tempDir = await getTemporaryDirectory();
-    final outPath = p.join(
-      tempDir.path,
-      'resized_${DateTime.now().millisecondsSinceEpoch}_${p.basename(imageFile.path)}',
-    );
-    final outFile = File(outPath);
-    await outFile.writeAsBytes(encodedBytes);
+    final fileName = p.basename(imageFile.path);
+    final ext = p.extension(imageFile.path).toLowerCase();
+
+    final result = await compute(_resizeWorkerIsolate, {
+      'bytes': originalBytes,
+      'targetWidth': targetWidth,
+      'targetHeight': targetHeight,
+      'maintainAspectRatio': maintainAspectRatio,
+      'percentage': percentage,
+      'ext': ext,
+      'tempDirPath': tempDir.path,
+      'fileName': fileName,
+    });
+
+    final outFile = File(result['outPath'] as String);
 
     return ResizeResult(
       originalFile: imageFile,
       resizedFile: outFile,
-      originalWidth: origW,
-      originalHeight: origH,
-      resizedWidth: resized.width,
-      resizedHeight: resized.height,
+      originalWidth: result['origW'] as int,
+      originalHeight: result['origH'] as int,
+      resizedWidth: result['finalW'] as int,
+      resizedHeight: result['finalH'] as int,
       originalSizeBytes: originalBytes.length,
-      resizedSizeBytes: encodedBytes.length,
+      resizedSizeBytes: result['size'] as int,
     );
   }
+}
+
+Map<String, dynamic> _resizeWorkerIsolate(Map<String, dynamic> params) {
+  final bytes = params['bytes'] as Uint8List;
+  final targetWidth = params['targetWidth'] as int;
+  final targetHeight = params['targetHeight'] as int;
+  final maintainAspectRatio = params['maintainAspectRatio'] as bool;
+  final percentage = params['percentage'] as double?;
+  final ext = params['ext'] as String;
+  final tempDirPath = params['tempDirPath'] as String;
+  final fileName = params['fileName'] as String;
+
+  final decoded = img.decodeImage(bytes);
+  if (decoded == null) {
+    throw Exception('Failed to decode image file.');
+  }
+
+  final int origW = decoded.width;
+  final int origH = decoded.height;
+
+  int finalW = targetWidth;
+  int finalH = targetHeight;
+
+  if (percentage != null) {
+    finalW = (origW * (percentage / 100.0)).round();
+    finalH = (origH * (percentage / 100.0)).round();
+  } else if (maintainAspectRatio && origW > 0 && origH > 0) {
+    final double ratio = origW / origH;
+    if (finalW / finalH > ratio) {
+      finalW = (finalH * ratio).round();
+    } else {
+      finalH = (finalW / ratio).round();
+    }
+  }
+
+  finalW = finalW.clamp(1, 10000);
+  finalH = finalH.clamp(1, 10000);
+
+  final resized = img.copyResize(
+    decoded,
+    width: finalW,
+    height: finalH,
+    interpolation: img.Interpolation.linear,
+  );
+
+  List<int> encodedBytes;
+  if (ext == '.png') {
+    encodedBytes = img.encodePng(resized);
+  } else if (ext == '.webp') {
+    encodedBytes = img.encodeWebP(resized);
+  } else {
+    encodedBytes = img.encodeJpg(resized, quality: 90);
+  }
+
+  final outPath = p.join(
+    tempDirPath,
+    'resized_${DateTime.now().millisecondsSinceEpoch}_$fileName',
+  );
+  final outFile = File(outPath)..writeAsBytesSync(encodedBytes);
+
+  return {
+    'outPath': outFile.path,
+    'origW': origW,
+    'origH': origH,
+    'finalW': finalW,
+    'finalH': finalH,
+    'size': encodedBytes.length,
+  };
 }
