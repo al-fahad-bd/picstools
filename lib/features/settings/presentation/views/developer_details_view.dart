@@ -158,8 +158,9 @@ class DeveloperDetailsView extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               NeoCard(
-                backgroundColor:
-                    isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+                backgroundColor: isDark
+                    ? NeoColors.darkSurface
+                    : NeoColors.lightSurface,
                 shadowOffset: 3,
                 child: Column(
                   children: [
@@ -181,14 +182,14 @@ class DeveloperDetailsView extends StatelessWidget {
                     const Divider(height: 1),
                     _buildSpecRow(
                       icon: Icons.palette_rounded,
-                      iconBg: NeoColors.purple,
+                      iconBg: NeoColors.softPink,
                       title: 'Design System',
                       subtitle: 'Neo-Brutalist UI & Dynamic Theme',
                       isDark: isDark,
                     ),
                     const Divider(height: 1),
                     _buildSpecRow(
-                      icon: Icons.shield_rounded,
+                      icon: Icons.privacy_tip_outlined,
                       iconBg: NeoColors.green,
                       title: 'Privacy & Security',
                       subtitle: '100% On-Device Offline Processing',
@@ -236,7 +237,9 @@ class DeveloperDetailsView extends StatelessWidget {
                             'abdullahalfahad.vercel.app',
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 10,
-                              color: NeoColors.borderLight.withValues(alpha: 0.8),
+                              color: NeoColors.borderLight.withValues(
+                                alpha: 0.8,
+                              ),
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -271,7 +274,9 @@ class DeveloperDetailsView extends StatelessWidget {
                             'Developer Edition',
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 11,
-                              color: NeoColors.borderLight.withValues(alpha: 0.8),
+                              color: NeoColors.borderLight.withValues(
+                                alpha: 0.8,
+                              ),
                             ),
                           ),
                         ],

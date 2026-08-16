@@ -79,7 +79,7 @@ class _OnboardingViewState extends State<OnboardingView> {
       accentColor: NeoColors.pink,
       softBgColor: NeoColors.softPink,
       tag: '🔒 PRIVACY FIRST',
-      icon: Icons.shield_rounded,
+      icon: Icons.privacy_tip_outlined,
     ),
   ];
 

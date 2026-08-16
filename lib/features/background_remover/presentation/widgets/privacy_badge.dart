@@ -25,13 +25,10 @@ class PrivacyBadge extends StatelessWidget {
             decoration: BoxDecoration(
               color: NeoColors.green,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: NeoColors.borderLight,
-                width: 1.5,
-              ),
+              border: Border.all(color: NeoColors.borderLight, width: 1.5),
             ),
             child: const Icon(
-              Icons.shield_rounded,
+              Icons.privacy_tip_outlined,
               size: 16,
               color: NeoColors.borderLight,
             ),
