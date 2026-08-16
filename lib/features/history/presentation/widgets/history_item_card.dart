@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/constants/neo_styles.dart';
 import '../../../../core/services/history_service.dart';
@@ -10,12 +11,14 @@ class HistoryItemCard extends StatelessWidget {
   final HistoryItem item;
   final bool isDark;
   final VoidCallback? onDelete;
+  final VoidCallback? onTap;
 
   const HistoryItemCard({
     super.key,
     required this.item,
     required this.isDark,
     this.onDelete,
+    this.onTap,
   });
 
   IconData _getToolIcon(String toolName) {
@@ -86,6 +89,7 @@ class HistoryItemCard extends StatelessWidget {
       backgroundColor: isDark
           ? NeoColors.darkSurface
           : NeoColors.lightSurface,
+      onTap: onTap ?? () => context.push('/history_details', extra: item),
       child: Row(
         children: [
           Container(

@@ -8,6 +8,8 @@ import '../../../history/presentation/views/history_view.dart';
 import '../../../pro/presentation/views/pro_view.dart';
 import '../../../settings/presentation/views/settings_view.dart';
 
+import '../../../history/presentation/bloc/history_bloc.dart';
+
 class MainNavView extends StatefulWidget {
   final int initialIndex;
 
@@ -82,7 +84,12 @@ class _MainNavViewState extends State<MainNavView> {
       bottomNavigationBar: NeoBottomNavBar(
         currentIndex: _currentNavIndex,
         items: _navItems,
-        onTap: (index) => setState(() => _currentNavIndex = index),
+        onTap: (index) {
+          setState(() => _currentNavIndex = index);
+          if (index == 1) {
+            getIt<HistoryBloc>().add(LoadHistoryEvent());
+          }
+        },
       ),
       body: SafeArea(
         child: IndexedStack(

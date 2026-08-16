@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../../../core/services/history_service.dart';
@@ -18,6 +19,13 @@ class DeleteHistoryItemEvent extends HistoryEvent {
   const DeleteHistoryItemEvent(this.id);
   @override
   List<Object?> get props => [id];
+}
+
+class _HistoryStreamUpdatedEvent extends HistoryEvent {
+  final List<HistoryItem> items;
+  const _HistoryStreamUpdatedEvent(this.items);
+  @override
+  List<Object?> get props => [items];
 }
 
 // States
@@ -48,15 +56,34 @@ class HistoryErrorState extends HistoryState {
 // BLoC Implementation
 class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
   final HistoryService historyService;
+  StreamSubscription<List<HistoryItem>>? _historySubscription;
 
   HistoryBloc({required this.historyService}) : super(HistoryLoadingState()) {
     on<LoadHistoryEvent>(_onLoadHistory);
     on<ClearHistoryEvent>(_onClearHistory);
     on<DeleteHistoryItemEvent>(_onDeleteItem);
+    on<_HistoryStreamUpdatedEvent>(_onHistoryStreamUpdated);
+
+    _historySubscription = historyService.historyStream.listen((items) {
+      add(_HistoryStreamUpdatedEvent(items));
+    });
   }
 
-  Future<void> _onLoadHistory(LoadHistoryEvent event, Emitter<HistoryState> emit) async {
-    emit(HistoryLoadingState());
+  void _onHistoryStreamUpdated(
+    _HistoryStreamUpdatedEvent event,
+    Emitter<HistoryState> emit,
+  ) {
+    if (event.items.isEmpty) {
+      emit(HistoryEmptyState());
+    } else {
+      emit(HistoryLoadedState(event.items));
+    }
+  }
+
+  Future<void> _onLoadHistory(
+    LoadHistoryEvent event,
+    Emitter<HistoryState> emit,
+  ) async {
     try {
       final items = await historyService.getHistory();
       if (items.isEmpty) {
@@ -69,7 +96,10 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     }
   }
 
-  Future<void> _onClearHistory(ClearHistoryEvent event, Emitter<HistoryState> emit) async {
+  Future<void> _onClearHistory(
+    ClearHistoryEvent event,
+    Emitter<HistoryState> emit,
+  ) async {
     try {
       await historyService.clearHistory();
       emit(HistoryEmptyState());
@@ -78,7 +108,10 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     }
   }
 
-  Future<void> _onDeleteItem(DeleteHistoryItemEvent event, Emitter<HistoryState> emit) async {
+  Future<void> _onDeleteItem(
+    DeleteHistoryItemEvent event,
+    Emitter<HistoryState> emit,
+  ) async {
     try {
       await historyService.deleteHistoryItem(event.id);
       final items = await historyService.getHistory();
@@ -90,5 +123,11 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     } catch (e) {
       emit(HistoryErrorState('Failed to delete history item: $e'));
     }
+  }
+
+  @override
+  Future<void> close() {
+    _historySubscription?.cancel();
+    return super.close();
   }
 }

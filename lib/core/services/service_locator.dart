@@ -117,7 +117,7 @@ Future<void> initServiceLocator() async {
 
   // Feature BLoCs
   getIt.registerFactory<HomeBloc>(() => HomeBloc());
-  getIt.registerFactory<HistoryBloc>(
+  getIt.registerLazySingleton<HistoryBloc>(
     () => HistoryBloc(historyService: getIt<HistoryService>()),
   );
   getIt.registerFactory<ProBloc>(

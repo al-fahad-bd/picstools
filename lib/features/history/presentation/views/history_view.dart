@@ -13,8 +13,8 @@ class HistoryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<HistoryBloc>()..add(LoadHistoryEvent()),
+    return BlocProvider.value(
+      value: getIt<HistoryBloc>()..add(LoadHistoryEvent()),
       child: const _HistoryViewContent(),
     );
   }
@@ -66,39 +66,55 @@ class _HistoryViewContent extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Expanded(
-            child: BlocBuilder<HistoryBloc, HistoryState>(
-              builder: (context, state) {
-                if (state is HistoryLoadingState) {
-                  return const Center(
-                    child: NeoLoader.large(
-                      size: 38,
-                      color: NeoColors.cyan,
-                      secondaryColor: NeoColors.yellow,
+            child: RefreshIndicator(
+              color: NeoColors.cyan,
+              backgroundColor:
+                  isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+              onRefresh: () async {
+                context.read<HistoryBloc>().add(LoadHistoryEvent());
+                await Future.delayed(const Duration(milliseconds: 300));
+              },
+              child: BlocBuilder<HistoryBloc, HistoryState>(
+                builder: (context, state) {
+                  if (state is HistoryLoadingState) {
+                    return const Center(
+                      child: NeoLoader.large(
+                        size: 38,
+                        color: NeoColors.cyan,
+                        secondaryColor: NeoColors.yellow,
+                      ),
+                    );
+                  }
+
+                  if (state is HistoryLoadedState && state.items.isNotEmpty) {
+                    return ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      itemCount: state.items.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 12),
+                      itemBuilder: (context, index) {
+                        final item = state.items[index];
+                        return HistoryItemCard(
+                          item: item,
+                          isDark: isDark,
+                          onDelete: () {
+                            context.read<HistoryBloc>().add(
+                                  DeleteHistoryItemEvent(item.id),
+                                );
+                          },
+                        );
+                      },
+                    );
+                  }
+
+                  return SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.6,
+                      child: HistoryEmptyView(isDark: isDark),
                     ),
                   );
-                }
-
-                if (state is HistoryLoadedState && state.items.isNotEmpty) {
-                  return ListView.separated(
-                    itemCount: state.items.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final item = state.items[index];
-                      return HistoryItemCard(
-                        item: item,
-                        isDark: isDark,
-                        onDelete: () {
-                          context.read<HistoryBloc>().add(
-                                DeleteHistoryItemEvent(item.id),
-                              );
-                        },
-                      );
-                    },
-                  );
-                }
-
-                return HistoryEmptyView(isDark: isDark);
-              },
+                },
+              ),
             ),
           ),
         ],

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -42,6 +43,7 @@ class HistoryItem {
 }
 
 abstract class HistoryService {
+  Stream<List<HistoryItem>> get historyStream;
   Future<List<HistoryItem>> getHistory();
   Future<void> addHistoryItem(HistoryItem item);
   Future<void> deleteHistoryItem(String id);
@@ -51,8 +53,12 @@ abstract class HistoryService {
 class HistoryServiceImpl implements HistoryService {
   static const String _key = 'picstools_history';
   final SharedPreferences _prefs;
+  final _historyController = StreamController<List<HistoryItem>>.broadcast();
 
   HistoryServiceImpl(this._prefs);
+
+  @override
+  Stream<List<HistoryItem>> get historyStream => _historyController.stream;
 
   @override
   Future<List<HistoryItem>> getHistory() async {
@@ -69,6 +75,7 @@ class HistoryServiceImpl implements HistoryService {
     list.insert(0, item);
     final jsonList = list.take(50).map((i) => jsonEncode(i.toJson())).toList();
     await _prefs.setStringList(_key, jsonList);
+    _historyController.add(list);
   }
 
   @override
@@ -77,10 +84,16 @@ class HistoryServiceImpl implements HistoryService {
     list.removeWhere((item) => item.id == id);
     final jsonList = list.map((i) => jsonEncode(i.toJson())).toList();
     await _prefs.setStringList(_key, jsonList);
+    _historyController.add(list);
   }
 
   @override
   Future<void> clearHistory() async {
     await _prefs.remove(_key);
+    _historyController.add([]);
+  }
+
+  void dispose() {
+    _historyController.close();
   }
 }

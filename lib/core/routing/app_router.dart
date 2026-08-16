@@ -1,7 +1,9 @@
 import 'package:go_router/go_router.dart';
+import '../../core/services/history_service.dart';
 import '../../features/splash/presentation/views/splash_view.dart';
 import '../../features/onboarding/presentation/views/onboarding_view.dart';
 import '../../features/main_nav/presentation/views/main_nav_view.dart';
+import '../../features/history/presentation/views/history_details_view.dart';
 import '../../features/compressor/presentation/views/compress_view.dart';
 import '../../features/resizer/presentation/views/resize_view.dart';
 import '../../features/cropper/presentation/views/crop_view.dart';
@@ -33,6 +35,13 @@ abstract class AppRouter {
       GoRoute(
         path: '/history',
         builder: (context, state) => const MainNavView(initialIndex: 1),
+      ),
+      GoRoute(
+        path: '/history_details',
+        builder: (context, state) {
+          final item = state.extra as HistoryItem;
+          return HistoryDetailsView(item: item);
+        },
       ),
       GoRoute(
         path: '/pro',

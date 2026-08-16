@@ -10,6 +10,7 @@ import 'package:picstools/features/pro/presentation/views/pro_view.dart';
 import 'package:picstools/core/services/history_service.dart';
 import 'package:picstools/core/services/monetization/in_app_purchase_service.dart';
 import 'package:picstools/core/services/auth_service.dart';
+import 'package:picstools/features/history/presentation/views/history_details_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -93,6 +94,31 @@ void main() {
     );
     await tester.pump();
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('HistoryDetailsView layout does not overflow on small viewports (320px)', (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
+    final dummyItem = HistoryItem(
+      id: 'test_1',
+      toolName: 'AI Background Remover Tool',
+      originalPath: '/tmp/test_orig.jpg',
+      processedPath: '/tmp/test_proc.png',
+      originalSizeBytes: 4500000,
+      processedSizeBytes: 1200000,
+      timestamp: DateTime.now(),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: HistoryDetailsView(item: dummyItem),
+      ),
+    );
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+    expect(find.text('History Details'), findsOneWidget);
   });
 
   test('HomeBloc filters tools by search and category correctly', () {
