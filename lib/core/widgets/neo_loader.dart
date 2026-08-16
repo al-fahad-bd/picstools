@@ -18,6 +18,7 @@ class NeoLoader extends StatefulWidget {
   final double size;
   final Color? color;
   final Color? secondaryColor;
+  final Color? tertiaryColor;
   final Color? borderColor;
   final NeoLoaderStyle style;
   final double strokeWidth;
@@ -27,6 +28,7 @@ class NeoLoader extends StatefulWidget {
     this.size = 24.0,
     this.color,
     this.secondaryColor,
+    this.tertiaryColor,
     this.borderColor,
     this.style = NeoLoaderStyle.dots,
     this.strokeWidth = 2.0,
@@ -38,6 +40,7 @@ class NeoLoader extends StatefulWidget {
     this.size = 18.0,
     this.color,
     this.secondaryColor,
+    this.tertiaryColor,
     this.borderColor,
     this.strokeWidth = 1.5,
   }) : style = NeoLoaderStyle.dots;
@@ -48,6 +51,7 @@ class NeoLoader extends StatefulWidget {
     this.size = 48.0,
     this.color = NeoColors.yellow,
     this.secondaryColor = NeoColors.cyan,
+    this.tertiaryColor,
     this.borderColor,
     this.strokeWidth = 2.5,
   }) : style = NeoLoaderStyle.cubes;
@@ -58,6 +62,7 @@ class NeoLoader extends StatefulWidget {
     this.size = 28.0,
     this.color = NeoColors.yellow,
     this.secondaryColor,
+    this.tertiaryColor,
     this.borderColor,
     this.strokeWidth = 2.5,
   }) : style = NeoLoaderStyle.spinner;
@@ -92,20 +97,33 @@ class _NeoLoaderState extends State<NeoLoader>
         widget.color ?? (isDark ? NeoColors.yellow : NeoColors.borderLight);
     final secColor =
         widget.secondaryColor ?? (isDark ? NeoColors.cyan : NeoColors.pink);
-    final border = widget.borderColor ??
+    final tertColor =
+        widget.tertiaryColor ??
+        ((primaryColor == NeoColors.green || secColor == NeoColors.green)
+            ? NeoColors.pink
+            : (primaryColor == NeoColors.cyan || secColor == NeoColors.cyan
+                  ? NeoColors.green
+                  : NeoColors.cyan));
+    final border =
+        widget.borderColor ??
         (isDark ? NeoColors.borderDark : NeoColors.borderLight);
 
     switch (widget.style) {
       case NeoLoaderStyle.dots:
-        return _buildPulsingDots(primaryColor, secColor, border);
+        return _buildPulsingDots(primaryColor, secColor, tertColor, border);
       case NeoLoaderStyle.spinner:
         return _buildRotatingSpinner(primaryColor, border);
       case NeoLoaderStyle.cubes:
-        return _buildBouncingCubes(primaryColor, secColor, border);
+        return _buildBouncingCubes(primaryColor, secColor, tertColor, border);
     }
   }
 
-  Widget _buildPulsingDots(Color color, Color secColor, Color border) {
+  Widget _buildPulsingDots(
+    Color color,
+    Color secColor,
+    Color tertColor,
+    Color border,
+  ) {
     final dotSize = widget.size * 0.32;
     final spacing = widget.size * 0.12;
 
@@ -125,9 +143,9 @@ class _NeoLoaderState extends State<NeoLoader>
               final scale = 0.6 + (0.55 * (sinVal < 0 ? 0 : sinVal));
               final translateY = -4.0 * (sinVal < 0 ? 0 : sinVal);
 
-              final dotColor = index == 1
-                  ? secColor
-                  : color;
+              final dotColor = index == 0
+                  ? color
+                  : (index == 1 ? secColor : tertColor);
 
               return Transform.translate(
                 offset: Offset(0, translateY),
@@ -193,7 +211,12 @@ class _NeoLoaderState extends State<NeoLoader>
     );
   }
 
-  Widget _buildBouncingCubes(Color color, Color secColor, Color border) {
+  Widget _buildBouncingCubes(
+    Color color,
+    Color secColor,
+    Color tertColor,
+    Color border,
+  ) {
     final cubeSize = widget.size * 0.36;
 
     return AnimatedBuilder(
@@ -222,7 +245,7 @@ class _NeoLoaderState extends State<NeoLoader>
               SizedBox(width: widget.size * 0.14),
               _buildSingleCube(
                 size: cubeSize,
-                color: NeoColors.green,
+                color: tertColor,
                 border: border,
                 t: (_controller.value + 0.66) % 1.0,
               ),
@@ -253,10 +276,7 @@ class _NeoLoaderState extends State<NeoLoader>
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(size * 0.2),
-            border: Border.all(
-              color: border,
-              width: widget.strokeWidth,
-            ),
+            border: Border.all(color: border, width: widget.strokeWidth),
             boxShadow: [
               BoxShadow(
                 color: border,

@@ -435,6 +435,7 @@ class _ConvertViewContent extends StatelessWidget {
                 size: 46,
                 color: NeoColors.green,
                 secondaryColor: NeoColors.yellow,
+                tertiaryColor: NeoColors.cyan,
               ),
             ),
           ),
@@ -579,7 +580,7 @@ class _ConvertViewContent extends StatelessWidget {
           NeoButton(
             label: 'SHARE CONVERTED FILE(S)',
             icon: const Icon(Icons.share_rounded, color: NeoColors.borderLight),
-            backgroundColor: NeoColors.green,
+            backgroundColor: NeoColors.cyan,
             fullWidth: true,
             onPressed: () {
               final xFiles = state.results.map((r) => XFile(r.convertedFile.path)).toList();
