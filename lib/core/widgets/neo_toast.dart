@@ -8,11 +8,14 @@ class NeoToast {
     BuildContext context,
     String message, {
     Color color = NeoColors.green,
+    Color? textColor,
     IconData icon = Icons.check_circle_rounded,
     Duration duration = const Duration(milliseconds: 2500),
   }) {
     final messenger = ScaffoldMessenger.maybeOf(context);
     if (messenger == null) return;
+
+    final resolvedTextColor = textColor ?? NeoColors.getContrastColor(color);
 
     messenger.hideCurrentSnackBar();
     messenger.showSnackBar(
@@ -37,7 +40,7 @@ class NeoToast {
                   color: Colors.black.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(icon, size: 20, color: NeoColors.darkSurface),
+                child: Icon(icon, size: 20, color: resolvedTextColor),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -46,7 +49,7 @@ class NeoToast {
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 13,
                     fontWeight: FontWeight.w900,
-                    color: NeoColors.darkSurface,
+                    color: resolvedTextColor,
                   ),
                 ),
               ),
@@ -94,12 +97,6 @@ class NeoToast {
     IconData icon = Icons.info_outline_rounded,
     Duration duration = const Duration(milliseconds: 2500),
   }) {
-    show(
-      context,
-      message,
-      color: color,
-      icon: icon,
-      duration: duration,
-    );
+    show(context, message, color: color, icon: icon, duration: duration);
   }
 }
