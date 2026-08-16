@@ -46,10 +46,13 @@ class _IdPhotoViewContent extends StatelessWidget {
     ImageSource source, {
     IdPhotoPreset? preset,
   }) async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final hasModel = await _ensureAiModelDownloaded(context, isDark);
+    if (!hasModel || !context.mounted) return;
     final picker = getIt<ImagePickerService>();
     final bloc = context.read<IdPhotoBloc>();
     final file = await picker.pickSingleImage(source: source);
-    if (file != null) {
+    if (file != null && context.mounted) {
       bloc.add(SelectPhotoEvent(file, preset: preset));
     }
   }
@@ -920,7 +923,9 @@ class _IdPhotoViewContent extends StatelessWidget {
               backgroundColor: isDark
                   ? NeoColors.darkSurface
                   : NeoColors.softYellow,
-              borderColor: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+              borderColor: isDark
+                  ? NeoColors.borderDark
+                  : NeoColors.borderLight,
               radius: 20,
               shadow: 4,
             ),

@@ -259,9 +259,24 @@ class OnnxInferenceDataSourceImpl implements OnnxInferenceDataSource {
       final imageBytes = await imageFile.readAsBytes();
       debugPrint('[BackgroundRemover] Input image size: ${(imageBytes.length / 1024).toStringAsFixed(1)} KB');
       
-      final originalImage = img.decodeImage(imageBytes);
-      if (originalImage == null) {
-        throw Exception('Could not decode input image format. Please select a valid PNG, JPG, or WebP image.');
+      final decoded = img.decodeImage(imageBytes);
+      if (decoded == null) {
+        throw Exception(
+          'Could not decode input image format. Please select a valid PNG, JPG, or WebP image.',
+        );
+      }
+      img.Image originalImage = decoded;
+
+      // Safe memory safeguard: downsample raw ultra-high-res camera captures (e.g. 48MP/108MP) to max 2048px
+      final maxDim = math.max(originalImage.width, originalImage.height);
+      if (maxDim > 2048) {
+        final scale = 2048 / maxDim;
+        originalImage = img.copyResize(
+          originalImage,
+          width: (originalImage.width * scale).round(),
+          height: (originalImage.height * scale).round(),
+          interpolation: img.Interpolation.linear,
+        );
       }
 
       final origW = originalImage.width;

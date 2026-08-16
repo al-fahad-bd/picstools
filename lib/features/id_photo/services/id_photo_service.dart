@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:math' as math;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 import 'package:pdf/pdf.dart';
@@ -11,7 +13,7 @@ import '../../background_remover/domain/usecases/remove_background_usecase.dart'
 enum PrintSheetType {
   single,
   sheet4x6, // 6 photos on 4x6" photo paper
-  sheetA4,  // 24 photos on A4 paper sheet
+  sheetA4, // 24 photos on A4 paper sheet
 }
 
 class IdPhotoResult {
@@ -37,9 +39,9 @@ class IdPhotoResult {
 }
 
 class IdPhotoService {
-  final RemoveBackgroundUseCase? removeBackgroundUseCase;
+  final RemoveBackgroundUseCase removeBackgroundUseCase;
 
-  IdPhotoService({this.removeBackgroundUseCase});
+  IdPhotoService({required this.removeBackgroundUseCase});
 
   Future<IdPhotoResult> createPassportPhoto({
     required File imageFile,
@@ -49,102 +51,189 @@ class IdPhotoService {
     required PrintSheetType sheetType,
     int rotationAngle = 0,
   }) async {
-    File sourceImageFile = imageFile;
-    if (removeBackgroundUseCase != null) {
-      try {
-        final bgResult = await removeBackgroundUseCase!(imageFile: imageFile);
-        sourceImageFile = bgResult.transparentPngFile;
-      } catch (e) {
-        debugPrint('Auto background removal fallback (model not downloaded or error): $e');
-      }
-    }
+    // Enforce AI portrait isolation so the subject is cleanly placed on the chosen background color
+    final bgResult = await removeBackgroundUseCase(imageFile: imageFile);
+    final sourceImageFile = bgResult.transparentPngFile;
 
-    final originalBytes = await sourceImageFile.readAsBytes();
-    final decoded = img.decodeImage(originalBytes);
-    if (decoded == null) {
-      throw Exception('Failed to decode photo file.');
-    }
-
-    img.Image processed = decoded;
-    if (rotationAngle != 0) {
-      processed = img.copyRotate(processed, angle: rotationAngle);
-    }
-
-    // 1. Crop to selected area
-    final int origW = processed.width;
-    final int origH = processed.height;
-
-    final int cropX = (origW * normCropRect.left).round().clamp(0, origW - 1);
-    final int cropY = (origH * normCropRect.top).round().clamp(0, origH - 1);
-    final int cropW = (origW * normCropRect.width).round().clamp(10, origW - cropX);
-    final int cropH = (origH * normCropRect.height).round().clamp(10, origH - cropY);
-
-    final cropped = img.copyCrop(processed, x: cropX, y: cropY, width: cropW, height: cropH);
-
-    // 2. High-DPI Resize to target pixel dimensions
-    final resized = img.copyResize(
-      cropped,
-      width: preset.targetWidthPx,
-      height: preset.targetHeightPx,
-      interpolation: img.Interpolation.average,
-    );
-
-    // 3. Apply Background Color Fill
-    final canvasPhoto = img.Image(
-      width: preset.targetWidthPx,
-      height: preset.targetHeightPx,
-      numChannels: 4,
-    );
-    final bgRgb = img.ColorRgb8(
-      (bgColor.r * 255).round().clamp(0, 255),
-      (bgColor.g * 255).round().clamp(0, 255),
-      (bgColor.b * 255).round().clamp(0, 255),
-    );
-    img.fill(canvasPhoto, color: bgRgb);
-    img.compositeImage(canvasPhoto, resized);
-
-    // Save Single Photo File
-    final singleBytes = img.encodeJpg(canvasPhoto, quality: 95);
+    final rawBytes = await sourceImageFile.readAsBytes();
     final tempDir = await getTemporaryDirectory();
-    final singleOut = File(p.join(
-      tempDir.path,
-      'id_${preset.id}_${DateTime.now().millisecondsSinceEpoch}.jpg',
-    ));
-    await singleOut.writeAsBytes(singleBytes);
 
-    File? printSheetJpg;
-    File? printSheetPdf;
+    final workerParams = _IdPhotoWorkerParams(
+      imageBytes: rawBytes,
+      targetWidthPx: preset.targetWidthPx,
+      targetHeightPx: preset.targetHeightPx,
+      cropLeft: normCropRect.left,
+      cropTop: normCropRect.top,
+      cropWidth: normCropRect.width,
+      cropHeight: normCropRect.height,
+      bgColorR: (bgColor.r * 255).round().clamp(0, 255),
+      bgColorG: (bgColor.g * 255).round().clamp(0, 255),
+      bgColorB: (bgColor.b * 255).round().clamp(0, 255),
+      sheetType: sheetType,
+      rotationAngle: rotationAngle,
+      tempDirPath: tempDir.path,
+      presetId: preset.id,
+    );
 
-    if (sheetType != PrintSheetType.single) {
-      final sheetData = await _generatePrintSheet(
-        singleImage: canvasPhoto,
-        preset: preset,
-        sheetType: sheetType,
-        tempDir: tempDir,
+    final workerOutput = await compute(_idPhotoWorkerIsolate, workerParams);
+
+    File? pdfFile;
+    if (workerOutput.printSheetPdfBytes != null) {
+      pdfFile = File(
+        p.join(
+          tempDir.path,
+          'print_sheet_${DateTime.now().millisecondsSinceEpoch}.pdf',
+        ),
       );
-      printSheetJpg = sheetData['jpg'] as File?;
-      printSheetPdf = sheetData['pdf'] as File?;
+      await pdfFile.writeAsBytes(workerOutput.printSheetPdfBytes!);
     }
 
     return IdPhotoResult(
-      singlePhotoFile: singleOut,
-      printSheetJpgFile: printSheetJpg,
-      printSheetPdfFile: printSheetPdf,
+      singlePhotoFile: File(workerOutput.singlePhotoPath),
+      printSheetJpgFile: workerOutput.printSheetJpgPath != null
+          ? File(workerOutput.printSheetJpgPath!)
+          : null,
+      printSheetPdfFile: pdfFile,
       preset: preset,
       sheetType: sheetType,
-      singleWidthPx: preset.targetWidthPx,
-      singleHeightPx: preset.targetHeightPx,
-      singleFileSizeBytes: singleBytes.length,
+      singleWidthPx: workerOutput.singleWidthPx,
+      singleHeightPx: workerOutput.singleHeightPx,
+      singleFileSizeBytes: workerOutput.singleFileSizeBytes,
+    );
+  }
+}
+
+class _IdPhotoWorkerParams {
+  final Uint8List imageBytes;
+  final int targetWidthPx;
+  final int targetHeightPx;
+  final double cropLeft;
+  final double cropTop;
+  final double cropWidth;
+  final double cropHeight;
+  final int bgColorR;
+  final int bgColorG;
+  final int bgColorB;
+  final PrintSheetType sheetType;
+  final int rotationAngle;
+  final String tempDirPath;
+  final String presetId;
+
+  const _IdPhotoWorkerParams({
+    required this.imageBytes,
+    required this.targetWidthPx,
+    required this.targetHeightPx,
+    required this.cropLeft,
+    required this.cropTop,
+    required this.cropWidth,
+    required this.cropHeight,
+    required this.bgColorR,
+    required this.bgColorG,
+    required this.bgColorB,
+    required this.sheetType,
+    required this.rotationAngle,
+    required this.tempDirPath,
+    required this.presetId,
+  });
+}
+
+class _IdPhotoWorkerOutput {
+  final String singlePhotoPath;
+  final String? printSheetJpgPath;
+  final Uint8List? printSheetPdfBytes;
+  final int singleWidthPx;
+  final int singleHeightPx;
+  final int singleFileSizeBytes;
+
+  const _IdPhotoWorkerOutput({
+    required this.singlePhotoPath,
+    this.printSheetJpgPath,
+    this.printSheetPdfBytes,
+    required this.singleWidthPx,
+    required this.singleHeightPx,
+    required this.singleFileSizeBytes,
+  });
+}
+
+Future<_IdPhotoWorkerOutput> _idPhotoWorkerIsolate(
+  _IdPhotoWorkerParams params,
+) async {
+  final decoded = img.decodeImage(params.imageBytes);
+  if (decoded == null) {
+    throw Exception('Failed to decode photo file in background worker.');
+  }
+
+  // Downsample if image is excessively large (e.g. 48MP raw camera image > 2400px)
+  img.Image processed = decoded;
+  final maxDim = math.max(processed.width, processed.height);
+  if (maxDim > 2400) {
+    final scale = 2400 / maxDim;
+    processed = img.copyResize(
+      processed,
+      width: (processed.width * scale).round(),
+      height: (processed.height * scale).round(),
+      interpolation: img.Interpolation.linear,
     );
   }
 
-  Future<Map<String, dynamic>> _generatePrintSheet({
-    required img.Image singleImage,
-    required IdPhotoPreset preset,
-    required PrintSheetType sheetType,
-    required Directory tempDir,
-  }) async {
-    final isA4 = sheetType == PrintSheetType.sheetA4;
+  if (params.rotationAngle != 0) {
+    processed = img.copyRotate(processed, angle: params.rotationAngle);
+  }
+
+  // 1. Crop to normalized rect
+  final int origW = processed.width;
+  final int origH = processed.height;
+
+  final int cropX = (origW * params.cropLeft).round().clamp(0, origW - 1);
+  final int cropY = (origH * params.cropTop).round().clamp(0, origH - 1);
+  final int cropW = (origW * params.cropWidth).round().clamp(
+    10,
+    origW - cropX,
+  );
+  final int cropH = (origH * params.cropHeight).round().clamp(
+    10,
+    origH - cropY,
+  );
+
+  final cropped = img.copyCrop(
+    processed,
+    x: cropX,
+    y: cropY,
+    width: cropW,
+    height: cropH,
+  );
+
+  // 2. High-DPI Resize to target pixel dimensions
+  final resized = img.copyResize(
+    cropped,
+    width: params.targetWidthPx,
+    height: params.targetHeightPx,
+    interpolation: img.Interpolation.average,
+  );
+
+  // 3. Apply Background Color Fill
+  final canvasPhoto = img.Image(
+    width: params.targetWidthPx,
+    height: params.targetHeightPx,
+    numChannels: 4,
+  );
+  final bgRgb = img.ColorRgb8(params.bgColorR, params.bgColorG, params.bgColorB);
+  img.fill(canvasPhoto, color: bgRgb);
+  img.compositeImage(canvasPhoto, resized);
+
+  // Save Single Photo File
+  final singleBytes = img.encodeJpg(canvasPhoto, quality: 95);
+  final singleOutPath = p.join(
+    params.tempDirPath,
+    'id_${params.presetId}_${DateTime.now().millisecondsSinceEpoch}.jpg',
+  );
+  File(singleOutPath).writeAsBytesSync(singleBytes);
+
+  String? sheetJpgPath;
+  Uint8List? sheetPdfBytes;
+
+  if (params.sheetType != PrintSheetType.single) {
+    final isA4 = params.sheetType == PrintSheetType.sheetA4;
     // 4x6 sheet @ 300 DPI = 1200 x 1800 px
     // A4 sheet @ 300 DPI = 2480 x 3508 px
     final sheetW = isA4 ? 2480 : 1200;
@@ -156,18 +245,21 @@ class IdPhotoService {
     final cols = isA4 ? 4 : 2;
     final rows = isA4 ? 6 : 3;
 
-    final photoW = singleImage.width;
-    final photoH = singleImage.height;
+    final photoW = canvasPhoto.width;
+    final photoH = canvasPhoto.height;
 
     // Scale photo to fit grid if needed
     final double maxTileW = (sheetW * 0.85) / cols;
     final double maxTileH = (sheetH * 0.85) / rows;
-    final double scale = (maxTileW / photoW < maxTileH / photoH) ? maxTileW / photoW : maxTileH / photoH;
+    final double scale =
+        (maxTileW / photoW < maxTileH / photoH)
+            ? maxTileW / photoW
+            : maxTileH / photoH;
 
     final tileW = (photoW * scale).round();
     final tileH = (photoH * scale).round();
 
-    final tileImage = img.copyResize(singleImage, width: tileW, height: tileH);
+    final tileImage = img.copyResize(canvasPhoto, width: tileW, height: tileH);
 
     final totalMarginX = sheetW - (cols * tileW);
     final totalMarginY = sheetH - (rows * tileH);
@@ -194,26 +286,42 @@ class IdPhotoService {
     }
 
     final jpgBytes = img.encodeJpg(sheet, quality: 92);
-    final jpgFile = File(p.join(tempDir.path, 'print_sheet_${DateTime.now().millisecondsSinceEpoch}.jpg'));
-    await jpgFile.writeAsBytes(jpgBytes);
+    sheetJpgPath = p.join(
+      params.tempDirPath,
+      'print_sheet_${DateTime.now().millisecondsSinceEpoch}.jpg',
+    );
+    File(sheetJpgPath).writeAsBytesSync(jpgBytes);
 
     // Create PDF Print Document
     final pdfDoc = pw.Document();
     final pdfImage = pw.MemoryImage(jpgBytes);
     pdfDoc.addPage(
       pw.Page(
-        pageFormat: isA4 ? PdfPageFormat.a4 : const PdfPageFormat(4 * PdfPageFormat.inch, 6 * PdfPageFormat.inch),
+        pageFormat:
+            isA4
+                ? PdfPageFormat.a4
+                : const PdfPageFormat(
+                  4 * PdfPageFormat.inch,
+                  6 * PdfPageFormat.inch,
+                ),
         margin: pw.EdgeInsets.zero,
-        build: (pw.Context context) => pw.FullPage(
-          ignoreMargins: true,
-          child: pw.Image(pdfImage, fit: pw.BoxFit.contain),
-        ),
+        build:
+            (pw.Context context) => pw.FullPage(
+              ignoreMargins: true,
+              child: pw.Image(pdfImage, fit: pw.BoxFit.contain),
+            ),
       ),
     );
 
-    final pdfFile = File(p.join(tempDir.path, 'print_sheet_${DateTime.now().millisecondsSinceEpoch}.pdf'));
-    await pdfFile.writeAsBytes(await pdfDoc.save());
-
-    return {'jpg': jpgFile, 'pdf': pdfFile};
+    sheetPdfBytes = await pdfDoc.save();
   }
+
+  return _IdPhotoWorkerOutput(
+    singlePhotoPath: singleOutPath,
+    printSheetJpgPath: sheetJpgPath,
+    printSheetPdfBytes: sheetPdfBytes,
+    singleWidthPx: params.targetWidthPx,
+    singleHeightPx: params.targetHeightPx,
+    singleFileSizeBytes: singleBytes.length,
+  );
 }
