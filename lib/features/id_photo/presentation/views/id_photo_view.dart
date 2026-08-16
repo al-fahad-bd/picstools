@@ -429,10 +429,15 @@ class _IdPhotoViewContent extends StatelessWidget {
   ) {
     final bloc = context.read<IdPhotoBloc>();
     final bgColors = [
-      {'name': 'White', 'color': Colors.white},
-      {'name': 'Light Blue', 'color': const Color(0xFFE6F0FA)},
-      {'name': 'Blue', 'color': const Color(0xFF0055FF)},
-      {'name': 'Off-White', 'color': const Color(0xFFF0F0F0)},
+      {'name': 'White', 'color': const Color(0xFFFFFFFF)},
+      {'name': 'Off-White', 'color': const Color(0xFFF6F7F9)},
+      {'name': 'Light Grey', 'color': const Color(0xFFE2E4E8)},
+      {'name': 'Light Blue', 'color': const Color(0xFFD0E6FC)},
+      {'name': 'Royal Blue', 'color': const Color(0xFF1E60D4)},
+      {'name': 'Navy Blue', 'color': const Color(0xFF1A2B4C)},
+      {'name': 'Official Red', 'color': const Color(0xFFDC2626)},
+      {'name': 'Warm Ivory', 'color': const Color(0xFFF7F2E7)},
+      {'name': 'Charcoal', 'color': const Color(0xFF2C3440)},
     ];
 
     return Column(
