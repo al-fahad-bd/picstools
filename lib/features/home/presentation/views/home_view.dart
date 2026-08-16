@@ -17,10 +17,7 @@ import '../widgets/pro_banner_card.dart';
 class HomeView extends StatelessWidget {
   final VoidCallback? onNavigateToPro;
 
-  const HomeView({
-    super.key,
-    this.onNavigateToPro,
-  });
+  const HomeView({super.key, this.onNavigateToPro});
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +87,7 @@ class _HomeViewContent extends StatelessWidget {
                                   color: NeoColors.borderLight,
                                   width: 2,
                                 ),
-                                boxShadow: const [
+                                boxShadow: [
                                   BoxShadow(
                                     color: NeoColors.borderLight,
                                     offset: Offset(2, 2),
@@ -210,4 +207,3 @@ class _HomeViewContent extends StatelessWidget {
     );
   }
 }
-

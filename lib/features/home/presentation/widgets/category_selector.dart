@@ -48,6 +48,9 @@ class CategorySelector extends StatelessWidget {
                       : (isDark
                             ? NeoColors.darkSurface
                             : NeoColors.lightSurface),
+                  borderColor: isDark
+                      ? NeoColors.borderDark
+                      : NeoColors.borderLight,
                   radius: 12,
                   shadow: isSelected ? 3 : 1.5,
                   showShadow: true,

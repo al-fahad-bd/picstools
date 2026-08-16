@@ -25,14 +25,12 @@ class HomeHeader extends StatelessWidget {
       children: [
         // Logo Pill
         Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 8,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: NeoStyles.neoDecoration(
             backgroundColor: isDark
                 ? NeoColors.darkSurface
                 : NeoColors.lightSurface,
+            borderColor: isDark ? NeoColors.borderDark : NeoColors.borderLight,
             radius: 14,
             shadow: 3,
           ),
@@ -64,10 +62,7 @@ class HomeHeader extends StatelessWidget {
         GestureDetector(
           onTap: onProTap,
           child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 8,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: NeoStyles.neoDecoration(
               backgroundColor: badgeColor,
               radius: 12,
@@ -98,4 +93,3 @@ class HomeHeader extends StatelessWidget {
     );
   }
 }
-
