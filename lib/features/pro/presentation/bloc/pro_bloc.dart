@@ -106,12 +106,8 @@ class ProBloc extends Bloc<ProEvent, ProState> {
           ),
         );
       } else {
-        emit(
-          ProErrorState(
-            'Purchase was cancelled or not completed.',
-            isPro: isPro,
-          ),
-        );
+        // User cancelled or dismissed the billing sheet; cleanly reset button
+        emit(ProLoadedState(isPro: isPro));
       }
     } catch (e) {
       emit(
@@ -160,4 +156,3 @@ class ProBloc extends Bloc<ProEvent, ProState> {
     await purchaseService.openManageSubscriptions();
   }
 }
-

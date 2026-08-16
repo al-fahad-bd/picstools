@@ -4,6 +4,8 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:flutter/widgets.dart';
+
 abstract class InAppPurchaseService {
   Future<void> initialize();
   bool isProUser();
@@ -13,7 +15,7 @@ abstract class InAppPurchaseService {
   Future<void> openManageSubscriptions();
 }
 
-class InAppPurchaseServiceImpl implements InAppPurchaseService {
+class InAppPurchaseServiceImpl with WidgetsBindingObserver implements InAppPurchaseService {
   static const String proSubscriptionId = 'picstools_pro_monthly';
   static const String _proPrefKey = 'is_pro_user_cached';
   static const String _playStoreSubUrl =
@@ -35,6 +37,8 @@ class InAppPurchaseServiceImpl implements InAppPurchaseService {
 
   @override
   Future<void> initialize() async {
+    WidgetsBinding.instance.addObserver(this);
+
     final available = await _iap.isAvailable();
     if (!available) {
       debugPrint('InAppPurchaseService: Store is not available');
@@ -54,6 +58,22 @@ class InAppPurchaseServiceImpl implements InAppPurchaseService {
     try {
       await checkSubscriptionStatus();
     } catch (_) {}
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed &&
+        _pendingPurchaseCompleter != null &&
+        !_pendingPurchaseCompleter!.isCompleted) {
+      // User returned to the app (dismissed Google Play bottom sheet by outside tap or back)
+      // Allow a brief 800ms window for any incoming billing stream event
+      Future.delayed(const Duration(milliseconds: 800), () {
+        if (_pendingPurchaseCompleter != null &&
+            !_pendingPurchaseCompleter!.isCompleted) {
+          _completePending(_isPro);
+        }
+      });
+    }
   }
 
   void _completePending(bool result) {
@@ -173,8 +193,9 @@ class InAppPurchaseServiceImpl implements InAppPurchaseService {
 
       // Safe timeout so UI spinner does not hang indefinitely if sheet is dismissed
       return await _pendingPurchaseCompleter!.future.timeout(
-        const Duration(seconds: 45),
+        const Duration(seconds: 8),
         onTimeout: () {
+          _completePending(_isPro);
           return _isPro;
         },
       );
@@ -212,6 +233,7 @@ class InAppPurchaseServiceImpl implements InAppPurchaseService {
   }
 
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _subscription?.cancel();
   }
 }
