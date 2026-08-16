@@ -14,8 +14,8 @@ class SettingsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<SettingsBloc>()..add(LoadSettingsEvent()),
+    return BlocProvider.value(
+      value: getIt<SettingsBloc>(),
       child: const _SettingsViewContent(),
     );
   }
@@ -74,11 +74,15 @@ class _SettingsViewContent extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // General Settings (Version, Privacy, Sound, Dev details)
+              // General Settings (Theme, Version, Privacy, Sound, Dev details)
               SettingsTileGroup(
                 isDark: isDark,
+                themeMode: loaded.themeMode,
                 isSoundEnabled: loaded.isSoundEnabled,
                 isDeveloperUnlocked: loaded.isDeveloperUnlocked,
+                onChangeThemeMode: (mode) {
+                  context.read<SettingsBloc>().add(ChangeThemeModeEvent(mode));
+                },
                 onToggleSound: (val) {
                   context.read<SettingsBloc>().add(ToggleSoundEvent(val));
                 },

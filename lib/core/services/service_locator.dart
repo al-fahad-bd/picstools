@@ -123,7 +123,7 @@ Future<void> initServiceLocator() async {
   getIt.registerFactory<ProBloc>(
     () => ProBloc(purchaseService: getIt<InAppPurchaseService>()),
   );
-  getIt.registerFactory<SettingsBloc>(
+  getIt.registerLazySingleton<SettingsBloc>(
     () => SettingsBloc(
       audioService: getIt<AudioService>(),
       prefs: getIt<SharedPreferences>(),
