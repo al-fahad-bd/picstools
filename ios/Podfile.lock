@@ -2,6 +2,37 @@ PODS:
   - audioplayers_darwin (0.0.1):
     - Flutter
     - FlutterMacOS
+  - Firebase/Auth (12.17.0):
+    - Firebase/CoreOnly
+    - FirebaseAuth (~> 12.17.0)
+  - Firebase/CoreOnly (12.17.0):
+    - FirebaseCore (~> 12.17.0)
+  - firebase_auth (6.5.7):
+    - Firebase/Auth (= 12.17.0)
+    - firebase_core
+    - Flutter
+  - firebase_core (4.13.0):
+    - Firebase/CoreOnly (= 12.17.0)
+    - Flutter
+  - FirebaseAppCheckInterop (12.17.0)
+  - FirebaseAuth (12.17.0):
+    - FirebaseAppCheckInterop (~> 12.17.0)
+    - FirebaseAuthInterop (~> 12.17.0)
+    - FirebaseCore (~> 12.17.0)
+    - FirebaseCoreExtension (~> 12.17.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.1)
+    - GoogleUtilities/Environment (~> 8.1)
+    - GTMSessionFetcher/Core (< 6.0, >= 3.4)
+    - RecaptchaInterop (~> 101.0)
+  - FirebaseAuthInterop (12.17.0)
+  - FirebaseCore (12.17.0):
+    - FirebaseCoreInternal (~> 12.17.0)
+    - GoogleUtilities/Environment (~> 8.1)
+    - GoogleUtilities/Logger (~> 8.1)
+  - FirebaseCoreExtension (12.17.0):
+    - FirebaseCore (~> 12.17.0)
+  - FirebaseCoreInternal (12.17.0):
+    - "GoogleUtilities/NSData+zlib (~> 8.1)"
   - Flutter (1.0.0)
   - flutter_onnxruntime (0.0.1):
     - Flutter
@@ -9,8 +40,33 @@ PODS:
   - gal (1.0.0):
     - Flutter
     - FlutterMacOS
+  - GoogleUtilities/AppDelegateSwizzler (8.1.2):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Environment (8.1.2):
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Logger (8.1.2):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Network (8.1.2):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Privacy
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (8.1.2)":
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Privacy (8.1.2)
+  - GoogleUtilities/Reachability (8.1.2):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
+  - GTMSessionFetcher/Core (5.3.1)
   - image_picker_ios (0.0.1):
     - Flutter
+  - in_app_purchase_storekit (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - onnxruntime-c (1.23.0)
   - onnxruntime-objc (1.23.0):
     - onnxruntime-objc/Core (= 1.23.0)
@@ -18,6 +74,7 @@ PODS:
     - onnxruntime-c (= 1.23.0)
   - printing (1.0.0):
     - Flutter
+  - RecaptchaInterop (101.0.0)
   - share_plus (0.0.1):
     - Flutter
   - shared_preferences_foundation (0.0.1):
@@ -28,10 +85,13 @@ PODS:
 
 DEPENDENCIES:
   - audioplayers_darwin (from `.symlinks/plugins/audioplayers_darwin/darwin`)
+  - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
+  - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - Flutter (from `Flutter`)
   - flutter_onnxruntime (from `.symlinks/plugins/flutter_onnxruntime/ios`)
   - gal (from `.symlinks/plugins/gal/darwin`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
+  - in_app_purchase_storekit (from `.symlinks/plugins/in_app_purchase_storekit/darwin`)
   - printing (from `.symlinks/plugins/printing/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
@@ -39,12 +99,26 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - Firebase
+    - FirebaseAppCheckInterop
+    - FirebaseAuth
+    - FirebaseAuthInterop
+    - FirebaseCore
+    - FirebaseCoreExtension
+    - FirebaseCoreInternal
+    - GoogleUtilities
+    - GTMSessionFetcher
     - onnxruntime-c
     - onnxruntime-objc
+    - RecaptchaInterop
 
 EXTERNAL SOURCES:
   audioplayers_darwin:
     :path: ".symlinks/plugins/audioplayers_darwin/darwin"
+  firebase_auth:
+    :path: ".symlinks/plugins/firebase_auth/ios"
+  firebase_core:
+    :path: ".symlinks/plugins/firebase_core/ios"
   Flutter:
     :path: Flutter
   flutter_onnxruntime:
@@ -53,6 +127,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/gal/darwin"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
+  in_app_purchase_storekit:
+    :path: ".symlinks/plugins/in_app_purchase_storekit/darwin"
   printing:
     :path: ".symlinks/plugins/printing/ios"
   share_plus:
@@ -64,13 +140,26 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   audioplayers_darwin: 835ced6edd4c9fc8ebb0a7cc9e294a91d99917d5
+  Firebase: e8400c058702940d53f31fc0653e4e7a06332326
+  firebase_auth: 3e82fa3e632856cd5a8e2bedf458d682740c8168
+  firebase_core: c94f9efeed0ded590b7eecaf6110a374eb865d7a
+  FirebaseAppCheckInterop: 6d4cd7b9df8047da8cfc98c3fef4618bab2a8e0d
+  FirebaseAuth: d27d2fc54508c3af9db2f617300fcf3042328d80
+  FirebaseAuthInterop: 1679f5a45921270225b7eabf1ad4ebff8790fe82
+  FirebaseCore: 52d4512296984a44a8c8870c6494870fc7aeee2f
+  FirebaseCoreExtension: be2d62bfcf339c7dd94646d43d910aaf37fe17c1
+  FirebaseCoreInternal: 3b310521b34a51ce3a6c605e4618b9aef8f6c112
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_onnxruntime: 5c16abbb94ec57759a244095eb62cab0eaab312c
   gal: baecd024ebfd13c441269ca7404792a7152fde89
+  GoogleUtilities: 766ace00c6b10d8148408f329d10c4f051931850
+  GTMSessionFetcher: a6d2b2aa203485893d4511ff64642dc811f7c09f
   image_picker_ios: e0ece4aa2a75771a7de3fa735d26d90817041326
+  in_app_purchase_storekit: 22cca7d08eebca9babdf4d07d0baccb73325d3c8
   onnxruntime-c: 3174c63a963d9abbc2bf9627e3d622819c0ed5f7
   onnxruntime-objc: 1254d12f8160e562e7693ff17f5aa3dd17dc409e
   printing: a8960104e6c1a2b4bd3483a2f79c69be60830d08
+  RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
   shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
   url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b

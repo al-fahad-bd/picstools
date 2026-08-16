@@ -43,38 +43,95 @@ class _NeoCropCanvasState extends State<NeoCropCanvas> {
   CropHandleType _activeHandle = CropHandleType.none;
   Offset? _dragStartOffset;
   Rect? _initialNormRect;
+  Size? _imageSize;
 
   @override
   void initState() {
     super.initState();
-    _applyAspectRatioConstraint();
+    _loadImageDimensions();
   }
 
   @override
   void didUpdateWidget(NeoCropCanvas oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.aspectRatio != widget.aspectRatio) {
+    if (oldWidget.imageFile.path != widget.imageFile.path ||
+        oldWidget.rotationAngle != widget.rotationAngle) {
+      _loadImageDimensions();
+    } else if (oldWidget.aspectRatio != widget.aspectRatio) {
       _applyAspectRatioConstraint();
     }
   }
 
-  void _applyAspectRatioConstraint() {
-    if (widget.aspectRatio == null) return;
-    final r = widget.aspectRatio!;
-    double w = 0.8;
-    double h = 0.8;
+  void _loadImageDimensions() {
+    final image = FileImage(widget.imageFile);
+    image.resolve(const ImageConfiguration()).addListener(
+      ImageStreamListener((info, _) {
+        if (!mounted) return;
+        final rawW = info.image.width.toDouble();
+        final rawH = info.image.height.toDouble();
+        final isRotated90or270 =
+            widget.rotationAngle == 90 || widget.rotationAngle == 270;
+        setState(() {
+          _imageSize = isRotated90or270 ? Size(rawH, rawW) : Size(rawW, rawH);
+          _applyAspectRatioConstraint();
+        });
+      }),
+    );
+  }
 
-    if (r >= 1.0) {
-      h = (w / r).clamp(0.15, 0.95);
-    } else {
-      w = (h * r).clamp(0.15, 0.95);
+  Rect _calculateImageRect(Size containerSize) {
+    if (_imageSize == null ||
+        _imageSize!.width <= 0 ||
+        _imageSize!.height <= 0) {
+      return Offset.zero & containerSize;
     }
 
-    final l = (1.0 - w) / 2.0;
-    final t = (1.0 - h) / 2.0;
+    final imageAR = _imageSize!.width / _imageSize!.height;
+    final containerAR = containerSize.width / containerSize.height;
+
+    double renderW, renderH;
+    if (imageAR > containerAR) {
+      renderW = containerSize.width;
+      renderH = containerSize.width / imageAR;
+    } else {
+      renderH = containerSize.height;
+      renderW = containerSize.height * imageAR;
+    }
+
+    final left = (containerSize.width - renderW) / 2.0;
+    final top = (containerSize.height - renderH) / 2.0;
+
+    return Rect.fromLTWH(left, top, renderW, renderH);
+  }
+
+  void _applyAspectRatioConstraint() {
+    if (widget.aspectRatio == null) {
+      _normCropRect = const Rect.fromLTWH(0.05, 0.05, 0.9, 0.9);
+      widget.onCropChanged(_normCropRect);
+      return;
+    }
+
+    final r = widget.aspectRatio!;
+    final imageAR = (_imageSize != null && _imageSize!.height > 0)
+        ? _imageSize!.width / _imageSize!.height
+        : 1.0;
+
+    final normAR = r / imageAR;
+
+    double normW = 0.85;
+    double normH = 0.85;
+
+    if (normAR >= 1.0) {
+      normH = (normW / normAR).clamp(0.15, 0.95);
+    } else {
+      normW = (normH * normAR).clamp(0.15, 0.95);
+    }
+
+    final l = ((1.0 - normW) / 2.0).clamp(0.0, 1.0 - normW);
+    final t = ((1.0 - normH) / 2.0).clamp(0.0, 1.0 - normH);
 
     setState(() {
-      _normCropRect = Rect.fromLTWH(l, t, w, h);
+      _normCropRect = Rect.fromLTWH(l, t, normW, normH);
     });
     widget.onCropChanged(_normCropRect);
   }
@@ -116,12 +173,13 @@ class _NeoCropCanvasState extends State<NeoCropCanvas> {
     return CropHandleType.none;
   }
 
-  void _onPanStart(DragStartDetails details, Size displaySize) {
+  void _onPanStart(DragStartDetails details, Size containerSize) {
+    final imageRect = _calculateImageRect(containerSize);
     final displayCropRect = Rect.fromLTWH(
-      _normCropRect.left * displaySize.width,
-      _normCropRect.top * displaySize.height,
-      _normCropRect.width * displaySize.width,
-      _normCropRect.height * displaySize.height,
+      imageRect.left + _normCropRect.left * imageRect.width,
+      imageRect.top + _normCropRect.top * imageRect.height,
+      _normCropRect.width * imageRect.width,
+      _normCropRect.height * imageRect.height,
     );
 
     _activeHandle = _hitTestHandle(details.localPosition, displayCropRect);
@@ -129,13 +187,20 @@ class _NeoCropCanvasState extends State<NeoCropCanvas> {
     _initialNormRect = _normCropRect;
   }
 
-  void _onPanUpdate(DragUpdateDetails details, Size displaySize) {
-    if (_activeHandle == CropHandleType.none || _dragStartOffset == null || _initialNormRect == null) {
+  void _onPanUpdate(DragUpdateDetails details, Size containerSize) {
+    if (_activeHandle == CropHandleType.none ||
+        _dragStartOffset == null ||
+        _initialNormRect == null) {
       return;
     }
 
-    final dxNorm = (details.localPosition.dx - _dragStartOffset!.dx) / displaySize.width;
-    final dyNorm = (details.localPosition.dy - _dragStartOffset!.dy) / displaySize.height;
+    final imageRect = _calculateImageRect(containerSize);
+    if (imageRect.width <= 0 || imageRect.height <= 0) return;
+
+    final dxNorm =
+        (details.localPosition.dx - _dragStartOffset!.dx) / imageRect.width;
+    final dyNorm =
+        (details.localPosition.dy - _dragStartOffset!.dy) / imageRect.height;
 
     double left = _initialNormRect!.left;
     double top = _initialNormRect!.top;
@@ -195,13 +260,18 @@ class _NeoCropCanvasState extends State<NeoCropCanvas> {
     // Apply aspect ratio constraint if set and resizing
     if (widget.aspectRatio != null && _activeHandle != CropHandleType.move) {
       final r = widget.aspectRatio!;
+      final imageAR = (_imageSize != null && _imageSize!.height > 0)
+          ? _imageSize!.width / _imageSize!.height
+          : 1.0;
+      final normAR = r / imageAR;
+
       final newW = right - left;
-      final newH = newW / r;
+      final newH = newW / normAR;
       if (top + newH <= 1.0) {
         bottom = top + newH;
       } else {
         bottom = 1.0;
-        right = (left + (bottom - top) * r).clamp(left + 0.1, 1.0);
+        right = (left + (bottom - top) * normAR).clamp(left + 0.1, 1.0);
       }
     }
 
@@ -222,11 +292,13 @@ class _NeoCropCanvasState extends State<NeoCropCanvas> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final displaySize = Size(constraints.maxWidth, constraints.maxHeight);
+        final containerSize =
+            Size(constraints.maxWidth, constraints.maxHeight);
+        final imageRect = _calculateImageRect(containerSize);
 
         return GestureDetector(
-          onPanStart: (d) => _onPanStart(d, displaySize),
-          onPanUpdate: (d) => _onPanUpdate(d, displaySize),
+          onPanStart: (d) => _onPanStart(d, containerSize),
+          onPanUpdate: (d) => _onPanUpdate(d, containerSize),
           onPanEnd: _onPanEnd,
           child: Stack(
             clipBehavior: Clip.none,
@@ -247,19 +319,20 @@ class _NeoCropCanvasState extends State<NeoCropCanvas> {
                       child: Image.file(
                         widget.imageFile,
                         fit: BoxFit.contain,
-                        width: displaySize.width,
-                        height: displaySize.height,
+                        width: containerSize.width,
+                        height: containerSize.height,
                       ),
                     ),
                   ),
                 ),
               ),
 
-              // Dimmed Mask & Neo-Brutalist Grid Overlay
+              // Dimmed Mask & Neo-Brutalist Grid Overlay aligned to image bounds
               Positioned.fill(
                 child: CustomPaint(
                   painter: _NeoCropPainter(
                     normCropRect: _normCropRect,
+                    imageRect: imageRect,
                     accentColor: NeoColors.yellow,
                   ),
                 ),
@@ -274,28 +347,30 @@ class _NeoCropCanvasState extends State<NeoCropCanvas> {
 
 class _NeoCropPainter extends CustomPainter {
   final Rect normCropRect;
+  final Rect imageRect;
   final Color accentColor;
 
   _NeoCropPainter({
     required this.normCropRect,
+    required this.imageRect,
     required this.accentColor,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     final cropRect = Rect.fromLTWH(
-      normCropRect.left * size.width,
-      normCropRect.top * size.height,
-      normCropRect.width * size.width,
-      normCropRect.height * size.height,
+      imageRect.left + normCropRect.left * imageRect.width,
+      imageRect.top + normCropRect.top * imageRect.height,
+      normCropRect.width * imageRect.width,
+      normCropRect.height * imageRect.height,
     );
 
-    // 1. Draw dimmed mask outside crop rect
+    // 1. Draw dimmed mask outside crop rect but inside image bounds
     final maskPaint = Paint()
       ..color = Colors.black.withValues(alpha: 0.6)
       ..style = PaintingStyle.fill;
 
-    final fullPath = Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
+    final fullPath = Path()..addRect(imageRect);
     final cropPath = Path()..addRect(cropRect);
     final diffPath = Path.combine(PathOperation.difference, fullPath, cropPath);
 
@@ -379,7 +454,11 @@ class _NeoCropPainter extends CustomPainter {
     // Handle Shadow
     canvas.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(center: center + const Offset(2, 2), width: handleRadius * 2, height: handleRadius * 2),
+        Rect.fromCenter(
+          center: center + const Offset(2, 2),
+          width: handleRadius * 2,
+          height: handleRadius * 2,
+        ),
         const Radius.circular(3),
       ),
       shadowPaint,
@@ -388,7 +467,11 @@ class _NeoCropPainter extends CustomPainter {
     // Handle Fill
     canvas.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(center: center, width: handleRadius * 2, height: handleRadius * 2),
+        Rect.fromCenter(
+          center: center,
+          width: handleRadius * 2,
+          height: handleRadius * 2,
+        ),
         const Radius.circular(3),
       ),
       fillPaint,
@@ -397,7 +480,11 @@ class _NeoCropPainter extends CustomPainter {
     // Handle Border
     canvas.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(center: center, width: handleRadius * 2, height: handleRadius * 2),
+        Rect.fromCenter(
+          center: center,
+          width: handleRadius * 2,
+          height: handleRadius * 2,
+        ),
         const Radius.circular(3),
       ),
       strokePaint,
@@ -406,6 +493,9 @@ class _NeoCropPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _NeoCropPainter oldDelegate) {
-    return oldDelegate.normCropRect != normCropRect || oldDelegate.accentColor != accentColor;
+    return oldDelegate.normCropRect != normCropRect ||
+        oldDelegate.imageRect != imageRect ||
+        oldDelegate.accentColor != accentColor;
   }
 }
+

@@ -27,6 +27,8 @@ class CategorySelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
+      clipBehavior: Clip.none,
+      padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: categories.map((cat) {
           final isSelected = selectedCategory == cat;
@@ -36,11 +38,16 @@ class CategorySelector extends StatelessWidget {
               onTap: () => onSelectCategory(cat),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
                 decoration: NeoStyles.neoDecoration(
                   backgroundColor: isSelected
                       ? NeoColors.yellow
-                      : (isDark ? NeoColors.darkSurface : NeoColors.lightSurface),
+                      : (isDark
+                            ? NeoColors.darkSurface
+                            : NeoColors.lightSurface),
                   radius: 12,
                   shadow: isSelected ? 3 : 1.5,
                   showShadow: true,

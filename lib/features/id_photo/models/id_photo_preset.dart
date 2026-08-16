@@ -1,4 +1,6 @@
-class IdPhotoPreset {
+import 'package:equatable/equatable.dart';
+
+class IdPhotoPreset extends Equatable {
   final String id;
   final String title;
   final String country;
@@ -21,7 +23,39 @@ class IdPhotoPreset {
 
   double get aspectRatio => widthMm / heightMm;
 
+  @override
+  List<Object?> get props => [
+        id,
+        title,
+        country,
+        widthMm,
+        heightMm,
+        targetWidthPx,
+        targetHeightPx,
+        description,
+      ];
+
   static const List<IdPhotoPreset> defaultPresets = [
+    IdPhotoPreset(
+      id: 'bd_passport',
+      title: 'Bangladesh Passport / Visa',
+      country: 'Bangladesh 🇧🇩',
+      widthMm: 40.0,
+      heightMm: 50.0,
+      targetWidthPx: 472,
+      targetHeightPx: 591,
+      description: '40 x 50 mm • Plain White background',
+    ),
+    IdPhotoPreset(
+      id: 'bd_stamp',
+      title: 'Bangladesh Stamp / NID',
+      country: 'Bangladesh 🇧🇩',
+      widthMm: 25.0,
+      heightMm: 30.0,
+      targetWidthPx: 295,
+      targetHeightPx: 354,
+      description: '25 x 30 mm (Stamp size) • White background',
+    ),
     IdPhotoPreset(
       id: 'us_passport',
       title: 'US Passport / Visa',
@@ -53,6 +87,26 @@ class IdPhotoPreset {
       description: '35 x 45 mm (or 2 x 2 in) • White background',
     ),
     IdPhotoPreset(
+      id: 'uae_visa',
+      title: 'UAE / Emirates ID / Visa',
+      country: 'UAE 🇦🇪',
+      widthMm: 40.0,
+      heightMm: 50.0,
+      targetWidthPx: 472,
+      targetHeightPx: 591,
+      description: '40 x 50 mm • Plain White background',
+    ),
+    IdPhotoPreset(
+      id: 'saudi_visa',
+      title: 'Saudi Visa / Iqama',
+      country: 'Saudi Arabia 🇸🇦',
+      widthMm: 40.0,
+      heightMm: 60.0,
+      targetWidthPx: 472,
+      targetHeightPx: 709,
+      description: '40 x 60 mm • White background',
+    ),
+    IdPhotoPreset(
       id: 'canada_passport',
       title: 'Canada Passport',
       country: 'Canada 🇨🇦',
@@ -64,7 +118,7 @@ class IdPhotoPreset {
     ),
     IdPhotoPreset(
       id: 'china_visa',
-      title: 'China Visa',
+      title: 'China Visa / Passport',
       country: 'China 🇨🇳',
       widthMm: 33.0,
       heightMm: 48.0,
@@ -74,7 +128,7 @@ class IdPhotoPreset {
     ),
     IdPhotoPreset(
       id: 'japan_passport',
-      title: 'Japan Passport',
+      title: 'Japan Passport / ID',
       country: 'Japan 🇯🇵',
       widthMm: 35.0,
       heightMm: 45.0,
@@ -91,6 +145,76 @@ class IdPhotoPreset {
       targetWidthPx: 413,
       targetHeightPx: 531,
       description: '35 x 45 mm • Plain Light background',
+    ),
+    IdPhotoPreset(
+      id: 'singapore_passport',
+      title: 'Singapore Passport / NRIC',
+      country: 'Singapore 🇸🇬',
+      widthMm: 35.0,
+      heightMm: 45.0,
+      targetWidthPx: 413,
+      targetHeightPx: 531,
+      description: '35 x 45 mm • Matt White background',
+    ),
+    IdPhotoPreset(
+      id: 'malaysia_passport',
+      title: 'Malaysia Passport / MyKad',
+      country: 'Malaysia 🇲🇾',
+      widthMm: 35.0,
+      heightMm: 50.0,
+      targetWidthPx: 413,
+      targetHeightPx: 591,
+      description: '35 x 50 mm • Plain White background',
+    ),
+    IdPhotoPreset(
+      id: 'korea_passport',
+      title: 'South Korea Passport',
+      country: 'South Korea 🇰🇷',
+      widthMm: 35.0,
+      heightMm: 45.0,
+      targetWidthPx: 413,
+      targetHeightPx: 531,
+      description: '35 x 45 mm • Plain White background',
+    ),
+    IdPhotoPreset(
+      id: 'pakistan_passport',
+      title: 'Pakistan Passport / CNIC',
+      country: 'Pakistan 🇵🇰',
+      widthMm: 35.0,
+      heightMm: 45.0,
+      targetWidthPx: 413,
+      targetHeightPx: 531,
+      description: '35 x 45 mm • Plain Light background',
+    ),
+    IdPhotoPreset(
+      id: 'brazil_photo',
+      title: 'Brazil 3x4 / Passport',
+      country: 'Brazil 🇧🇷',
+      widthMm: 30.0,
+      heightMm: 40.0,
+      targetWidthPx: 354,
+      targetHeightPx: 472,
+      description: '30 x 40 mm (3x4) • Plain White background',
+    ),
+    IdPhotoPreset(
+      id: 'turkey_passport',
+      title: 'Turkey Biometric ID',
+      country: 'Turkey 🇹🇷',
+      widthMm: 50.0,
+      heightMm: 60.0,
+      targetWidthPx: 591,
+      targetHeightPx: 709,
+      description: '50 x 60 mm • White background',
+    ),
+    IdPhotoPreset(
+      id: 'icao_standard',
+      title: 'ICAO Standard (Global)',
+      country: 'International 🌐',
+      widthMm: 35.0,
+      heightMm: 45.0,
+      targetWidthPx: 413,
+      targetHeightPx: 531,
+      description: '35 x 45 mm • International standard',
     ),
   ];
 }

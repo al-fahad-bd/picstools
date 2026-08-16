@@ -73,7 +73,11 @@ Future<void> initServiceLocator() async {
     () => ImageConverterService(),
   );
   getIt.registerLazySingleton<ImagePdfService>(() => ImagePdfService());
-  getIt.registerLazySingleton<IdPhotoService>(() => IdPhotoService());
+  getIt.registerLazySingleton<IdPhotoService>(
+    () => IdPhotoService(
+      removeBackgroundUseCase: getIt<RemoveBackgroundUseCase>(),
+    ),
+  );
   getIt.registerLazySingleton<SignatureService>(() => SignatureService());
 
   // Background Remover Feature

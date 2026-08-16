@@ -9,6 +9,7 @@ class NeoBadge extends StatelessWidget {
   final Color borderColor;
   final IconData? icon;
   final double fontSize;
+  final EdgeInsetsGeometry? padding;
 
   const NeoBadge({
     super.key,
@@ -18,6 +19,7 @@ class NeoBadge extends StatelessWidget {
     this.borderColor = NeoColors.borderLight,
     this.icon,
     this.fontSize = 12.0,
+    this.padding,
   });
 
   @override
@@ -25,12 +27,37 @@ class NeoBadge extends StatelessWidget {
     final effectiveTextColor =
         textColor ?? NeoColors.getContrastColor(backgroundColor);
 
+    final textWidget = Text(
+      label.toUpperCase(),
+      overflow: TextOverflow.ellipsis,
+      maxLines: 1,
+      softWrap: false,
+      style: GoogleFonts.spaceGrotesk(
+        fontSize: fontSize,
+        fontWeight: FontWeight.w800,
+        color: effectiveTextColor,
+        letterSpacing: 0.3,
+      ),
+    );
+
+    final content = icon != null
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: fontSize + 2, color: effectiveTextColor),
+              const SizedBox(width: 4),
+              Flexible(child: textWidget),
+            ],
+          )
+        : textWidget;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: padding ?? const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: borderColor, width: 1.8),
+        border: Border.all(color: borderColor, width: 1.5),
         boxShadow: const [
           BoxShadow(
             color: NeoColors.borderLight,
@@ -39,24 +66,7 @@ class NeoBadge extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon != null) ...[
-            Icon(icon, size: fontSize + 2, color: effectiveTextColor),
-            const SizedBox(width: 4),
-          ],
-          Text(
-            label.toUpperCase(),
-            style: GoogleFonts.spaceGrotesk(
-              fontSize: fontSize,
-              fontWeight: FontWeight.w800,
-              color: effectiveTextColor,
-              letterSpacing: 0.6,
-            ),
-          ),
-        ],
-      ),
+      child: content,
     );
   }
 }

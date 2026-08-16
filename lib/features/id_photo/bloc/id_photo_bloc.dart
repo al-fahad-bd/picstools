@@ -22,9 +22,10 @@ class SelectPresetEvent extends IdPhotoEvent {
 
 class SelectPhotoEvent extends IdPhotoEvent {
   final File file;
-  const SelectPhotoEvent(this.file);
+  final IdPhotoPreset? preset;
+  const SelectPhotoEvent(this.file, {this.preset});
   @override
-  List<Object?> get props => [file];
+  List<Object?> get props => [file, preset];
 }
 
 class UpdateNormCropRectIdEvent extends IdPhotoEvent {
@@ -151,10 +152,13 @@ class IdPhotoBloc extends Bloc<IdPhotoEvent, IdPhotoState> {
   }
 
   void _onSelectPhoto(SelectPhotoEvent event, Emitter<IdPhotoState> emit) {
-    final defaultPreset = IdPhotoPreset.defaultPresets.first;
+    final defaultPreset = event.preset ?? IdPhotoPreset.defaultPresets.first;
     if (state is IdPhotoConfiguredState) {
       final current = state as IdPhotoConfiguredState;
-      emit(current.copyWith(file: event.file));
+      emit(current.copyWith(
+        file: event.file,
+        preset: event.preset ?? current.preset,
+      ));
     } else {
       emit(IdPhotoConfiguredState(
         file: event.file,
