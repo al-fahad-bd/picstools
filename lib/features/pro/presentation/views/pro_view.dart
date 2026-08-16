@@ -14,10 +14,7 @@ import '../widgets/pro_feature_card.dart';
 class ProView extends StatelessWidget {
   final VoidCallback? onNavigateToHome;
 
-  const ProView({
-    super.key,
-    this.onNavigateToHome,
-  });
+  const ProView({super.key, this.onNavigateToHome});
 
   @override
   Widget build(BuildContext context) {
@@ -131,9 +128,9 @@ class _ProViewContent extends StatelessWidget {
                           fullWidth: true,
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           onPressed: () {
-                            context
-                                .read<ProBloc>()
-                                .add(ManageSubscriptionEvent());
+                            context.read<ProBloc>().add(
+                              ManageSubscriptionEvent(),
+                            );
                           },
                         ),
                       ],
@@ -250,7 +247,7 @@ class _ProViewContent extends StatelessWidget {
                     subtitle: 'Protect documents with passwords',
                     isDark: isDark,
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 8),
                   NeoButton(
                     label: 'UPGRADE NOW - \$2.99 / MONTH',
                     backgroundColor: NeoColors.yellow,
@@ -269,9 +266,7 @@ class _ProViewContent extends StatelessWidget {
                   onPressed: isLoading
                       ? null
                       : () {
-                          context.read<ProBloc>().add(
-                                RestorePurchasesEvent(),
-                              );
+                          context.read<ProBloc>().add(RestorePurchasesEvent());
                         },
                   child: Text(
                     'Restore Purchases',

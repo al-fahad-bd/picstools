@@ -38,13 +38,13 @@ class _SettingsViewContent extends StatelessWidget {
               color: state.isDeveloperNewlyUnlocked
                   ? NeoColors.purple
                   : (state.toastMessage!.contains('deleted')
-                      ? NeoColors.pink
-                      : NeoColors.cyan),
+                        ? NeoColors.pink
+                        : NeoColors.cyan),
               icon: state.isDeveloperNewlyUnlocked
                   ? Icons.verified_rounded
                   : (state.toastMessage!.contains('deleted')
-                      ? Icons.delete_forever_rounded
-                      : Icons.terminal_rounded),
+                        ? Icons.delete_forever_rounded
+                        : Icons.terminal_rounded),
             );
           }
           if (state.isDeveloperNewlyUnlocked) {

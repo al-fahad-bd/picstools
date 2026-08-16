@@ -21,6 +21,8 @@ import '../../models/id_photo_preset.dart';
 import '../../services/id_photo_service.dart';
 import '../../bloc/id_photo_bloc.dart';
 import '../widgets/face_guide_overlay.dart';
+import '../../../background_remover/domain/usecases/check_model_status_usecase.dart';
+import '../../../background_remover/domain/usecases/download_model_usecase.dart';
 
 class IdPhotoView extends StatelessWidget {
   const IdPhotoView({super.key});
@@ -666,13 +668,211 @@ class _IdPhotoViewContent extends StatelessWidget {
                 backgroundColor: NeoColors.orange,
                 fullWidth: true,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                onPressed: () => bloc.add(StartProcessingIdPhotoEvent()),
+                onPressed: () async {
+                  final hasModel = await _ensureAiModelDownloaded(
+                    context,
+                    isDark,
+                  );
+                  if (!hasModel) return;
+                  if (context.mounted) {
+                    bloc.add(StartProcessingIdPhotoEvent());
+                  }
+                },
               ),
             ],
           ),
         ),
       ],
     );
+  }
+
+  Future<bool> _ensureAiModelDownloaded(
+    BuildContext context,
+    bool isDark,
+  ) async {
+    final checkModelUseCase = getIt<CheckModelStatusUseCase>();
+    final downloadModelUseCase = getIt<DownloadModelUseCase>();
+
+    final modelInfo = await checkModelUseCase();
+    if (modelInfo.isDownloaded) {
+      return true;
+    }
+
+    if (!context.mounted) return false;
+    final bool? downloaded = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        double progress = 0.0;
+        int receivedBytes = 0;
+        int totalBytes = modelInfo.expectedSizeBytes;
+        String? errorMessage;
+        bool isDownloading = false;
+
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            void startDownload() async {
+              setDialogState(() {
+                isDownloading = true;
+                errorMessage = null;
+              });
+
+              try {
+                await downloadModelUseCase(
+                  onProgress: (received, total, percentage) {
+                    setDialogState(() {
+                      receivedBytes = received;
+                      totalBytes = total;
+                      progress = percentage;
+                    });
+                  },
+                );
+                if (dialogContext.mounted) {
+                  Navigator.of(dialogContext).pop(true);
+                }
+              } catch (e) {
+                setDialogState(() {
+                  isDownloading = false;
+                  errorMessage = 'Download failed: $e';
+                });
+              }
+            }
+
+            return AlertDialog(
+              backgroundColor: isDark
+                  ? NeoColors.darkSurface
+                  : NeoColors.lightSurface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(
+                  color: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+                  width: 2.5,
+                ),
+              ),
+              title: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: NeoStyles.neoDecoration(
+                      backgroundColor: NeoColors.purple,
+                      radius: 8,
+                      shadow: 2,
+                    ),
+                    child: const Icon(
+                      Icons.auto_awesome_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'AI Model Required',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'To cleanly isolate your portrait and replace complex or outdoor backgrounds with studio precision, the compact on-device AI model (~${(modelInfo.expectedSizeBytes / (1024 * 1024)).toStringAsFixed(1)} MB) must be downloaded once.',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 13,
+                      color: isDark
+                          ? NeoColors.textSecondaryDark
+                          : NeoColors.textSecondaryLight,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  if (isDownloading) ...[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: LinearProgressIndicator(
+                        value: progress,
+                        minHeight: 10,
+                        backgroundColor: isDark
+                            ? Colors.grey[800]
+                            : Colors.grey[200],
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          NeoColors.purple,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${(progress * 100).toStringAsFixed(0)}%',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '${(receivedBytes / (1024 * 1024)).toStringAsFixed(1)} / ${(totalBytes / (1024 * 1024)).toStringAsFixed(1)} MB',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 12,
+                            color: isDark
+                                ? NeoColors.textSecondaryDark
+                                : NeoColors.textSecondaryLight,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                  if (errorMessage != null) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      errorMessage!,
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 12,
+                        color: NeoColors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+              actions: [
+                if (!isDownloading) ...[
+                  TextButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(false),
+                    child: Text(
+                      'Cancel',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontWeight: FontWeight.bold,
+                        color: isDark
+                            ? NeoColors.textSecondaryDark
+                            : NeoColors.textSecondaryLight,
+                      ),
+                    ),
+                  ),
+                  NeoButton(
+                    label:
+                        'Download (~${(modelInfo.expectedSizeBytes / (1024 * 1024)).toStringAsFixed(1)} MB)',
+                    backgroundColor: NeoColors.yellow,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    onPressed: startDownload,
+                  ),
+                ],
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    return downloaded == true;
   }
 
   Widget _buildSheetChip({

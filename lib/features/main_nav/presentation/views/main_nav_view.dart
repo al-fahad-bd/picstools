@@ -11,10 +11,7 @@ import '../../../settings/presentation/views/settings_view.dart';
 class MainNavView extends StatefulWidget {
   final int initialIndex;
 
-  const MainNavView({
-    super.key,
-    this.initialIndex = 0,
-  });
+  const MainNavView({super.key, this.initialIndex = 0});
 
   @override
   State<MainNavView> createState() => _MainNavViewState();
@@ -98,11 +95,10 @@ class _MainNavViewState extends State<MainNavView> {
             ProView(
               onNavigateToHome: () => setState(() => _currentNavIndex = 0),
             ),
-            const SettingsView(),
+            SettingsView(key: ValueKey('settings_tab_$_currentNavIndex')),
           ],
         ),
       ),
     );
   }
 }
-
