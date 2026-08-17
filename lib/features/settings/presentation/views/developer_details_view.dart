@@ -14,21 +14,27 @@ import '../../../../core/widgets/neo_toast.dart';
 class DeveloperDetailsView extends StatelessWidget {
   const DeveloperDetailsView({super.key});
 
-  Future<void> _launchPortfolioUrl(BuildContext context) async {
-    final Uri url = Uri.parse('http://abdullahalfahad.vercel.app/');
+  Future<void> _launchExternalUrl(
+    BuildContext context,
+    String urlString,
+  ) async {
+    final Uri url = Uri.parse(urlString);
     try {
       if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
         await launchUrl(url);
       }
     } catch (_) {
       if (context.mounted) {
-        NeoToast.showError(
-          context,
-          'Could not open http://abdullahalfahad.vercel.app/',
-        );
+        NeoToast.showError(context, 'Could not open $urlString');
       }
     }
   }
+
+  Future<void> _launchPortfolioUrl(BuildContext context) =>
+      _launchExternalUrl(context, 'https://abdullahalfahad.vercel.app/');
+
+  Future<void> _launchLinkedInUrl(BuildContext context) =>
+      _launchExternalUrl(context, 'https://www.linkedin.com/in/al-fahad-bd/');
 
   @override
   Widget build(BuildContext context) {
@@ -216,17 +222,26 @@ class DeveloperDetailsView extends StatelessWidget {
                       backgroundColor: NeoColors.softCyan,
                       shadowOffset: 3,
                       padding: const EdgeInsets.all(16),
-                      onTap: () => _launchPortfolioUrl(context),
+                      onTap: () => _launchLinkedInUrl(context),
                       child: Column(
                         children: [
-                          const Icon(
-                            Icons.language_rounded,
-                            size: 28,
-                            color: NeoColors.borderLight,
+                          Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Image.network(
+                              'https://cdn-icons-png.flaticon.com/512/174/174857.png',
+                              width: 28,
+                              height: 28,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(
+                                    Icons.link_rounded,
+                                    size: 28,
+                                    color: NeoColors.borderLight,
+                                  ),
+                            ),
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Portfolio',
+                            'LinkedIn',
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 14,
                               fontWeight: FontWeight.w900,
@@ -234,7 +249,7 @@ class DeveloperDetailsView extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            'abdullahalfahad.vercel.app',
+                            'in/al-fahad-bd',
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 10,
                               color: NeoColors.borderLight.withValues(
@@ -256,10 +271,14 @@ class DeveloperDetailsView extends StatelessWidget {
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         children: [
-                          const Icon(
-                            Icons.star_rounded,
-                            size: 28,
-                            color: NeoColors.borderLight,
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: Image.asset(
+                              'assets/icon/app_icon.png',
+                              width: 36,
+                              height: 36,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           Text(
