@@ -523,31 +523,69 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                         itemBuilder: (context, index) {
                           final file = state.files[index];
                           final isSelected = index == safeIndex;
-                          return GestureDetector(
-                            onTap: () =>
-                                setState(() => _selectedPreviewIndex = index),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: isSelected
-                                      ? NeoColors.cyan
-                                      : (isDark
-                                            ? NeoColors.borderDark
-                                            : NeoColors.borderLight),
-                                  width: isSelected ? 3 : 1.5,
-                                ),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(6),
-                                child: Image.file(
-                                  file,
+                          return Stack(
+                            children: [
+                              GestureDetector(
+                                onTap: () =>
+                                    setState(() => _selectedPreviewIndex = index),
+                                child: Container(
                                   width: 56,
                                   height: 56,
-                                  fit: BoxFit.cover,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? NeoColors.cyan
+                                          : (isDark
+                                                ? NeoColors.borderDark
+                                                : NeoColors.borderLight),
+                                      width: 2.0,
+                                    ),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(6),
+                                    child: Image.file(
+                                      file,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                              Positioned(
+                                top: 2,
+                                right: 2,
+                                child: GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: () {
+                                    if (_selectedPreviewIndex >=
+                                            state.files.length - 1 &&
+                                        _selectedPreviewIndex > 0) {
+                                      setState(() {
+                                        _selectedPreviewIndex =
+                                            _selectedPreviewIndex - 1;
+                                      });
+                                    }
+                                    bloc.add(RemoveResizeImageEvent(index));
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                      color: NeoColors.red,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    child: const Icon(
+                                      Icons.close_rounded,
+                                      size: 11,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           );
                         },
                       ),

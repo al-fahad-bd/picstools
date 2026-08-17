@@ -37,6 +37,13 @@ class SetPercentageResizeEvent extends ResizerEvent {
   List<Object?> get props => [percentage];
 }
 
+class RemoveResizeImageEvent extends ResizerEvent {
+  final int index;
+  const RemoveResizeImageEvent(this.index);
+  @override
+  List<Object?> get props => [index];
+}
+
 class StartResizeEvent extends ResizerEvent {}
 
 class ResetResizerEvent extends ResizerEvent {}
@@ -95,15 +102,15 @@ class ResizerConfiguredState extends ResizerState {
 
   @override
   List<Object?> get props => [
-        files,
-        originalSizes,
-        originalWidth,
-        originalHeight,
-        targetWidth,
-        targetHeight,
-        maintainAspectRatio,
-        percentage,
-      ];
+    files,
+    originalSizes,
+    originalWidth,
+    originalHeight,
+    targetWidth,
+    targetHeight,
+    maintainAspectRatio,
+    percentage,
+  ];
 }
 
 class ResizerProcessingState extends ResizerState {
@@ -139,19 +146,59 @@ class ResizerBloc extends Bloc<ResizerEvent, ResizerState> {
   final ImageResizerService resizerService;
   final HistoryService historyService;
 
-  ResizerBloc({
-    required this.resizerService,
-    required this.historyService,
-  }) : super(ResizerInitialState()) {
+  ResizerBloc({required this.resizerService, required this.historyService})
+    : super(ResizerInitialState()) {
     on<SelectResizeImagesEvent>(_onSelectImages);
     on<UpdateDimensionsEvent>(_onUpdateDimensions);
     on<ToggleMaintainAspectRatioEvent>(_onToggleAspectRatio);
     on<SetPercentageResizeEvent>(_onSetPercentage);
+    on<RemoveResizeImageEvent>(_onRemoveImage);
     on<StartResizeEvent>(_onStartResize);
     on<ResetResizerEvent>(_onReset);
   }
 
-  Future<void> _onSelectImages(SelectResizeImagesEvent event, Emitter<ResizerState> emit) async {
+  Future<void> _onRemoveImage(
+    RemoveResizeImageEvent event,
+    Emitter<ResizerState> emit,
+  ) async {
+    if (state is! ResizerConfiguredState) return;
+    final current = state as ResizerConfiguredState;
+    if (event.index < 0 || event.index >= current.files.length) return;
+
+    final updatedFiles = List<File>.from(current.files)..removeAt(event.index);
+    final updatedSizes = List<Size>.from(current.originalSizes);
+    if (event.index < updatedSizes.length) {
+      updatedSizes.removeAt(event.index);
+    }
+
+    if (updatedFiles.isEmpty) {
+      emit(ResizerInitialState());
+      return;
+    }
+
+    final firstW = updatedSizes.isNotEmpty
+        ? updatedSizes.first.width.round()
+        : 1080;
+    final firstH = updatedSizes.isNotEmpty
+        ? updatedSizes.first.height.round()
+        : 1080;
+
+    emit(
+      current.copyWith(
+        files: updatedFiles,
+        originalSizes: updatedSizes,
+        originalWidth: firstW,
+        originalHeight: firstH,
+        targetWidth: (firstW * (current.percentage / 100.0)).round(),
+        targetHeight: (firstH * (current.percentage / 100.0)).round(),
+      ),
+    );
+  }
+
+  Future<void> _onSelectImages(
+    SelectResizeImagesEvent event,
+    Emitter<ResizerState> emit,
+  ) async {
     if (event.files.isEmpty) return;
     final sizes = <Size>[];
 
@@ -172,66 +219,86 @@ class ResizerBloc extends Bloc<ResizerEvent, ResizerState> {
     final firstW = sizes.isNotEmpty ? sizes.first.width.round() : 1080;
     final firstH = sizes.isNotEmpty ? sizes.first.height.round() : 1080;
 
-    emit(ResizerConfiguredState(
-      files: event.files,
-      originalSizes: sizes,
-      originalWidth: firstW,
-      originalHeight: firstH,
-      targetWidth: firstW,
-      targetHeight: firstH,
-    ));
+    emit(
+      ResizerConfiguredState(
+        files: event.files,
+        originalSizes: sizes,
+        originalWidth: firstW,
+        originalHeight: firstH,
+        targetWidth: firstW,
+        targetHeight: firstH,
+      ),
+    );
   }
 
-  void _onUpdateDimensions(UpdateDimensionsEvent event, Emitter<ResizerState> emit) {
+  void _onUpdateDimensions(
+    UpdateDimensionsEvent event,
+    Emitter<ResizerState> emit,
+  ) {
     if (state is ResizerConfiguredState) {
       final current = state as ResizerConfiguredState;
-      emit(current.copyWith(
-        targetWidth: event.width,
-        targetHeight: event.height,
-      ));
+      emit(
+        current.copyWith(targetWidth: event.width, targetHeight: event.height),
+      );
     }
   }
 
-  void _onToggleAspectRatio(ToggleMaintainAspectRatioEvent event, Emitter<ResizerState> emit) {
+  void _onToggleAspectRatio(
+    ToggleMaintainAspectRatioEvent event,
+    Emitter<ResizerState> emit,
+  ) {
     if (state is ResizerConfiguredState) {
       final current = state as ResizerConfiguredState;
       emit(current.copyWith(maintainAspectRatio: !current.maintainAspectRatio));
     }
   }
 
-  void _onSetPercentage(SetPercentageResizeEvent event, Emitter<ResizerState> emit) {
+  void _onSetPercentage(
+    SetPercentageResizeEvent event,
+    Emitter<ResizerState> emit,
+  ) {
     if (state is ResizerConfiguredState) {
       final current = state as ResizerConfiguredState;
       final newW = (current.originalWidth * (event.percentage / 100.0)).round();
-      final newH = (current.originalHeight * (event.percentage / 100.0)).round();
-      emit(current.copyWith(
-        targetWidth: newW,
-        targetHeight: newH,
-        percentage: event.percentage,
-      ));
+      final newH = (current.originalHeight * (event.percentage / 100.0))
+          .round();
+      emit(
+        current.copyWith(
+          targetWidth: newW,
+          targetHeight: newH,
+          percentage: event.percentage,
+        ),
+      );
     }
   }
 
-  Future<void> _onStartResize(StartResizeEvent event, Emitter<ResizerState> emit) async {
+  Future<void> _onStartResize(
+    StartResizeEvent event,
+    Emitter<ResizerState> emit,
+  ) async {
     if (state is! ResizerConfiguredState) return;
     final current = state as ResizerConfiguredState;
 
-    emit(ResizerProcessingState(
-      currentIndex: 0,
-      totalCount: current.files.length,
-      progress: 0.0,
-    ));
+    emit(
+      ResizerProcessingState(
+        currentIndex: 0,
+        totalCount: current.files.length,
+        progress: 0.0,
+      ),
+    );
 
     final results = <ResizeResult>[];
     final isBatch = current.files.length > 1;
 
     try {
       for (int i = 0; i < current.files.length; i++) {
-        emit(ResizerProcessingState(
-          currentIndex: i + 1,
-          totalCount: current.files.length,
-          progress: (i + 1) / current.files.length,
-        ));
+        emit(
+          ResizerProcessingState(
+            currentIndex: i + 1,
+            totalCount: current.files.length,
+            progress: (i + 1) / current.files.length,
+          ),
+        );
 
         final res = await resizerService.resizeImage(
           imageFile: current.files[i],
@@ -243,15 +310,17 @@ class ResizerBloc extends Bloc<ResizerEvent, ResizerState> {
 
         results.add(res);
 
-        await historyService.addHistoryItem(HistoryItem(
-          id: '${DateTime.now().millisecondsSinceEpoch}_$i',
-          toolName: 'Resize',
-          originalPath: res.originalFile.path,
-          processedPath: res.resizedFile.path,
-          originalSizeBytes: res.originalSizeBytes,
-          processedSizeBytes: res.resizedSizeBytes,
-          timestamp: DateTime.now(),
-        ));
+        await historyService.addHistoryItem(
+          HistoryItem(
+            id: '${DateTime.now().millisecondsSinceEpoch}_$i',
+            toolName: 'Resize',
+            originalPath: res.originalFile.path,
+            processedPath: res.resizedFile.path,
+            originalSizeBytes: res.originalSizeBytes,
+            processedSizeBytes: res.resizedSizeBytes,
+            timestamp: DateTime.now(),
+          ),
+        );
       }
 
       emit(ResizerSuccessState(results));
