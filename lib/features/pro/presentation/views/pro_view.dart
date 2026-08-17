@@ -203,6 +203,14 @@ class _ProViewContent extends StatelessWidget {
                     isDark: isDark,
                     accentColor: NeoColors.green,
                   ),
+                  ProFeatureCard(
+                    icon: Icons.cloud_sync_rounded,
+                    label: 'Cloud Backup & Multi-Device Sync',
+                    subtitle: 'Safely sync history and Pro across all devices',
+                    isUnlocked: true,
+                    isDark: isDark,
+                    accentColor: NeoColors.purple,
+                  ),
                   const SizedBox(height: 20),
                   NeoButton(
                     label: 'EXPLORE PRO TOOLS',
@@ -227,6 +235,12 @@ class _ProViewContent extends StatelessWidget {
                     icon: Icons.block_rounded,
                     label: 'Remove All Advertisements',
                     subtitle: 'Enjoy clean, uninterrupted workflows',
+                    isDark: isDark,
+                  ),
+                  ProFeatureCard(
+                    icon: Icons.cloud_sync_rounded,
+                    label: 'Cloud Backup & Multi-Device Sync',
+                    subtitle: 'Sync Pro status & export history across devices',
                     isDark: isDark,
                   ),
                   ProFeatureCard(
@@ -262,22 +276,27 @@ class _ProViewContent extends StatelessWidget {
                   ),
                 ],
                 const SizedBox(height: 12),
-                TextButton(
-                  onPressed: isLoading
-                      ? null
-                      : () {
-                          context.read<ProBloc>().add(RestorePurchasesEvent());
-                        },
-                  child: Text(
-                    'Restore Purchases',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: isDark
-                          ? NeoColors.textSecondaryDark
-                          : NeoColors.textSecondaryLight,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              context.read<ProBloc>().add(RestorePurchasesEvent());
+                            },
+                      child: Text(
+                        'Restore Purchases',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: isDark
+                              ? NeoColors.textSecondaryDark
+                              : NeoColors.textSecondaryLight,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
                 const SizedBox(height: 10),
                 Text(

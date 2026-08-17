@@ -88,7 +88,10 @@ class CompressToolGraphic extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: NeoColors.yellow,
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: NeoColors.borderLight, width: 1.5),
+                    border: Border.all(
+                      color: NeoColors.borderLight,
+                      width: 1.5,
+                    ),
                   ),
                   child: const Icon(
                     Icons.compress_rounded,
@@ -148,18 +151,24 @@ class PdfToolGraphic extends StatelessWidget {
               children: [
                 // PDF Red Pill Tag
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: NeoColors.red,
                     borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: NeoColors.borderLight, width: 1.2),
+                    border: Border.all(
+                      color: NeoColors.borderLight,
+                      width: 1.2,
+                    ),
                   ),
                   child: Text(
                     'PDF',
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 8.5,
                       fontWeight: FontWeight.w900,
-                      color: NeoColors.borderLight,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -240,11 +249,17 @@ class ResizeToolGraphic extends StatelessWidget {
               children: [
                 // Dimension Badge (100% visible, centered, zero clipping)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: NeoColors.cyan,
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: NeoColors.borderLight, width: 1.5),
+                    border: Border.all(
+                      color: NeoColors.borderLight,
+                      width: 1.5,
+                    ),
                   ),
                   child: Text(
                     '1080 × 1920',
@@ -331,7 +346,7 @@ class CropToolGraphic extends StatelessWidget {
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 8.5,
                     fontWeight: FontWeight.w900,
-                    color: NeoColors.borderLight,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -361,7 +376,7 @@ class CropToolGraphic extends StatelessWidget {
                 child: const Icon(
                   Icons.crop_rounded,
                   size: 18,
-                  color: NeoColors.borderLight,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -451,7 +466,10 @@ class ConvertToolGraphic extends StatelessWidget {
               borderRadius: BorderRadius.circular(4),
               border: Border.all(color: NeoColors.borderLight, width: 1.2),
               boxShadow: const [
-                BoxShadow(color: NeoColors.borderLight, offset: Offset(1.2, 1.2)),
+                BoxShadow(
+                  color: NeoColors.borderLight,
+                  offset: Offset(1.2, 1.2),
+                ),
               ],
             ),
             child: Text(
@@ -502,7 +520,7 @@ class IdPhotoToolGraphic extends StatelessWidget {
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 8.5,
                     fontWeight: FontWeight.w900,
-                    color: NeoColors.borderLight,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -531,7 +549,10 @@ class IdPhotoToolGraphic extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: NeoColors.orange,
                     shape: BoxShape.circle,
-                    border: Border.all(color: NeoColors.borderLight, width: 1.2),
+                    border: Border.all(
+                      color: NeoColors.borderLight,
+                      width: 1.2,
+                    ),
                   ),
                   child: const Icon(
                     Icons.person_rounded,
@@ -637,7 +658,10 @@ class SignatureToolGraphic extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: NeoColors.blue,
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: NeoColors.borderLight, width: 1.2),
+                    border: Border.all(
+                      color: NeoColors.borderLight,
+                      width: 1.2,
+                    ),
                   ),
                   child: const Icon(
                     Icons.edit_outlined,
@@ -715,7 +739,10 @@ class RemoveBgToolGraphic extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: NeoColors.purple,
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: NeoColors.borderLight, width: 1.2),
+                    border: Border.all(
+                      color: NeoColors.borderLight,
+                      width: 1.2,
+                    ),
                   ),
                   child: const Icon(
                     Icons.auto_fix_high_rounded,
@@ -735,7 +762,10 @@ class RemoveBgToolGraphic extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: NeoColors.yellow,
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: NeoColors.borderLight, width: 1.2),
+                    border: Border.all(
+                      color: NeoColors.borderLight,
+                      width: 1.2,
+                    ),
                   ),
                   child: const Icon(
                     Icons.person_outline_rounded,
@@ -761,4 +791,3 @@ class SocialToolGraphic extends StatelessWidget {
     return RemoveBgToolGraphic(isDark: isDark);
   }
 }
-

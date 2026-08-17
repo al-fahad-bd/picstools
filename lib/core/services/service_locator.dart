@@ -30,6 +30,7 @@ import '../../features/background_remover/domain/usecases/cancel_model_download_
 import '../../features/background_remover/domain/usecases/delete_model_usecase.dart';
 import '../../features/background_remover/domain/usecases/remove_background_usecase.dart';
 import '../../features/background_remover/presentation/bloc/background_remover_bloc.dart';
+import '../../features/settings/presentation/bloc/auth_bloc.dart';
 
 final getIt = GetIt.instance;
 
@@ -116,6 +117,9 @@ Future<void> initServiceLocator() async {
   );
 
   // Feature BLoCs
+  getIt.registerLazySingleton<AuthBloc>(
+    () => AuthBloc(authService: getIt<AuthService>()),
+  );
   getIt.registerFactory<HomeBloc>(() => HomeBloc());
   getIt.registerLazySingleton<HistoryBloc>(
     () => HistoryBloc(historyService: getIt<HistoryService>()),

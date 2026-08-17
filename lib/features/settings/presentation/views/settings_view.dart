@@ -5,17 +5,26 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/widgets/neo_toast.dart';
 import '../../../../core/services/service_locator.dart';
+import '../bloc/auth_bloc.dart';
 import '../bloc/settings_bloc.dart';
 import '../widgets/settings_tile_group.dart';
 import '../widgets/ai_model_card.dart';
+import '../widgets/account_sync_card.dart';
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: getIt<SettingsBloc>()..add(RefreshAiModelStatusEvent()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(
+          value: getIt<SettingsBloc>()..add(RefreshAiModelStatusEvent()),
+        ),
+        BlocProvider.value(
+          value: getIt<AuthBloc>()..add(CheckAuthStatusEvent()),
+        ),
+      ],
       child: const _SettingsViewContent(),
     );
   }
@@ -74,6 +83,9 @@ class _SettingsViewContent extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
+              // Account & Cloud Sync Section (Only visible for Pro users)
+              AccountSyncCard(isDark: isDark),
+
               // General Settings (Theme, Version, Privacy, Sound, Dev details)
               SettingsTileGroup(
                 isDark: isDark,
@@ -116,3 +128,4 @@ class _SettingsViewContent extends StatelessWidget {
     );
   }
 }
+

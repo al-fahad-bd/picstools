@@ -21,6 +21,7 @@ class OnboardingSlide {
   final Color softBgColor;
   final String tag;
   final IconData icon;
+  final Color? highlightTextColor;
 
   OnboardingSlide({
     required this.titlePrefix,
@@ -32,6 +33,7 @@ class OnboardingSlide {
     required this.softBgColor,
     required this.tag,
     required this.icon,
+    this.highlightTextColor,
   });
 }
 
@@ -78,6 +80,7 @@ class _OnboardingViewState extends State<OnboardingView> {
       imagePath: 'assets/images/onboarding_privacy.png',
       accentColor: NeoColors.pink,
       softBgColor: NeoColors.softPink,
+      highlightTextColor: Colors.white,
       tag: '🔒 PRIVACY FIRST',
       icon: Icons.privacy_tip_outlined,
     ),
@@ -370,7 +373,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                                                 style: GoogleFonts.spaceGrotesk(
                                                   fontSize: 22,
                                                   fontWeight: FontWeight.w900,
-                                                  color: NeoColors.borderLight,
+                                                  color: slide.highlightTextColor ??
+                                                      NeoColors.getContrastColor(
+                                                          slide.accentColor),
                                                   letterSpacing: -0.5,
                                                 ),
                                               ),
