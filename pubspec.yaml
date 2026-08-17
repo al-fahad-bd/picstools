@@ -2,7 +2,7 @@ name: picstools
 description: "A production-ready Flutter mobile application for an image utility app."
 publish_to: "none"
 
-version: 1.0.0+4
+version: 1.0.0+5
 
 environment:
   sdk: ^3.12.2
