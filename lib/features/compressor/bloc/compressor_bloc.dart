@@ -39,6 +39,13 @@ class SetTargetFileSizeEvent extends CompressorEvent {
   List<Object?> get props => [targetSizeBytes];
 }
 
+class RemoveImageEvent extends CompressorEvent {
+  final int index;
+  const RemoveImageEvent(this.index);
+  @override
+  List<Object?> get props => [index];
+}
+
 class StartCompressionEvent extends CompressorEvent {}
 
 class ResetCompressorEvent extends CompressorEvent {}
@@ -134,8 +141,33 @@ class CompressorBloc extends Bloc<CompressorEvent, CompressorState> {
     on<SetQualityPresetEvent>(_onSetQualityPreset);
     on<SetCustomQualityEvent>(_onSetCustomQuality);
     on<SetTargetFileSizeEvent>(_onSetTargetFileSize);
+    on<RemoveImageEvent>(_onRemoveImage);
     on<StartCompressionEvent>(_onStartCompression);
     on<ResetCompressorEvent>(_onReset);
+  }
+
+  Future<void> _onRemoveImage(RemoveImageEvent event, Emitter<CompressorState> emit) async {
+    if (state is! CompressorImagesSelectedState) return;
+    final current = state as CompressorImagesSelectedState;
+    if (event.index < 0 || event.index >= current.files.length) return;
+
+    final updatedFiles = List<File>.from(current.files)..removeAt(event.index);
+    if (updatedFiles.isEmpty) {
+      emit(CompressorInitialState());
+      return;
+    }
+
+    int totalBytes = 0;
+    for (final f in updatedFiles) {
+      if (await f.exists()) {
+        totalBytes += await f.length();
+      }
+    }
+
+    emit(current.copyWith(
+      files: updatedFiles,
+      totalOriginalSizeBytes: totalBytes,
+    ));
   }
 
   Future<void> _onSelectImages(SelectImagesEvent event, Emitter<CompressorState> emit) async {

@@ -27,10 +27,8 @@ class CompressView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => CompressorBloc(
-        compressorService: getIt(),
-        historyService: getIt(),
-      ),
+      create: (context) =>
+          CompressorBloc(compressorService: getIt(), historyService: getIt()),
       child: const _CompressViewContent(),
     );
   }
@@ -138,7 +136,9 @@ class _CompressViewContentState extends State<_CompressViewContent> {
             textAlign: TextAlign.center,
             style: GoogleFonts.spaceGrotesk(
               fontSize: 14,
-              color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+              color: isDark
+                  ? NeoColors.textSecondaryDark
+                  : NeoColors.textSecondaryLight,
             ),
           ),
           const SizedBox(height: 36),
@@ -157,7 +157,10 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                     radius: 12,
                     shadow: 2,
                   ),
-                  child: const Icon(Icons.photo_library_rounded, color: NeoColors.borderLight),
+                  child: const Icon(
+                    Icons.photo_library_rounded,
+                    color: NeoColors.borderLight,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -182,14 +185,19 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right_rounded, color: NeoColors.borderLight),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: NeoColors.borderLight,
+                ),
               ],
             ),
           ),
           const SizedBox(height: 16),
 
           NeoCard(
-            backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+            backgroundColor: isDark
+                ? NeoColors.darkSurface
+                : NeoColors.lightSurface,
             shadowOffset: 4,
             onTap: () => _pickImage(context, ImageSource.camera),
             child: Row(
@@ -201,7 +209,10 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                     radius: 12,
                     shadow: 2,
                   ),
-                  child: const Icon(Icons.camera_alt_rounded, color: NeoColors.borderLight),
+                  child: const Icon(
+                    Icons.camera_alt_rounded,
+                    color: NeoColors.borderLight,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -219,7 +230,9 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                         'Use camera to capture image instantly',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 12,
-                          color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+                          color: isDark
+                              ? NeoColors.textSecondaryDark
+                              : NeoColors.textSecondaryLight,
                         ),
                       ),
                     ],
@@ -255,9 +268,7 @@ class _CompressViewContentState extends State<_CompressViewContent> {
           height: MediaQuery.of(context).size.height * 0.85,
           decoration: BoxDecoration(
             color: isDark ? NeoColors.darkBg : NeoColors.lightBg,
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(24),
-            ),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
             border: Border.all(
               color: isDark ? NeoColors.borderDark : NeoColors.borderLight,
               width: 3,
@@ -336,7 +347,8 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                           top: 10,
                           right: 10,
                           child: NeoBadge(
-                            label: '$width x $height px • ${FileUtils.formatBytes(sizeBytes)}',
+                            label:
+                                '$width x $height px • ${FileUtils.formatBytes(sizeBytes)}',
                             backgroundColor: NeoColors.green,
                             fontSize: 11,
                           ),
@@ -360,13 +372,21 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                             color: NeoColors.borderLight,
                           ),
                           backgroundColor: NeoColors.yellow,
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 12,
+                          ),
                           onPressed: () {
-                            final box = context.findRenderObject() as RenderBox?;
-                            final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
-                            Share.shareXFiles([
-                              XFile(imageFile.path),
-                            ], text: 'Compressed with PicsTools!', sharePositionOrigin: origin);
+                            final box =
+                                context.findRenderObject() as RenderBox?;
+                            final origin = box != null
+                                ? box.localToGlobal(Offset.zero) & box.size
+                                : null;
+                            Share.shareXFiles(
+                              [XFile(imageFile.path)],
+                              text: 'Compressed with PicsTools!',
+                              sharePositionOrigin: origin,
+                            );
                           },
                         ),
                       ),
@@ -380,7 +400,10 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                             color: NeoColors.borderLight,
                           ),
                           backgroundColor: NeoColors.green,
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 12,
+                          ),
                           onPressed: () async {
                             final saver = getIt<FileSaveService>();
                             final saved = await saver.saveFileToPublicStorage(
@@ -414,7 +437,10 @@ class _CompressViewContentState extends State<_CompressViewContent> {
     bool isDark,
   ) {
     final bloc = context.read<CompressorBloc>();
-    final safeIndex = _selectedPreviewIndex.clamp(0, state.files.isEmpty ? 0 : state.files.length - 1);
+    final safeIndex = _selectedPreviewIndex.clamp(
+      0,
+      state.files.isEmpty ? 0 : state.files.length - 1,
+    );
     final previewFile = state.files.isNotEmpty ? state.files[safeIndex] : null;
 
     return SingleChildScrollView(
@@ -425,7 +451,9 @@ class _CompressViewContentState extends State<_CompressViewContent> {
           // Live Image Preview Frame
           if (previewFile != null) ...[
             NeoCard(
-              backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+              backgroundColor: isDark
+                  ? NeoColors.darkSurface
+                  : NeoColors.lightSurface,
               shadowOffset: 4,
               padding: const EdgeInsets.all(12),
               child: Column(
@@ -445,7 +473,11 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                         top: 8,
                         right: 8,
                         child: NeoBadge(
-                          label: FileUtils.formatBytes(previewFile.lengthSync()),
+                          label: FileUtils.formatBytes(
+                            previewFile.existsSync()
+                                ? previewFile.lengthSync()
+                                : 0,
+                          ),
                           backgroundColor: NeoColors.yellow,
                           fontSize: 11,
                         ),
@@ -454,7 +486,10 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                         bottom: 8,
                         left: 8,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.black.withValues(alpha: 0.7),
                             borderRadius: BorderRadius.circular(6),
@@ -484,26 +519,67 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                         itemBuilder: (context, index) {
                           final file = state.files[index];
                           final isSelected = index == safeIndex;
-                          return GestureDetector(
-                            onTap: () => setState(() => _selectedPreviewIndex = index),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: isSelected ? NeoColors.yellow : (isDark ? NeoColors.borderDark : NeoColors.borderLight),
-                                  width: isSelected ? 3 : 1.5,
+                          return Stack(
+                            children: [
+                              GestureDetector(
+                                onTap: () => setState(
+                                  () => _selectedPreviewIndex = index,
                                 ),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(6),
-                                child: Image.file(
-                                  file,
+                                child: Container(
                                   width: 56,
                                   height: 56,
-                                  fit: BoxFit.cover,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? NeoColors.yellow
+                                          : (isDark
+                                                ? NeoColors.borderDark
+                                                : NeoColors.borderLight),
+                                      width: 2.0,
+                                    ),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(6),
+                                    child: Image.file(file, fit: BoxFit.cover),
+                                  ),
                                 ),
                               ),
-                            ),
+                              Positioned(
+                                top: 2,
+                                right: 2,
+                                child: GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: () {
+                                    if (_selectedPreviewIndex >=
+                                            state.files.length - 1 &&
+                                        _selectedPreviewIndex > 0) {
+                                      setState(() {
+                                        _selectedPreviewIndex =
+                                            _selectedPreviewIndex - 1;
+                                      });
+                                    }
+                                    bloc.add(RemoveImageEvent(index));
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                      color: NeoColors.red,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    child: const Icon(
+                                      Icons.close_rounded,
+                                      size: 11,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           );
                         },
                       ),
@@ -546,7 +622,9 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        state.files.length == 1 ? '1 Image Selected' : '${state.files.length} Images Selected',
+                        state.files.length == 1
+                            ? '1 Image Selected'
+                            : '${state.files.length} Images Selected',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 16,
                           fontWeight: FontWeight.w900,
@@ -567,7 +645,10 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                 NeoButton(
                   label: 'CHANGE',
                   backgroundColor: NeoColors.yellow,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   onPressed: () {
                     setState(() => _selectedPreviewIndex = 0);
                     bloc.add(ResetCompressorEvent());
@@ -627,7 +708,9 @@ class _CompressViewContentState extends State<_CompressViewContent> {
 
           // Custom Quality Slider
           NeoCard(
-            backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+            backgroundColor: isDark
+                ? NeoColors.darkSurface
+                : NeoColors.lightSurface,
             child: NeoSlider(
               label: 'Custom Quality',
               value: state.quality.toDouble(),
@@ -722,7 +805,9 @@ class _CompressViewContentState extends State<_CompressViewContent> {
     required bool isDark,
   }) {
     return NeoCard(
-      backgroundColor: isSelected ? color : (isDark ? NeoColors.darkSurface : NeoColors.lightSurface),
+      backgroundColor: isSelected
+          ? color
+          : (isDark ? NeoColors.darkSurface : NeoColors.lightSurface),
       padding: const EdgeInsets.all(12),
       shadowOffset: isSelected ? 4 : 2,
       onTap: onTap,
@@ -744,7 +829,9 @@ class _CompressViewContentState extends State<_CompressViewContent> {
               fontWeight: FontWeight.w600,
               color: isSelected
                   ? NeoColors.borderLight.withValues(alpha: 0.8)
-                  : (isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight),
+                  : (isDark
+                        ? NeoColors.textSecondaryDark
+                        : NeoColors.textSecondaryLight),
             ),
           ),
         ],
@@ -764,7 +851,9 @@ class _CompressViewContentState extends State<_CompressViewContent> {
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: NeoStyles.neoDecoration(
-          backgroundColor: isSelected ? NeoColors.cyan : (isDark ? NeoColors.darkSurface : NeoColors.lightSurface),
+          backgroundColor: isSelected
+              ? NeoColors.cyan
+              : (isDark ? NeoColors.darkSurface : NeoColors.lightSurface),
           radius: 10,
           shadow: isSelected ? 3 : 1,
         ),
@@ -795,8 +884,12 @@ class _CompressViewContentState extends State<_CompressViewContent> {
             width: 84,
             height: 84,
             decoration: NeoStyles.neoDecoration(
-              backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.softYellow,
-              borderColor: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+              backgroundColor: isDark
+                  ? NeoColors.darkSurface
+                  : NeoColors.softYellow,
+              borderColor: isDark
+                  ? NeoColors.borderDark
+                  : NeoColors.borderLight,
               radius: 20,
               shadow: 4,
             ),
@@ -821,7 +914,9 @@ class _CompressViewContentState extends State<_CompressViewContent> {
             'Processing file ${state.currentIndex} of ${state.totalCount}',
             style: GoogleFonts.spaceGrotesk(
               fontSize: 14,
-              color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+              color: isDark
+                  ? NeoColors.textSecondaryDark
+                  : NeoColors.textSecondaryLight,
             ),
           ),
           const SizedBox(height: 24),
@@ -830,7 +925,9 @@ class _CompressViewContentState extends State<_CompressViewContent> {
             child: LinearProgressIndicator(
               value: state.progress,
               minHeight: 12,
-              backgroundColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+              backgroundColor: isDark
+                  ? Colors.grey.shade800
+                  : Colors.grey.shade300,
               valueColor: const AlwaysStoppedAnimation<Color>(NeoColors.yellow),
             ),
           ),
@@ -890,7 +987,11 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                       FileUtils.formatBytes(state.totalOriginalSizeBytes),
                       NeoColors.borderLight,
                     ),
-                    Container(width: 2, height: 30, color: NeoColors.borderLight),
+                    Container(
+                      width: 2,
+                      height: 30,
+                      color: NeoColors.borderLight,
+                    ),
                     _buildStatCol(
                       'Compressed',
                       FileUtils.formatBytes(state.totalCompressedSizeBytes),
@@ -917,7 +1018,9 @@ class _CompressViewContentState extends State<_CompressViewContent> {
               );
 
               return NeoCard(
-                backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+                backgroundColor: isDark
+                    ? NeoColors.darkSurface
+                    : NeoColors.lightSurface,
                 onTap: () => _openImageViewerModal(
                   context,
                   item.compressedFile,
@@ -953,7 +1056,9 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                             '${FileUtils.formatBytes(item.originalSizeBytes)} ➔ ${FileUtils.formatBytes(item.compressedSizeBytes)}',
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 12,
-                              color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+                              color: isDark
+                                  ? NeoColors.textSecondaryDark
+                                  : NeoColors.textSecondaryLight,
                             ),
                           ),
                         ],
@@ -974,7 +1079,10 @@ class _CompressViewContentState extends State<_CompressViewContent> {
           // Actions: Download, Share & Done
           NeoButton(
             label: 'SAVE TO DEVICE',
-            icon: const Icon(Icons.download_rounded, color: NeoColors.borderLight),
+            icon: const Icon(
+              Icons.download_rounded,
+              color: NeoColors.borderLight,
+            ),
             backgroundColor: NeoColors.green,
             fullWidth: true,
             onPressed: () async {
@@ -1000,16 +1108,27 @@ class _CompressViewContentState extends State<_CompressViewContent> {
             backgroundColor: NeoColors.cyan,
             fullWidth: true,
             onPressed: () {
-              final xFiles = state.results.map((r) => XFile(r.compressedFile.path)).toList();
+              final xFiles = state.results
+                  .map((r) => XFile(r.compressedFile.path))
+                  .toList();
               final box = context.findRenderObject() as RenderBox?;
-              final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
-              Share.shareXFiles(xFiles, text: 'Compressed with PicsTools!', sharePositionOrigin: origin);
+              final origin = box != null
+                  ? box.localToGlobal(Offset.zero) & box.size
+                  : null;
+              Share.shareXFiles(
+                xFiles,
+                text: 'Compressed with PicsTools!',
+                sharePositionOrigin: origin,
+              );
             },
           ),
           const SizedBox(height: 12),
           NeoButton(
             label: 'COMPRESS ANOTHER IMAGE',
-            icon: const Icon(Icons.refresh_rounded, color: NeoColors.borderLight),
+            icon: const Icon(
+              Icons.refresh_rounded,
+              color: NeoColors.borderLight,
+            ),
             backgroundColor: NeoColors.yellow,
             fullWidth: true,
             onPressed: () => bloc.add(ResetCompressorEvent()),

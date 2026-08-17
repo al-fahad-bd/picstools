@@ -199,6 +199,12 @@ class _PdfViewContent extends StatelessWidget {
 
   void _openPdfPreviewModal(BuildContext context, File pdfFile) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final pdfBytes = pdfFile.existsSync() ? pdfFile.readAsBytesSync() : null;
+
+    if (pdfBytes == null || pdfBytes.isEmpty) {
+      NeoToast.showError(context, 'PDF file could not be loaded.');
+      return;
+    }
 
     showModalBottomSheet(
       context: context,
@@ -265,13 +271,44 @@ class _PdfViewContent extends StatelessWidget {
                 // Interactive PDF Viewer
                 Expanded(
                   child: PdfPreview(
-                    build: (format) => pdfFile.readAsBytesSync(),
+                    build: (format) => pdfBytes,
+                    dynamicLayout: false,
                     canChangePageFormat: false,
                     canChangeOrientation: false,
                     canDebug: false,
                     allowPrinting: true,
                     allowSharing: true,
                     pdfFileName: path.basename(pdfFile.path),
+                    loadingWidget: const Center(
+                      child: NeoLoader(
+                        size: 40,
+                        color: NeoColors.purple,
+                        secondaryColor: NeoColors.yellow,
+                      ),
+                    ),
+                    onError: (context, error) => Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.picture_as_pdf_rounded,
+                              color: NeoColors.purple,
+                              size: 48,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'PDF Ready for Save & Share',
+                              style: GoogleFonts.spaceGrotesk(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     scrollViewDecoration: BoxDecoration(
                       color: isDark ? NeoColors.darkBg : NeoColors.lightBg,
                     ),
@@ -864,8 +901,12 @@ class _PdfViewContent extends StatelessWidget {
             width: 84,
             height: 84,
             decoration: NeoStyles.neoDecoration(
-              backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.softPurple,
-              borderColor: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+              backgroundColor: isDark
+                  ? NeoColors.darkSurface
+                  : NeoColors.softPurple,
+              borderColor: isDark
+                  ? NeoColors.borderDark
+                  : NeoColors.borderLight,
               radius: 20,
               shadow: 4,
             ),
@@ -1015,10 +1056,14 @@ class _PdfViewContent extends StatelessWidget {
                 fullWidth: true,
                 onPressed: () {
                   final box = context.findRenderObject() as RenderBox?;
-                  final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
-                  Share.shareXFiles([
-                    XFile(state.result.pdfFile.path),
-                  ], text: 'Created with PicsTools!', sharePositionOrigin: origin);
+                  final origin = box != null
+                      ? box.localToGlobal(Offset.zero) & box.size
+                      : null;
+                  Share.shareXFiles(
+                    [XFile(state.result.pdfFile.path)],
+                    text: 'Created with PicsTools!',
+                    sharePositionOrigin: origin,
+                  );
                 },
               ),
               const SizedBox(height: 12),
