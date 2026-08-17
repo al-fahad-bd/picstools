@@ -251,26 +251,59 @@ class _ConvertViewContent extends StatelessWidget {
         children: [
           // Selected Photos Live Thumbnail Strip
           SizedBox(
-            height: 100,
+            height: 104,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: state.files.length,
               separatorBuilder: (_, _) => const SizedBox(width: 10),
               itemBuilder: (context, index) {
                 final file = state.files[index];
-                return NeoCard(
-                  backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
-                  padding: const EdgeInsets.all(4),
-                  shadowOffset: 2,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.file(
-                      file,
-                      width: 90,
-                      height: 90,
-                      fit: BoxFit.cover,
+                return Stack(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4, right: 4),
+                      child: NeoCard(
+                        backgroundColor: isDark
+                            ? NeoColors.darkSurface
+                            : NeoColors.lightSurface,
+                        padding: const EdgeInsets.all(4),
+                        shadowOffset: 2,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.file(
+                            file,
+                            width: 86,
+                            height: 86,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => bloc.add(RemoveConvertImageEvent(index)),
+                        child: Container(
+                          padding: const EdgeInsets.all(3),
+                          decoration: BoxDecoration(
+                            color: NeoColors.red,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 1.5,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.close_rounded,
+                            size: 11,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 );
               },
             ),

@@ -32,6 +32,13 @@ class SetConvertQualityEvent extends ConverterEvent {
   List<Object?> get props => [quality];
 }
 
+class RemoveConvertImageEvent extends ConverterEvent {
+  final int index;
+  const RemoveConvertImageEvent(this.index);
+  @override
+  List<Object?> get props => [index];
+}
+
 class StartConversionEvent extends ConverterEvent {}
 
 class ResetConverterEvent extends ConverterEvent {}
@@ -139,8 +146,26 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
     });
     on<SetTargetFormatEvent>(_onSetFormat);
     on<SetConvertQualityEvent>(_onSetQuality);
+    on<RemoveConvertImageEvent>(_onRemoveImage);
     on<StartConversionEvent>(_onStartConversion);
     on<ResetConverterEvent>((event, emit) => emit(ConverterInitialState()));
+  }
+
+  void _onRemoveImage(
+    RemoveConvertImageEvent event,
+    Emitter<ConverterState> emit,
+  ) {
+    if (state is! ConverterConfiguredState) return;
+    final current = state as ConverterConfiguredState;
+    if (event.index < 0 || event.index >= current.files.length) return;
+
+    final updatedFiles = List<File>.from(current.files)..removeAt(event.index);
+    if (updatedFiles.isEmpty) {
+      emit(ConverterInitialState());
+      return;
+    }
+
+    emit(current.copyWith(files: updatedFiles));
   }
 
   void _onSetFormat(SetTargetFormatEvent event, Emitter<ConverterState> emit) {
