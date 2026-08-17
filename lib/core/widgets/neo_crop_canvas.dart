@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../constants/neo_colors.dart';
 
@@ -18,9 +19,10 @@ enum CropHandleType {
 class NeoCropCanvas extends StatefulWidget {
   final File imageFile;
   final double? aspectRatio; // null = free crop
-  final int rotationAngle; // 0, 90, 180, 270
+  final num rotationAngle; // Free angle in degrees (e.g. -45.0, 12.5, 90.0)
   final bool flipHorizontal;
   final bool flipVertical;
+  final Rect? initialNormCropRect;
   final ValueChanged<Rect> onCropChanged; // Normalized rect (0.0 - 1.0)
 
   const NeoCropCanvas({
@@ -30,6 +32,7 @@ class NeoCropCanvas extends StatefulWidget {
     this.rotationAngle = 0,
     this.flipHorizontal = false,
     this.flipVertical = false,
+    this.initialNormCropRect,
     required this.onCropChanged,
   });
 
@@ -39,7 +42,8 @@ class NeoCropCanvas extends StatefulWidget {
 
 class _NeoCropCanvasState extends State<NeoCropCanvas> {
   // Normalized crop rectangle relative to image bounds (0.0 to 1.0)
-  Rect _normCropRect = const Rect.fromLTWH(0.05, 0.05, 0.9, 0.9);
+  late Rect _normCropRect;
+  bool _hasUserCustomizedCrop = false;
   CropHandleType _activeHandle = CropHandleType.none;
   Offset? _dragStartOffset;
   Rect? _initialNormRect;
@@ -48,32 +52,43 @@ class _NeoCropCanvasState extends State<NeoCropCanvas> {
   @override
   void initState() {
     super.initState();
-    _loadImageDimensions();
+    _normCropRect = widget.initialNormCropRect ?? const Rect.fromLTWH(0.05, 0.05, 0.9, 0.9);
+    _loadImageDimensions(isInitial: true);
   }
 
   @override
   void didUpdateWidget(NeoCropCanvas oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.imageFile.path != widget.imageFile.path ||
-        oldWidget.rotationAngle != widget.rotationAngle) {
-      _loadImageDimensions();
+    if (oldWidget.imageFile.path != widget.imageFile.path) {
+      _hasUserCustomizedCrop = false;
+      _normCropRect = widget.initialNormCropRect ?? const Rect.fromLTWH(0.05, 0.05, 0.9, 0.9);
+      _loadImageDimensions(isInitial: true);
+    } else if (oldWidget.rotationAngle != widget.rotationAngle) {
+      _loadImageDimensions(isInitial: false);
     } else if (oldWidget.aspectRatio != widget.aspectRatio) {
-      _applyAspectRatioConstraint();
+      _applyAspectRatioConstraint(isInitial: false);
     }
   }
 
-  void _loadImageDimensions() {
+  void _loadImageDimensions({bool isInitial = false}) {
     final image = FileImage(widget.imageFile);
     image.resolve(const ImageConfiguration()).addListener(
       ImageStreamListener((info, _) {
         if (!mounted) return;
         final rawW = info.image.width.toDouble();
         final rawH = info.image.height.toDouble();
-        final isRotated90or270 =
-            widget.rotationAngle == 90 || widget.rotationAngle == 270;
+
+        final rad = (widget.rotationAngle.abs() * math.pi) / 180.0;
+        final cosVal = math.cos(rad).abs();
+        final sinVal = math.sin(rad).abs();
+        final boundW = rawW * cosVal + rawH * sinVal;
+        final boundH = rawW * sinVal + rawH * cosVal;
+
         setState(() {
-          _imageSize = isRotated90or270 ? Size(rawH, rawW) : Size(rawW, rawH);
-          _applyAspectRatioConstraint();
+          _imageSize = Size(boundW, boundH);
+          if (isInitial || widget.aspectRatio != null) {
+            _applyAspectRatioConstraint(isInitial: isInitial);
+          }
         });
       }),
     );
@@ -104,10 +119,12 @@ class _NeoCropCanvasState extends State<NeoCropCanvas> {
     return Rect.fromLTWH(left, top, renderW, renderH);
   }
 
-  void _applyAspectRatioConstraint() {
+  void _applyAspectRatioConstraint({bool isInitial = false}) {
     if (widget.aspectRatio == null) {
-      _normCropRect = const Rect.fromLTWH(0.05, 0.05, 0.9, 0.9);
-      widget.onCropChanged(_normCropRect);
+      if (isInitial && !_hasUserCustomizedCrop && widget.initialNormCropRect == null) {
+        _normCropRect = const Rect.fromLTWH(0.05, 0.05, 0.9, 0.9);
+        widget.onCropChanged(_normCropRect);
+      }
       return;
     }
 
@@ -118,8 +135,8 @@ class _NeoCropCanvasState extends State<NeoCropCanvas> {
 
     final normAR = r / imageAR;
 
-    double normW = 0.85;
-    double normH = 0.85;
+    double normW = _normCropRect.width.clamp(0.15, 0.95);
+    double normH = _normCropRect.height.clamp(0.15, 0.95);
 
     if (normAR >= 1.0) {
       normH = (normW / normAR).clamp(0.15, 0.95);
@@ -127,8 +144,8 @@ class _NeoCropCanvasState extends State<NeoCropCanvas> {
       normW = (normH * normAR).clamp(0.15, 0.95);
     }
 
-    final l = ((1.0 - normW) / 2.0).clamp(0.0, 1.0 - normW);
-    final t = ((1.0 - normH) / 2.0).clamp(0.0, 1.0 - normH);
+    final l = _normCropRect.left.clamp(0.0, (1.0 - normW).clamp(0.0, 1.0));
+    final t = _normCropRect.top.clamp(0.0, (1.0 - normH).clamp(0.0, 1.0));
 
     setState(() {
       _normCropRect = Rect.fromLTWH(l, t, normW, normH);
@@ -276,6 +293,7 @@ class _NeoCropCanvasState extends State<NeoCropCanvas> {
     }
 
     final newRect = Rect.fromLTRB(left, top, right, bottom);
+    _hasUserCustomizedCrop = true;
     setState(() {
       _normCropRect = newRect;
     });

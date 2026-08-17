@@ -46,8 +46,8 @@ class SettingsTileGroup extends StatelessWidget {
             borderColor: isSelected
                 ? (isDark ? Colors.white : NeoColors.borderLight)
                 : (isDark
-                    ? NeoColors.borderDark.withValues(alpha: 0.5)
-                    : Colors.grey[400]!),
+                      ? NeoColors.borderDark.withValues(alpha: 0.5)
+                      : Colors.grey[400]!),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -58,8 +58,8 @@ class SettingsTileGroup extends StatelessWidget {
                 color: isSelected
                     ? NeoColors.borderLight
                     : (isDark
-                        ? NeoColors.textSecondaryDark
-                        : NeoColors.textSecondaryLight),
+                          ? NeoColors.textSecondaryDark
+                          : NeoColors.textSecondaryLight),
               ),
               const SizedBox(width: 6),
               Text(
@@ -70,8 +70,8 @@ class SettingsTileGroup extends StatelessWidget {
                   color: isSelected
                       ? NeoColors.borderLight
                       : (isDark
-                          ? NeoColors.textPrimaryDark
-                          : NeoColors.textPrimaryLight),
+                            ? NeoColors.textPrimaryDark
+                            : NeoColors.textPrimaryLight),
                 ),
               ),
             ],
@@ -84,9 +84,7 @@ class SettingsTileGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return NeoCard(
-      backgroundColor: isDark
-          ? NeoColors.darkSurface
-          : NeoColors.lightSurface,
+      backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
       child: Column(
         children: [
           // Theme Mode Selector
@@ -106,8 +104,8 @@ class SettingsTileGroup extends StatelessWidget {
                         themeMode == ThemeMode.light
                             ? Icons.light_mode_rounded
                             : (themeMode == ThemeMode.dark
-                                ? Icons.dark_mode_rounded
-                                : Icons.brightness_auto_rounded),
+                                  ? Icons.dark_mode_rounded
+                                  : Icons.brightness_auto_rounded),
                         color: isDark ? NeoColors.yellow : NeoColors.purple,
                       ),
                       const SizedBox(width: 16),
@@ -125,8 +123,8 @@ class SettingsTileGroup extends StatelessWidget {
                               themeMode == ThemeMode.system
                                   ? 'System Default (Matches device)'
                                   : (themeMode == ThemeMode.light
-                                      ? 'Light Mode'
-                                      : 'Dark Mode'),
+                                        ? 'Light Mode'
+                                        : 'Dark Mode'),
                               style: GoogleFonts.spaceGrotesk(
                                 fontSize: 11,
                                 color: isDark
@@ -170,87 +168,108 @@ class SettingsTileGroup extends StatelessWidget {
           ),
           const Divider(),
 
-          Material(
-            color: Colors.transparent,
-            child: ListTile(
-              leading: const Icon(Icons.info_outline_rounded),
-              title: Text(
-                'App Version',
-                style: GoogleFonts.spaceGrotesk(
-                  fontWeight: FontWeight.bold,
-                ),
+          InkWell(
+            onTap: onTapVersion,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              child: Row(
+                children: [
+                  const Icon(Icons.info_outline_rounded),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      'App Version',
+                      style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Text(
+                    '1.0.0',
+                    style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w600),
+                  ),
+                ],
               ),
-              trailing: Text(
-                '1.0.0',
-                style: GoogleFonts.spaceGrotesk(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              onTap: onTapVersion,
             ),
           ),
           const Divider(),
-          Material(
-            color: Colors.transparent,
-            child: ListTile(
-              leading: const Icon(Icons.shield_outlined),
-              title: Text(
-                'Privacy Policy',
-                style: GoogleFonts.spaceGrotesk(
-                  fontWeight: FontWeight.bold,
-                ),
+
+          InkWell(
+            onTap: () => context.push('/privacy_policy'),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              child: Row(
+                children: [
+                  const Icon(Icons.shield_outlined),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      'Privacy Policy',
+                      style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right_rounded),
+                ],
               ),
-              trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: () => context.push('/privacy_policy'),
             ),
           ),
           const Divider(),
-          Material(
-            color: Colors.transparent,
-            child: ListTile(
-              leading: Icon(
-                Icons.music_note_rounded,
-                color: isDark ? NeoColors.yellow : NeoColors.purple,
-              ),
-              title: Text(
-                'Background Sound',
-                style: GoogleFonts.spaceGrotesk(
-                  fontWeight: FontWeight.bold,
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.music_note_rounded,
+                  color: isDark ? NeoColors.yellow : NeoColors.purple,
                 ),
-              ),
-              subtitle: Text(
-                'Relaxing ambient music loop',
-                style: GoogleFonts.spaceGrotesk(
-                  fontSize: 11,
-                  color: isDark
-                      ? NeoColors.textSecondaryDark
-                      : NeoColors.textSecondaryLight,
-                ),
-              ),
-              trailing: NeoSwitch(
-                value: isSoundEnabled,
-                activeTrackColor: NeoColors.yellow,
-                onChanged: onToggleSound,
-              ),
-            ),
-          ),
-          if (isDeveloperUnlocked) ...[
-            const Divider(),
-            Material(
-              color: Colors.transparent,
-              child: ListTile(
-                leading: const Icon(
-                  Icons.code_rounded,
-                  color: NeoColors.cyan,
-                ),
-                title: Text(
-                  'Developer Details',
-                  style: GoogleFonts.spaceGrotesk(
-                    fontWeight: FontWeight.bold,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Background Sound',
+                        style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        'Relaxing ambient music loop',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 11,
+                          color: isDark
+                              ? NeoColors.textSecondaryDark
+                              : NeoColors.textSecondaryLight,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => context.push('/developer'),
+                NeoSwitch(
+                  value: isSoundEnabled,
+                  activeTrackColor: NeoColors.yellow,
+                  onChanged: onToggleSound,
+                ),
+              ],
+            ),
+          ),
+
+          if (isDeveloperUnlocked) ...[
+            const Divider(),
+            InkWell(
+              onTap: () => context.push('/developer'),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                child: Row(
+                  children: [
+                    const Icon(Icons.code_rounded, color: NeoColors.cyan),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        'Developer Details',
+                        style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right_rounded),
+                  ],
+                ),
               ),
             ),
           ],

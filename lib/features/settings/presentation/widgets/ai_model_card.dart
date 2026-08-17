@@ -25,9 +25,7 @@ class AiModelCard extends StatelessWidget {
     final sizeText = modelInfo?.formattedActualSize ?? '~213 MB';
 
     return NeoCard(
-      backgroundColor: isDark
-          ? NeoColors.darkSurface
-          : NeoColors.lightSurface,
+      backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
       child: Column(
         children: [
           Padding(
@@ -133,114 +131,126 @@ class AiModelCard extends StatelessWidget {
           ),
           if (isInstalled) ...[
             const Divider(),
-            Material(
-              color: Colors.transparent,
-              child: ListTile(
-                leading: const Icon(
-                  Icons.delete_outline_rounded,
-                  color: NeoColors.red,
-                ),
-                title: Text(
-                  'Delete AI Model',
-                  style: GoogleFonts.spaceGrotesk(
-                    fontWeight: FontWeight.w900,
-                    color: NeoColors.red,
-                  ),
-                ),
-                subtitle: Text(
-                  'Free up disk space. You can download it again anytime.',
-                  style: GoogleFonts.spaceGrotesk(
-                    fontSize: 11,
-                    color: isDark
-                        ? NeoColors.textSecondaryDark
-                        : NeoColors.textSecondaryLight,
-                  ),
-                ),
-                trailing: isDeleting
-                    ? const NeoLoader.button(
-                        size: 16,
-                        color: NeoColors.red,
-                        secondaryColor: NeoColors.pink,
-                        borderColor: NeoColors.red,
-                      )
-                    : const Icon(
-                        Icons.chevron_right_rounded,
-                        color: NeoColors.red,
-                      ),
-                onTap: isDeleting
-                    ? null
-                    : () async {
-                        final confirmed = await showDialog<bool>(
-                          context: context,
-                          builder: (ctx) => AlertDialog(
-                            backgroundColor: isDark
-                                ? NeoColors.darkSurface
-                                : NeoColors.lightSurface,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              side: BorderSide(
-                                color: isDark
-                                    ? NeoColors.borderDark
-                                    : NeoColors.borderLight,
-                                width: 2,
-                              ),
+            InkWell(
+              onTap: isDeleting
+                  ? null
+                  : () async {
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          backgroundColor: isDark
+                              ? NeoColors.darkSurface
+                              : NeoColors.lightSurface,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            side: BorderSide(
+                              color: isDark
+                                  ? NeoColors.borderDark
+                                  : NeoColors.borderLight,
+                              width: 2,
                             ),
-                            title: Text(
-                              'Delete AI Model?',
-                              style: GoogleFonts.spaceGrotesk(
-                                fontWeight: FontWeight.w900,
-                                color: isDark
-                                    ? NeoColors.textPrimaryDark
-                                    : NeoColors.textPrimaryLight,
-                              ),
-                            ),
-                            content: Text(
-                              'The BiRefNet Lite model file will be removed from your device. You can download it again whenever you use the Background Remover.',
-                              style: GoogleFonts.spaceGrotesk(
-                                color: isDark
-                                    ? NeoColors.textSecondaryDark
-                                    : NeoColors.textSecondaryLight,
-                              ),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(ctx, false),
-                                child: Text(
-                                  'Cancel',
-                                  style: GoogleFonts.spaceGrotesk(
-                                    fontWeight: FontWeight.bold,
-                                    color: isDark
-                                        ? NeoColors.textSecondaryDark
-                                        : NeoColors.textSecondaryLight,
-                                  ),
-                                ),
-                              ),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: NeoColors.red,
-                                  foregroundColor: Colors.white,
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                onPressed: () => Navigator.pop(ctx, true),
-                                child: Text(
-                                  'Delete',
-                                  style: GoogleFonts.spaceGrotesk(
-                                    fontWeight: FontWeight.w900,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
                           ),
-                        );
+                          title: Text(
+                            'Delete AI Model?',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontWeight: FontWeight.w900,
+                              color: isDark
+                                  ? NeoColors.textPrimaryDark
+                                  : NeoColors.textPrimaryLight,
+                            ),
+                          ),
+                          content: Text(
+                            'The BiRefNet Lite model file will be removed from your device. You can download it again whenever you use the Background Remover.',
+                            style: GoogleFonts.spaceGrotesk(
+                              color: isDark
+                                  ? NeoColors.textSecondaryDark
+                                  : NeoColors.textSecondaryLight,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx, false),
+                              child: Text(
+                                'Cancel',
+                                style: GoogleFonts.spaceGrotesk(
+                                  fontWeight: FontWeight.bold,
+                                  color: isDark
+                                      ? NeoColors.textSecondaryDark
+                                      : NeoColors.textSecondaryLight,
+                                ),
+                              ),
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: NeoColors.red,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              onPressed: () => Navigator.pop(ctx, true),
+                              child: Text(
+                                'Delete',
+                                style: GoogleFonts.spaceGrotesk(
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
 
-                        if (confirmed == true) {
-                          onDeleteModel();
-                        }
-                      },
+                      if (confirmed == true) {
+                        onDeleteModel();
+                      }
+                    },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.delete_outline_rounded,
+                      color: NeoColors.red,
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Delete AI Model',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontWeight: FontWeight.w900,
+                              color: NeoColors.red,
+                            ),
+                          ),
+                          Text(
+                            'Free up disk space. You can download it again anytime.',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 11,
+                              color: isDark
+                                  ? NeoColors.textSecondaryDark
+                                  : NeoColors.textSecondaryLight,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    isDeleting
+                        ? const NeoLoader.button(
+                            size: 16,
+                            color: NeoColors.red,
+                            secondaryColor: NeoColors.pink,
+                            borderColor: NeoColors.red,
+                          )
+                        : const Icon(
+                            Icons.chevron_right_rounded,
+                            color: NeoColors.red,
+                          ),
+                  ],
+                ),
               ),
             ),
           ],

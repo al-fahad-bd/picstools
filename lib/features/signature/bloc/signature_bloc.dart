@@ -49,9 +49,62 @@ class SetSolidBgColorEvent extends SignatureEvent {
 
 class ScanPaperSignatureEvent extends SignatureEvent {
   final File photoFile;
-  const ScanPaperSignatureEvent(this.photoFile);
+  final double cropXRatio;
+  final double cropYRatio;
+  final double cropWidthRatio;
+  final double cropHeightRatio;
+  final num rotationAngle;
+
+  const ScanPaperSignatureEvent({
+    required this.photoFile,
+    this.cropXRatio = 0.0,
+    this.cropYRatio = 0.0,
+    this.cropWidthRatio = 1.0,
+    this.cropHeightRatio = 1.0,
+    this.rotationAngle = 0,
+  });
+
   @override
-  List<Object?> get props => [photoFile];
+  List<Object?> get props => [
+        photoFile,
+        cropXRatio,
+        cropYRatio,
+        cropWidthRatio,
+        cropHeightRatio,
+        rotationAngle,
+      ];
+}
+
+class AdjustSignatureEvent extends SignatureEvent {
+  final double cropXRatio;
+  final double cropYRatio;
+  final double cropWidthRatio;
+  final double cropHeightRatio;
+  final num rotationAngle;
+
+  const AdjustSignatureEvent({
+    required this.cropXRatio,
+    required this.cropYRatio,
+    required this.cropWidthRatio,
+    required this.cropHeightRatio,
+    this.rotationAngle = 0,
+  });
+
+  @override
+  List<Object?> get props => [
+        cropXRatio,
+        cropYRatio,
+        cropWidthRatio,
+        cropHeightRatio,
+        rotationAngle,
+      ];
+}
+
+class UpdateSignatureResultEvent extends SignatureEvent {
+  final SignatureExportResult result;
+  const UpdateSignatureResultEvent(this.result);
+  @override
+  List<Object?> get props => [result];
 }
 
 class StartExportSignatureEvent extends SignatureEvent {
@@ -144,6 +197,8 @@ class SignatureBloc extends Bloc<SignatureEvent, SignatureState> {
     on<SetInkColorEvent>(_onSetInkColor);
     on<SetSolidBgColorEvent>(_onSetBgColor);
     on<ScanPaperSignatureEvent>(_onScanPaper);
+    on<AdjustSignatureEvent>(_onAdjustSignature);
+    on<UpdateSignatureResultEvent>(_onUpdateResult);
     on<StartExportSignatureEvent>(_onStartExport);
     on<ResetSignatureEvent>((event, emit) => emit(const SignatureInitialState()));
   }
@@ -222,7 +277,14 @@ class SignatureBloc extends Bloc<SignatureEvent, SignatureState> {
   Future<void> _onScanPaper(ScanPaperSignatureEvent event, Emitter<SignatureState> emit) async {
     emit(SignatureProcessingState());
     try {
-      final res = await signatureService.scanPaperSignature(event.photoFile);
+      final res = await signatureService.scanPaperSignature(
+        photoFile: event.photoFile,
+        cropXRatio: event.cropXRatio,
+        cropYRatio: event.cropYRatio,
+        cropWidthRatio: event.cropWidthRatio,
+        cropHeightRatio: event.cropHeightRatio,
+        rotationAngle: event.rotationAngle,
+      );
       await historyService.addHistoryItem(HistoryItem(
         id: '${DateTime.now().millisecondsSinceEpoch}',
         toolName: 'Scanned Digital Signature',
@@ -236,6 +298,41 @@ class SignatureBloc extends Bloc<SignatureEvent, SignatureState> {
     } catch (e) {
       emit(SignatureErrorState("Paper signature extraction failed: ${e.toString()}"));
     }
+  }
+
+  Future<void> _onAdjustSignature(AdjustSignatureEvent event, Emitter<SignatureState> emit) async {
+    if (state is! SignatureSuccessState) return;
+    final current = state as SignatureSuccessState;
+
+    emit(SignatureProcessingState());
+    try {
+      final res = await signatureService.adjustSignature(
+        transparentPngFile: current.result.transparentPngFile,
+        cropXRatio: event.cropXRatio,
+        cropYRatio: event.cropYRatio,
+        cropWidthRatio: event.cropWidthRatio,
+        cropHeightRatio: event.cropHeightRatio,
+        rotationAngle: event.rotationAngle,
+      );
+
+      await historyService.addHistoryItem(HistoryItem(
+        id: '${DateTime.now().millisecondsSinceEpoch}',
+        toolName: 'Adjusted Signature',
+        originalPath: current.result.transparentPngFile.path,
+        processedPath: res.transparentPngFile.path,
+        originalSizeBytes: current.result.fileSizeBytes,
+        processedSizeBytes: res.fileSizeBytes,
+        timestamp: DateTime.now(),
+      ));
+
+      emit(SignatureSuccessState(res));
+    } catch (e) {
+      emit(SignatureErrorState("Signature adjustment failed: ${e.toString()}"));
+    }
+  }
+
+  void _onUpdateResult(UpdateSignatureResultEvent event, Emitter<SignatureState> emit) {
+    emit(SignatureSuccessState(event.result));
   }
 
   Future<void> _onStartExport(StartExportSignatureEvent event, Emitter<SignatureState> emit) async {

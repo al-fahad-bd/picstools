@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -9,12 +10,14 @@ import '../../../../core/widgets/neo_card.dart';
 import '../../../../core/widgets/neo_badge.dart';
 import '../../../../core/widgets/neo_button.dart';
 import '../../../../core/widgets/neo_toast.dart';
+import '../../../../core/widgets/neo_crop_canvas.dart';
 import '../../../../core/utils/file_utils.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/file_save_service.dart';
 import '../../bloc/signature_bloc.dart';
 import '../../services/signature_service.dart';
 import 'checkered_pattern_painter.dart';
+import 'neo_rotation_control.dart';
 
 class SignatureSuccessView extends StatelessWidget {
   final SignatureSuccessState state;
@@ -49,145 +52,121 @@ class SignatureSuccessView extends StatelessWidget {
     }
   }
 
-  void _showSaveOptionsModal(
-    BuildContext context,
-    SignatureExportResult res,
-  ) {
+  void _showSaveOptionsModal(BuildContext context, SignatureExportResult res) {
     showModalBottomSheet(
       context: context,
       useSafeArea: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) {
         return SafeArea(
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(24),
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
+                border: Border.all(
+                  color: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+                  width: 2.5,
+                ),
               ),
-              border: Border.all(
-                color: isDark ? NeoColors.borderDark : NeoColors.borderLight,
-                width: 2.5,
-              ),
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Save Signature Options',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Select format option to download to your device',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 12,
-                      color: isDark
-                          ? NeoColors.textSecondaryDark
-                          : NeoColors.textSecondaryLight,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: NeoStyles.neoDecoration(
-                        backgroundColor: NeoColors.cyan,
-                        radius: 10,
-                        shadow: 1.5,
-                      ),
-                      child: const Icon(
-                        Icons.texture_rounded,
-                        color: NeoColors.borderLight,
-                      ),
-                    ),
-                    title: Text(
-                      'Transparent PNG',
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Save Signature Options',
                       style: GoogleFonts.spaceGrotesk(
-                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
                       ),
                     ),
-                    subtitle: Text(
-                      'Ideal for overlaying on documents & dark backgrounds',
-                      style: GoogleFonts.spaceGrotesk(fontSize: 11),
-                    ),
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      _saveSignatureMultiple(context, [
-                        res.transparentPngFile,
-                      ], 'Transparent PNG');
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: NeoStyles.neoDecoration(
-                        backgroundColor: NeoColors.yellow,
-                        radius: 10,
-                        shadow: 1.5,
-                      ),
-                      child: const Icon(
-                        Icons.crop_square_rounded,
-                        color: NeoColors.borderLight,
-                      ),
-                    ),
-                    title: Text(
-                      'White Background Only (JPG)',
+                    const SizedBox(height: 4),
+                    Text(
+                      'Select format option to download to your device',
                       style: GoogleFonts.spaceGrotesk(
-                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        color: isDark
+                            ? NeoColors.textSecondaryDark
+                            : NeoColors.textSecondaryLight,
                       ),
                     ),
-                    subtitle: Text(
-                      'Ideal for forms, printing & official records',
-                      style: GoogleFonts.spaceGrotesk(fontSize: 11),
-                    ),
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      _saveSignatureMultiple(context, [
-                        res.solidBackgroundFile,
-                      ], 'White Background Signature');
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: NeoStyles.neoDecoration(
-                        backgroundColor: NeoColors.green,
-                        radius: 10,
-                        shadow: 1.5,
+                    const SizedBox(height: 16),
+                    _buildModalFormatTile(
+                      leadingIcon: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: NeoStyles.neoDecoration(
+                          backgroundColor: NeoColors.cyan,
+                          radius: 10,
+                          shadow: 1.5,
+                        ),
+                        child: const Icon(
+                          Icons.texture_rounded,
+                          color: NeoColors.borderLight,
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.style_rounded,
-                        color: NeoColors.borderLight,
+                      title: 'Transparent PNG',
+                      subtitle: 'Ideal for overlaying on documents & dark backgrounds',
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        _saveSignatureMultiple(context, [
+                          res.transparentPngFile,
+                        ], 'Transparent PNG');
+                      },
+                    ),
+                    const Divider(),
+                    _buildModalFormatTile(
+                      leadingIcon: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: NeoStyles.neoDecoration(
+                          backgroundColor: NeoColors.yellow,
+                          radius: 10,
+                          shadow: 1.5,
+                        ),
+                        child: const Icon(
+                          Icons.crop_square_rounded,
+                          color: NeoColors.borderLight,
+                        ),
                       ),
+                      title: 'White Background Only (JPG)',
+                      subtitle: 'Ideal for forms, printing & official records',
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        _saveSignatureMultiple(context, [
+                          res.solidBackgroundFile,
+                        ], 'White Background Signature');
+                      },
                     ),
-                    title: Text(
-                      'Save Both Versions (Transparent & White)',
-                      style: GoogleFonts.spaceGrotesk(
-                        fontWeight: FontWeight.bold,
+                    const Divider(),
+                    _buildModalFormatTile(
+                      leadingIcon: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: NeoStyles.neoDecoration(
+                          backgroundColor: NeoColors.green,
+                          radius: 10,
+                          shadow: 1.5,
+                        ),
+                        child: const Icon(
+                          Icons.style_rounded,
+                          color: NeoColors.borderLight,
+                        ),
                       ),
+                      title: 'Save Both Versions (Transparent & White)',
+                      subtitle: 'Downloads Transparent PNG & White JPG',
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        _saveSignatureMultiple(context, [
+                          res.transparentPngFile,
+                          res.solidBackgroundFile,
+                        ], 'Both Signature Formats');
+                      },
                     ),
-                    subtitle: Text(
-                      'Downloads Transparent PNG & White JPG',
-                      style: GoogleFonts.spaceGrotesk(fontSize: 11),
-                    ),
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      _saveSignatureMultiple(context, [
-                        res.transparentPngFile,
-                        res.solidBackgroundFile,
-                      ], 'Both Signature Formats');
-                    },
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -196,170 +175,199 @@ class SignatureSuccessView extends StatelessWidget {
     );
   }
 
-  void _showShareOptionsModal(
-    BuildContext context,
-    SignatureExportResult res,
-  ) {
+  void _showShareOptionsModal(BuildContext context, SignatureExportResult res) {
     showModalBottomSheet(
       context: context,
       useSafeArea: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) {
         return SafeArea(
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(24),
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
+                border: Border.all(
+                  color: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+                  width: 2.5,
+                ),
               ),
-              border: Border.all(
-                color: isDark ? NeoColors.borderDark : NeoColors.borderLight,
-                width: 2.5,
-              ),
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Share Signature Options',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Select which signature format you want to share',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 12,
-                      color: isDark
-                          ? NeoColors.textSecondaryDark
-                          : NeoColors.textSecondaryLight,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: NeoStyles.neoDecoration(
-                        backgroundColor: NeoColors.cyan,
-                        radius: 10,
-                        shadow: 1.5,
-                      ),
-                      child: const Icon(
-                        Icons.texture_rounded,
-                        color: NeoColors.borderLight,
-                      ),
-                    ),
-                    title: Text(
-                      'Share Transparent PNG Only',
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Share Signature Options',
                       style: GoogleFonts.spaceGrotesk(
-                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
                       ),
                     ),
-                    subtitle: Text(
-                      'Transparent background signature',
-                      style: GoogleFonts.spaceGrotesk(fontSize: 11),
-                    ),
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      final box = context.findRenderObject() as RenderBox?;
-                      final origin = box != null
-                          ? box.localToGlobal(Offset.zero) & box.size
-                          : null;
-                      Share.shareXFiles(
-                        [XFile(res.transparentPngFile.path)],
-                        text: 'Transparent Digital Signature',
-                        sharePositionOrigin: origin,
-                      );
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: NeoStyles.neoDecoration(
-                        backgroundColor: NeoColors.yellow,
-                        radius: 10,
-                        shadow: 1.5,
-                      ),
-                      child: const Icon(
-                        Icons.crop_square_rounded,
-                        color: NeoColors.borderLight,
-                      ),
-                    ),
-                    title: Text(
-                      'Share White Background Only (JPG)',
+                    const SizedBox(height: 4),
+                    Text(
+                      'Select which signature format you want to share',
                       style: GoogleFonts.spaceGrotesk(
-                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        color: isDark
+                            ? NeoColors.textSecondaryDark
+                            : NeoColors.textSecondaryLight,
                       ),
                     ),
-                    subtitle: Text(
-                      'Guaranteed visibility on all apps & documents',
-                      style: GoogleFonts.spaceGrotesk(fontSize: 11),
-                    ),
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      final box = context.findRenderObject() as RenderBox?;
-                      final origin = box != null
-                          ? box.localToGlobal(Offset.zero) & box.size
-                          : null;
-                      Share.shareXFiles(
-                        [XFile(res.solidBackgroundFile.path)],
-                        text: 'White Background Signature',
-                        sharePositionOrigin: origin,
-                      );
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: NeoStyles.neoDecoration(
-                        backgroundColor: NeoColors.green,
-                        radius: 10,
-                        shadow: 1.5,
+                    const SizedBox(height: 16),
+                    _buildModalFormatTile(
+                      leadingIcon: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: NeoStyles.neoDecoration(
+                          backgroundColor: NeoColors.cyan,
+                          radius: 10,
+                          shadow: 1.5,
+                        ),
+                        child: const Icon(
+                          Icons.texture_rounded,
+                          color: NeoColors.borderLight,
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.style_rounded,
-                        color: NeoColors.borderLight,
+                      title: 'Share Transparent PNG Only',
+                      subtitle: 'Transparent background signature',
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        final box = context.findRenderObject() as RenderBox?;
+                        final origin = box != null
+                            ? box.localToGlobal(Offset.zero) & box.size
+                            : null;
+                        Share.shareXFiles(
+                          [XFile(res.transparentPngFile.path)],
+                          text: 'Transparent Digital Signature',
+                          sharePositionOrigin: origin,
+                        );
+                      },
+                    ),
+                    const Divider(),
+                    _buildModalFormatTile(
+                      leadingIcon: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: NeoStyles.neoDecoration(
+                          backgroundColor: NeoColors.yellow,
+                          radius: 10,
+                          shadow: 1.5,
+                        ),
+                        child: const Icon(
+                          Icons.crop_square_rounded,
+                          color: NeoColors.borderLight,
+                        ),
                       ),
+                      title: 'Share White Background Only (JPG)',
+                      subtitle: 'Guaranteed visibility on all apps & documents',
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        final box = context.findRenderObject() as RenderBox?;
+                        final origin = box != null
+                            ? box.localToGlobal(Offset.zero) & box.size
+                            : null;
+                        Share.shareXFiles(
+                          [XFile(res.solidBackgroundFile.path)],
+                          text: 'White Background Signature',
+                          sharePositionOrigin: origin,
+                        );
+                      },
                     ),
-                    title: Text(
-                      'Share Both Formats',
-                      style: GoogleFonts.spaceGrotesk(
-                        fontWeight: FontWeight.bold,
+                    const Divider(),
+                    _buildModalFormatTile(
+                      leadingIcon: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: NeoStyles.neoDecoration(
+                          backgroundColor: NeoColors.green,
+                          radius: 10,
+                          shadow: 1.5,
+                        ),
+                        child: const Icon(
+                          Icons.style_rounded,
+                          color: NeoColors.borderLight,
+                        ),
                       ),
+                      title: 'Share Both Formats',
+                      subtitle: 'Shares Transparent PNG & White JPG',
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        final box = context.findRenderObject() as RenderBox?;
+                        final origin = box != null
+                            ? box.localToGlobal(Offset.zero) & box.size
+                            : null;
+                        Share.shareXFiles(
+                          [
+                            XFile(res.transparentPngFile.path),
+                            XFile(res.solidBackgroundFile.path),
+                          ],
+                          text: 'Digital Signature Files (Transparent & White)',
+                          sharePositionOrigin: origin,
+                        );
+                      },
                     ),
-                    subtitle: Text(
-                      'Shares Transparent PNG & White JPG',
-                      style: GoogleFonts.spaceGrotesk(fontSize: 11),
-                    ),
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      final box = context.findRenderObject() as RenderBox?;
-                      final origin = box != null
-                          ? box.localToGlobal(Offset.zero) & box.size
-                          : null;
-                      Share.shareXFiles(
-                        [
-                          XFile(res.transparentPngFile.path),
-                          XFile(res.solidBackgroundFile.path),
-                        ],
-                        text: 'Digital Signatures (Transparent & White BG)',
-                        sharePositionOrigin: origin,
-                      );
-                    },
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildModalFormatTile({
+    required Widget leadingIcon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        child: Row(
+          children: [
+            leadingIcon,
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.spaceGrotesk(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: isDark
+                          ? NeoColors.textPrimaryDark
+                          : NeoColors.textPrimaryLight,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 11,
+                      color: isDark
+                          ? NeoColors.textSecondaryDark
+                          : NeoColors.textSecondaryLight,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -516,6 +524,164 @@ class SignatureSuccessView extends StatelessWidget {
     );
   }
 
+  void _showCropRotateModal(BuildContext context, SignatureExportResult res) {
+    double baseRotation90 = 0.0;
+    double fineAngle = 0.0;
+    Rect normCropRect = const Rect.fromLTWH(0.02, 0.02, 0.96, 0.96);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (modalCtx) {
+        return StatefulBuilder(
+          builder: (ctx, setModalState) {
+            final totalAngle = baseRotation90 + fineAngle;
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.88,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
+                border: Border.all(
+                  color: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+                  width: 2.5,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Crop & Rotate Signature',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          Text(
+                            'Trim unwanted parts and align orientation',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 12,
+                              color: isDark
+                                  ? NeoColors.textSecondaryDark
+                                  : NeoColors.textSecondaryLight,
+                            ),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close_rounded),
+                        onPressed: () => Navigator.pop(modalCtx),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Crop canvas on transparent PNG
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isDark
+                              ? NeoColors.borderDark
+                              : NeoColors.borderLight,
+                          width: 2,
+                        ),
+                        color: isDark
+                            ? Colors.black38
+                            : const Color(0xFFE2E8F0),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(14),
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: CustomPaint(
+                                painter: CheckeredPatternPainter(
+                                  squareSize: 10,
+                                ),
+                              ),
+                            ),
+                            Positioned.fill(
+                              child: NeoCropCanvas(
+                                imageFile: res.transparentPngFile,
+                                rotationAngle: totalAngle,
+                                initialNormCropRect: normCropRect,
+                                onCropChanged: (rect) {
+                                  normCropRect = rect;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Continuous Rotation & Straightening Panel
+                  NeoRotationControl(
+                    baseRotation90: baseRotation90,
+                    fineAngle: fineAngle,
+                    isDark: isDark,
+                    onFineAngleChanged: (val) {
+                      setModalState(() => fineAngle = val);
+                    },
+                    onRotate90: () {
+                      setModalState(() {
+                        baseRotation90 = (baseRotation90 + 90.0) % 360.0;
+                      });
+                    },
+                    onReset: () {
+                      setModalState(() {
+                        baseRotation90 = 0.0;
+                        fineAngle = 0.0;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Apply changes button
+                  NeoButton(
+                    label: 'APPLY CHANGES',
+                    icon: const Icon(
+                      Icons.check_rounded,
+                      color: NeoColors.borderLight,
+                    ),
+                    backgroundColor: NeoColors.green,
+                    fullWidth: true,
+                    onPressed: () {
+                      Navigator.pop(modalCtx);
+                      context.read<SignatureBloc>().add(
+                        AdjustSignatureEvent(
+                          cropXRatio: normCropRect.left,
+                          cropYRatio: normCropRect.top,
+                          cropWidthRatio: normCropRect.width,
+                          cropHeightRatio: normCropRect.height,
+                          rotationAngle: totalAngle,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final res = state.result;
@@ -651,7 +817,20 @@ class SignatureSuccessView extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 24),
+
+          // Crop & Rotate Action Button
+          NeoButton(
+            label: 'CROP & ROTATE SIGNATURE',
+            icon: const Icon(
+              Icons.crop_rotate_rounded,
+              color: NeoColors.borderLight,
+            ),
+            backgroundColor: NeoColors.pink,
+            fullWidth: true,
+            onPressed: () => _showCropRotateModal(context, res),
+          ),
+          const SizedBox(height: 12),
 
           NeoButton(
             label: 'SAVE TO DEVICE',

@@ -1,22 +1,83 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/constants/neo_styles.dart';
 import '../../../../core/widgets/neo_card.dart';
+import '../../../../core/widgets/neo_button.dart';
+import '../../../../core/widgets/neo_badge.dart';
+import '../../../../core/widgets/neo_crop_canvas.dart';
+import '../../../../core/services/image_picker_service.dart';
+import '../../../../core/services/service_locator.dart';
 
-class SignatureScanView extends StatelessWidget {
+import 'neo_rotation_control.dart';
+
+typedef OnExtractSignatureCallback = void Function({
+  required File photoFile,
+  required double cropXRatio,
+  required double cropYRatio,
+  required double cropWidthRatio,
+  required double cropHeightRatio,
+  required num rotationAngle,
+});
+
+class SignatureScanView extends StatefulWidget {
   final bool isDark;
-  final void Function(BuildContext context, ImageSource source) onPickImage;
+  final OnExtractSignatureCallback onExtractSignature;
 
   const SignatureScanView({
     super.key,
     required this.isDark,
-    required this.onPickImage,
+    required this.onExtractSignature,
   });
 
   @override
+  State<SignatureScanView> createState() => _SignatureScanViewState();
+}
+
+class _SignatureScanViewState extends State<SignatureScanView> {
+  File? _selectedFile;
+  double _baseRotation90 = 0.0;
+  double _fineAngle = 0.0;
+  Rect _normCropRect = const Rect.fromLTWH(0.05, 0.05, 0.9, 0.9);
+
+  double get _totalRotationAngle => (_baseRotation90 + _fineAngle);
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = getIt<ImagePickerService>();
+    final file = await picker.pickSingleImage(source: source);
+    if (file != null && mounted) {
+      setState(() {
+        _selectedFile = file;
+        _baseRotation90 = 0.0;
+        _fineAngle = 0.0;
+        _normCropRect = const Rect.fromLTWH(0.05, 0.05, 0.9, 0.9);
+      });
+    }
+  }
+
+  void _processAndExtract() {
+    if (_selectedFile == null) return;
+    widget.onExtractSignature(
+      photoFile: _selectedFile!,
+      cropXRatio: _normCropRect.left,
+      cropYRatio: _normCropRect.top,
+      cropWidthRatio: _normCropRect.width,
+      cropHeightRatio: _normCropRect.height,
+      rotationAngle: _totalRotationAngle,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_selectedFile != null) {
+      return _buildCropAndAlignState(context);
+    }
+    return _buildSelectionState(context);
+  }
+
+  Widget _buildSelectionState(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
@@ -48,12 +109,12 @@ class SignatureScanView extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
-              'Sign on any white paper with a pen, then take a photo. PicsTools will auto-clean shadows & extract pure vector-like ink.',
+              'Sign on any white paper with a pen, then snap a photo. You can crop, rotate, and align it perfectly before automatic ink extraction.',
               textAlign: TextAlign.center,
               style: GoogleFonts.spaceGrotesk(
                 fontSize: 13,
                 height: 1.4,
-                color: isDark
+                color: widget.isDark
                     ? NeoColors.textSecondaryDark
                     : NeoColors.textSecondaryLight,
               ),
@@ -64,7 +125,7 @@ class SignatureScanView extends StatelessWidget {
           NeoCard(
             backgroundColor: NeoColors.softYellow,
             shadowOffset: 4,
-            onTap: () => onPickImage(context, ImageSource.camera),
+            onTap: () => _pickImage(ImageSource.camera),
             child: Row(
               children: [
                 Container(
@@ -93,7 +154,7 @@ class SignatureScanView extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Instant auto-background removal',
+                        'Snap photo with live crop & alignment',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 12,
                           color: NeoColors.borderLight.withValues(alpha: 0.8),
@@ -114,7 +175,7 @@ class SignatureScanView extends StatelessWidget {
           NeoCard(
             backgroundColor: NeoColors.softPurple,
             shadowOffset: 4,
-            onTap: () => onPickImage(context, ImageSource.gallery),
+            onTap: () => _pickImage(ImageSource.gallery),
             child: Row(
               children: [
                 Container(
@@ -143,7 +204,7 @@ class SignatureScanView extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Select existing photo of signature',
+                        'Select existing photo to crop & scan',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 12,
                           color: NeoColors.borderLight.withValues(alpha: 0.8),
@@ -158,6 +219,154 @@ class SignatureScanView extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCropAndAlignState(BuildContext context) {
+    final formattedAngle = _totalRotationAngle == _totalRotationAngle.roundToDouble()
+        ? '${_totalRotationAngle.toInt()}°'
+        : '${_totalRotationAngle.toStringAsFixed(1)}°';
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Header info bar
+          NeoCard(
+            backgroundColor: NeoColors.softYellow,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            shadowOffset: 3,
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.crop_rotate_rounded,
+                  size: 22,
+                  color: NeoColors.borderLight,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Crop & Align Signature',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w900,
+                          color: NeoColors.borderLight,
+                        ),
+                      ),
+                      Text(
+                        'Straighten any tilt and crop unwanted marks',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 11,
+                          color: NeoColors.borderLight.withValues(alpha: 0.8),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                NeoBadge(
+                  label: formattedAngle,
+                  backgroundColor: NeoColors.cyan,
+                  fontSize: 11,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+
+          // Interactive Crop Canvas Frame
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: widget.isDark
+                      ? NeoColors.borderDark
+                      : NeoColors.borderLight,
+                  width: 2.5,
+                ),
+                color: widget.isDark ? Colors.black26 : Colors.black12,
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(13),
+                child: NeoCropCanvas(
+                  imageFile: _selectedFile!,
+                  rotationAngle: _totalRotationAngle,
+                  initialNormCropRect: _normCropRect,
+                  onCropChanged: (rect) {
+                    _normCropRect = rect;
+                  },
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+
+          // Continuous Rotation & Straightening Panel
+          NeoRotationControl(
+            baseRotation90: _baseRotation90,
+            fineAngle: _fineAngle,
+            isDark: widget.isDark,
+            onFineAngleChanged: (val) {
+              setState(() => _fineAngle = val);
+            },
+            onRotate90: () {
+              setState(() {
+                _baseRotation90 = (_baseRotation90 + 90.0) % 360.0;
+              });
+            },
+            onReset: () {
+              setState(() {
+                _baseRotation90 = 0.0;
+                _fineAngle = 0.0;
+              });
+            },
+          ),
+          const SizedBox(height: 10),
+
+          // Action row: Change Photo & Extract Signature
+          Row(
+            children: [
+              NeoButton(
+                label: 'CHANGE PHOTO',
+                icon: const Icon(
+                  Icons.photo_library_outlined,
+                  size: 16,
+                  color: NeoColors.borderLight,
+                ),
+                backgroundColor: widget.isDark
+                    ? NeoColors.darkSurface
+                    : NeoColors.lightSurface,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                onPressed: () {
+                  setState(() {
+                    _selectedFile = null;
+                    _baseRotation90 = 0.0;
+                    _fineAngle = 0.0;
+                  });
+                },
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: NeoButton(
+                  label: 'EXTRACT SIGNATURE',
+                  icon: const Icon(
+                    Icons.auto_fix_high_rounded,
+                    size: 16,
+                    color: NeoColors.borderLight,
+                  ),
+                  backgroundColor: NeoColors.yellow,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  onPressed: _processAndExtract,
+                ),
+              ),
+            ],
           ),
         ],
       ),

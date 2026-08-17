@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/constants/neo_styles.dart';
@@ -10,7 +9,6 @@ import '../../../../core/widgets/neo_back_button.dart';
 import '../../../../core/widgets/neo_toast.dart';
 import '../../../../core/widgets/neo_loader.dart';
 import '../../../../core/services/service_locator.dart';
-import '../../../../core/services/image_picker_service.dart';
 import '../../bloc/signature_bloc.dart';
 import '../widgets/signature_mode_selection.dart';
 import '../widgets/signature_draw_view.dart';
@@ -41,18 +39,6 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
   String?
   _selectedMode; // null = Selection screen, 'draw' = Draw Canvas, 'scan' = Scan Paper
   final GlobalKey _canvasKey = GlobalKey();
-
-  Future<void> _scanPaperSignature(
-    BuildContext context,
-    ImageSource source,
-  ) async {
-    final picker = getIt<ImagePickerService>();
-    final bloc = context.read<SignatureBloc>();
-    final file = await picker.pickSingleImage(source: source);
-    if (file != null) {
-      bloc.add(ScanPaperSignatureEvent(file));
-    }
-  }
 
   void _handleBackPress(BuildContext context, SignatureState state) {
     final bloc = context.read<SignatureBloc>();
@@ -143,7 +129,23 @@ class _SignatureViewContentState extends State<_SignatureViewContent> {
       } else if (_selectedMode == 'scan') {
         return SignatureScanView(
           isDark: isDark,
-          onPickImage: _scanPaperSignature,
+          onExtractSignature: ({
+            required photoFile,
+            required cropXRatio,
+            required cropYRatio,
+            required cropWidthRatio,
+            required cropHeightRatio,
+            required rotationAngle,
+          }) {
+            context.read<SignatureBloc>().add(ScanPaperSignatureEvent(
+                  photoFile: photoFile,
+                  cropXRatio: cropXRatio,
+                  cropYRatio: cropYRatio,
+                  cropWidthRatio: cropWidthRatio,
+                  cropHeightRatio: cropHeightRatio,
+                  rotationAngle: rotationAngle,
+                ));
+          },
         );
       } else {
         return SignatureModeSelection(

@@ -29,7 +29,7 @@ class ImageCropperService {
     required double cropYRatio,
     required double cropWidthRatio,
     required double cropHeightRatio,
-    int rotationAngle = 0,
+    num rotationAngle = 0,
     bool flipHorizontal = false,
     bool flipVertical = false,
   }) async {
@@ -71,7 +71,7 @@ Map<String, dynamic> _cropWorkerIsolate(Map<String, dynamic> params) {
   final cropYRatio = (params['cropYRatio'] as num).toDouble();
   final cropWidthRatio = (params['cropWidthRatio'] as num).toDouble();
   final cropHeightRatio = (params['cropHeightRatio'] as num).toDouble();
-  final rotationAngle = params['rotationAngle'] as int;
+  final rotationAngle = params['rotationAngle'] as num;
   final flipHorizontal = params['flipHorizontal'] as bool;
   final flipVertical = params['flipVertical'] as bool;
   final ext = params['ext'] as String;
