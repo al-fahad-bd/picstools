@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/services/history_service.dart';
+import '../../../../core/services/service_locator.dart';
+import '../../../settings/presentation/bloc/settings_bloc.dart';
 import '../../domain/entities/ai_model_info.dart';
 import '../../domain/usecases/cancel_model_download_usecase.dart';
 import '../../domain/usecases/check_model_status_usecase.dart';
@@ -97,6 +99,9 @@ class BackgroundRemoverBloc
       final updatedInfo = await checkModelStatusUseCase();
       _cachedModelInfo = updatedInfo;
       debugPrint('[BackgroundRemoverBloc] Model download completed successfully. ModelReady.');
+      if (getIt.isRegistered<SettingsBloc>()) {
+        getIt<SettingsBloc>().add(RefreshAiModelStatusEvent());
+      }
       emit(ModelReadyState(modelInfo: updatedInfo));
     } catch (e, stackTrace) {
       debugPrint('════════════════════════════════════════════════════════════');
@@ -139,6 +144,9 @@ class BackgroundRemoverBloc
       final info = await checkModelStatusUseCase();
       _cachedModelInfo = info;
       debugPrint('[BackgroundRemoverBloc] Model deleted.');
+      if (getIt.isRegistered<SettingsBloc>()) {
+        getIt<SettingsBloc>().add(RefreshAiModelStatusEvent());
+      }
       emit(ModelNotDownloadedState(info));
     } catch (e, stackTrace) {
       debugPrint('════════════════════════════════════════════════════════════');

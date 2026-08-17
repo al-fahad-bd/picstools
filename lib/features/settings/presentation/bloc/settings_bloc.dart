@@ -232,9 +232,27 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     RefreshAiModelStatusEvent event,
     Emitter<SettingsState> emit,
   ) async {
-    if (state is! SettingsLoadedState) return;
-    final current = state as SettingsLoadedState;
     final modelInfo = await modelStorageDataSource.getStoredModelInfo();
-    emit(current.copyWith(aiModelInfo: modelInfo, clearToast: true));
+    if (state is SettingsLoadedState) {
+      final current = state as SettingsLoadedState;
+      emit(current.copyWith(aiModelInfo: modelInfo, clearToast: true));
+    } else {
+      final isSound = audioService.isSoundEnabled;
+      final isDevUnlocked = prefs.getBool('developer_mode_unlocked') ?? false;
+      final modeStr = prefs.getString('app_theme_mode');
+      ThemeMode themeMode = ThemeMode.system;
+      if (modeStr == 'light') {
+        themeMode = ThemeMode.light;
+      } else if (modeStr == 'dark') {
+        themeMode = ThemeMode.dark;
+      }
+
+      emit(SettingsLoadedState(
+        isSoundEnabled: isSound,
+        isDeveloperUnlocked: isDevUnlocked,
+        themeMode: themeMode,
+        aiModelInfo: modelInfo,
+      ));
+    }
   }
 }

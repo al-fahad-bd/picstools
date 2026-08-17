@@ -15,7 +15,7 @@ class SettingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: getIt<SettingsBloc>(),
+      value: getIt<SettingsBloc>()..add(RefreshAiModelStatusEvent()),
       child: const _SettingsViewContent(),
     );
   }
