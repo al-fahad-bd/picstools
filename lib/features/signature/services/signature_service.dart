@@ -29,7 +29,9 @@ class SignatureService {
     required Color solidBgColor,
   }) async {
     if (strokes.isEmpty) {
-      throw Exception('Signature canvas is empty. Please draw a signature first.');
+      throw Exception(
+        'Signature canvas is empty. Please draw a signature first.',
+      );
     }
 
     final tempDir = await getTemporaryDirectory();
@@ -39,7 +41,11 @@ class SignatureService {
     final strokeDataList = strokes.map((s) {
       return {
         'points': s.points.map((pt) => [pt.dx, pt.dy]).toList(),
-        'color': [(s.color.r * 255).round(), (s.color.g * 255).round(), (s.color.b * 255).round()],
+        'color': [
+          (s.color.r * 255).round(),
+          (s.color.g * 255).round(),
+          (s.color.b * 255).round(),
+        ],
         'strokeWidth': s.strokeWidth,
       };
     }).toList();
@@ -151,73 +157,107 @@ Map<String, dynamic> _exportDrawnSignatureIsolate(Map<String, dynamic> params) {
     }
   }
 
+  // Add 16px logical padding around ink bounds
   const padding = 16.0;
   minX = (minX - padding).clamp(0.0, canvasWidth);
   minY = (minY - padding).clamp(0.0, canvasHeight);
   maxX = (maxX + padding).clamp(0.0, canvasWidth);
   maxY = (maxY + padding).clamp(0.0, canvasHeight);
 
-  final int width = (maxX - minX).round().clamp(60, canvasWidth.round());
-  final int height = (maxY - minY).round().clamp(40, canvasHeight.round());
+  final rawW = (maxX - minX).clamp(60.0, canvasWidth);
+  final rawH = (maxY - minY).clamp(40.0, canvasHeight);
 
-  final transparentImg = img.Image(width: width, height: height, numChannels: 4);
+  // High-DPI supersampling scale factor (aims for ~1800-2400px ultra-crisp resolution)
+  final double scale = (2000.0 / rawW).clamp(4.0, 6.0);
+
+  final int width = (rawW * scale).round();
+  final int height = (rawH * scale).round();
+
+  final transparentImg = img.Image(
+    width: width,
+    height: height,
+    numChannels: 4,
+  );
   img.fill(transparentImg, color: img.ColorRgba8(0, 0, 0, 0));
 
   final solidImg = img.Image(width: width, height: height);
   img.fill(solidImg, color: img.ColorRgb8(255, 255, 255));
 
-  // First pass: white contour halo for dark strokes
+  // Render high-definition strokes with round caps & joints
   for (final s in strokesData) {
     final c = (s['color'] as List<dynamic>).cast<int>();
-    final r = c[0];
-    final g = c[1];
-    final b = c[2];
-    final strokeWidth = (s['strokeWidth'] as num).toDouble();
-    final isDark = (0.299 * r + 0.587 * g + 0.114 * b) < 60;
+    int r = c[0];
+    int g = c[1];
+    int b = c[2];
 
-    if (isDark) {
-      final whiteContourColor = img.ColorRgba8(255, 255, 255, 230);
-      final contourThickness = (strokeWidth + 2.5).round();
-      final points = (s['points'] as List<dynamic>).cast<List<dynamic>>();
-
-      for (int i = 0; i < points.length - 1; i++) {
-        final x1 = ((points[i][0] as num).toDouble() - minX).round();
-        final y1 = ((points[i][1] as num).toDouble() - minY).round();
-        final x2 = ((points[i + 1][0] as num).toDouble() - minX).round();
-        final y2 = ((points[i + 1][1] as num).toDouble() - minY).round();
-
-        img.drawLine(
-          transparentImg,
-          x1: x1,
-          y1: y1,
-          x2: x2,
-          y2: y2,
-          color: whiteContourColor,
-          thickness: contourThickness,
-        );
-      }
+    // If ink is black or near-black, map to the signature midnight slate ink (15, 23, 42)
+    // identical to the scan paper signature flow for perfect contrast & consistency
+    final lum = 0.299 * r + 0.587 * g + 0.114 * b;
+    if (lum < 40) {
+      r = 15;
+      g = 23;
+      b = 42;
     }
-  }
 
-  // Second pass: actual ink strokes
-  for (final s in strokesData) {
-    final c = (s['color'] as List<dynamic>).cast<int>();
-    final r = c[0];
-    final g = c[1];
-    final b = c[2];
     final strokeWidth = (s['strokeWidth'] as num).toDouble();
+    final scaledThickness = (strokeWidth * scale).clamp(2.0, 60.0);
+    final radius = (scaledThickness / 2.0).round().clamp(1, 30);
     final points = (s['points'] as List<dynamic>).cast<List<dynamic>>();
 
     final colorRgba = img.ColorRgba8(r, g, b, 255);
     final isNearWhite = r > 230 && g > 230 && b > 230;
-    final colorSolidRgb = isNearWhite ? img.ColorRgb8(15, 23, 42) : img.ColorRgb8(r, g, b);
+    final colorSolidRgb = isNearWhite
+        ? img.ColorRgb8(15, 23, 42)
+        : img.ColorRgb8(r, g, b);
+
+    if (points.isEmpty) continue;
+
+    // If single dot
+    if (points.length == 1) {
+      final x = (((points[0][0] as num).toDouble() - minX) * scale).round();
+      final y = (((points[0][1] as num).toDouble() - minY) * scale).round();
+      img.fillCircle(
+        transparentImg,
+        x: x,
+        y: y,
+        radius: radius,
+        color: colorRgba,
+      );
+      img.fillCircle(
+        solidImg,
+        x: x,
+        y: y,
+        radius: radius,
+        color: colorSolidRgb,
+      );
+      continue;
+    }
 
     for (int i = 0; i < points.length - 1; i++) {
-      final x1 = ((points[i][0] as num).toDouble() - minX).round();
-      final y1 = ((points[i][1] as num).toDouble() - minY).round();
-      final x2 = ((points[i + 1][0] as num).toDouble() - minX).round();
-      final y2 = ((points[i + 1][1] as num).toDouble() - minY).round();
+      final x1 = (((points[i][0] as num).toDouble() - minX) * scale).round();
+      final y1 = (((points[i][1] as num).toDouble() - minY) * scale).round();
+      final x2 = (((points[i + 1][0] as num).toDouble() - minX) * scale)
+          .round();
+      final y2 = (((points[i + 1][1] as num).toDouble() - minY) * scale)
+          .round();
 
+      // Draw round joint at start
+      img.fillCircle(
+        transparentImg,
+        x: x1,
+        y: y1,
+        radius: radius,
+        color: colorRgba,
+      );
+      img.fillCircle(
+        solidImg,
+        x: x1,
+        y: y1,
+        radius: radius,
+        color: colorSolidRgb,
+      );
+
+      // Draw connecting line segment
       img.drawLine(
         transparentImg,
         x1: x1,
@@ -225,7 +265,7 @@ Map<String, dynamic> _exportDrawnSignatureIsolate(Map<String, dynamic> params) {
         x2: x2,
         y2: y2,
         color: colorRgba,
-        thickness: strokeWidth.round(),
+        thickness: scaledThickness.round(),
       );
 
       img.drawLine(
@@ -235,16 +275,34 @@ Map<String, dynamic> _exportDrawnSignatureIsolate(Map<String, dynamic> params) {
         x2: x2,
         y2: y2,
         color: colorSolidRgb,
-        thickness: strokeWidth.round(),
+        thickness: scaledThickness.round(),
+      );
+
+      // Draw round joint at end
+      img.fillCircle(
+        transparentImg,
+        x: x2,
+        y: y2,
+        radius: radius,
+        color: colorRgba,
+      );
+      img.fillCircle(
+        solidImg,
+        x: x2,
+        y: y2,
+        radius: radius,
+        color: colorSolidRgb,
       );
     }
   }
 
   final transBytes = img.encodePng(transparentImg);
-  final transFile = File(p.join(tempDirPath, 'signature_transparent_$ts.png'))..writeAsBytesSync(transBytes);
+  final transFile = File(p.join(tempDirPath, 'signature_transparent_$ts.png'))
+    ..writeAsBytesSync(transBytes);
 
-  final solidBytes = img.encodeJpg(solidImg, quality: 95);
-  final solidFile = File(p.join(tempDirPath, 'signature_white_$ts.jpg'))..writeAsBytesSync(solidBytes);
+  final solidBytes = img.encodeJpg(solidImg, quality: 98);
+  final solidFile = File(p.join(tempDirPath, 'signature_white_$ts.jpg'))
+    ..writeAsBytesSync(solidBytes);
 
   return {
     'transPath': transFile.path,
@@ -261,7 +319,8 @@ Map<String, dynamic> _scanPaperSignatureIsolate(Map<String, dynamic> params) {
   final cropXRatio = (params['cropXRatio'] as num?)?.toDouble() ?? 0.0;
   final cropYRatio = (params['cropYRatio'] as num?)?.toDouble() ?? 0.0;
   final cropWidthRatio = (params['cropWidthRatio'] as num?)?.toDouble() ?? 1.0;
-  final cropHeightRatio = (params['cropHeightRatio'] as num?)?.toDouble() ?? 1.0;
+  final cropHeightRatio =
+      (params['cropHeightRatio'] as num?)?.toDouble() ?? 1.0;
   final rotationAngle = (params['rotationAngle'] as num?) ?? 0;
   final tempDirPath = params['tempDirPath'] as String;
   final ts = params['timestamp'] as int;
@@ -273,7 +332,9 @@ Map<String, dynamic> _scanPaperSignatureIsolate(Map<String, dynamic> params) {
 
   // 1. Maintain high 2800px resolution for ultra-sharp signature details
   if (decoded.width > 2800 || decoded.height > 2800) {
-    final scale = 2800.0 / (decoded.width > decoded.height ? decoded.width : decoded.height);
+    final scale =
+        2800.0 /
+        (decoded.width > decoded.height ? decoded.width : decoded.height);
     decoded = img.copyResize(
       decoded,
       width: (decoded.width * scale).round(),
@@ -288,14 +349,20 @@ Map<String, dynamic> _scanPaperSignatureIsolate(Map<String, dynamic> params) {
   }
 
   // 3. Crop coordinates if requested
-  if (cropWidthRatio < 0.999 || cropHeightRatio < 0.999 || cropXRatio > 0.001 || cropYRatio > 0.001) {
+  if (cropWidthRatio < 0.999 ||
+      cropHeightRatio < 0.999 ||
+      cropXRatio > 0.001 ||
+      cropYRatio > 0.001) {
     final int origW = decoded.width;
     final int origH = decoded.height;
 
     final int cropX = (origW * cropXRatio).round().clamp(0, origW - 1);
     final int cropY = (origH * cropYRatio).round().clamp(0, origH - 1);
     final int cropW = (origW * cropWidthRatio).round().clamp(10, origW - cropX);
-    final int cropH = (origH * cropHeightRatio).round().clamp(10, origH - cropY);
+    final int cropH = (origH * cropHeightRatio).round().clamp(
+      10,
+      origH - cropY,
+    );
 
     decoded = img.copyCrop(
       decoded,
@@ -352,7 +419,9 @@ Map<String, dynamic> _scanPaperSignatureIsolate(Map<String, dynamic> params) {
       if (lum < baseThreshold) {
         // High-precision smooth contrast curve for razor-sharp edges
         final contrastRatio = ((paperLum - lum) / paperLum).clamp(0.0, 1.0);
-        final normalizedAlpha = (((contrastRatio - 0.08) / 0.32) * 255.0).clamp(0.0, 255.0).round();
+        final normalizedAlpha = (((contrastRatio - 0.08) / 0.32) * 255.0)
+            .clamp(0.0, 255.0)
+            .round();
 
         if (normalizedAlpha > 15) {
           inkMask[rowOffset + x] = normalizedAlpha;
@@ -401,19 +470,31 @@ Map<String, dynamic> _scanPaperSignatureIsolate(Map<String, dynamic> params) {
         transparentImg.setPixel(cx, cy, img.ColorRgba8(15, 23, 42, alpha));
 
         // Anti-aliased blend on pure white background
-        final blendR = (255 - (255 - 15) * (alpha / 255.0)).round().clamp(0, 255);
-        final blendG = (255 - (255 - 23) * (alpha / 255.0)).round().clamp(0, 255);
-        final blendB = (255 - (255 - 42) * (alpha / 255.0)).round().clamp(0, 255);
+        final blendR = (255 - (255 - 15) * (alpha / 255.0)).round().clamp(
+          0,
+          255,
+        );
+        final blendG = (255 - (255 - 23) * (alpha / 255.0)).round().clamp(
+          0,
+          255,
+        );
+        final blendB = (255 - (255 - 42) * (alpha / 255.0)).round().clamp(
+          0,
+          255,
+        );
         solidImg.setPixel(cx, cy, img.ColorRgb8(blendR, blendG, blendB));
       }
     }
   }
 
   final transBytes = img.encodePng(transparentImg);
-  final transFile = File(p.join(tempDirPath, 'scanned_signature_transparent_$ts.png'))..writeAsBytesSync(transBytes);
+  final transFile = File(
+    p.join(tempDirPath, 'scanned_signature_transparent_$ts.png'),
+  )..writeAsBytesSync(transBytes);
 
   final solidBytes = img.encodeJpg(solidImg, quality: 98);
-  final solidFile = File(p.join(tempDirPath, 'scanned_signature_white_$ts.jpg'))..writeAsBytesSync(solidBytes);
+  final solidFile = File(p.join(tempDirPath, 'scanned_signature_white_$ts.jpg'))
+    ..writeAsBytesSync(solidBytes);
 
   return {
     'transPath': transFile.path,
@@ -467,10 +548,14 @@ Map<String, dynamic> _adjustSignatureIsolate(Map<String, dynamic> params) {
   img.compositeImage(solidImg, processed);
 
   final transBytes = img.encodePng(processed);
-  final transFile = File(p.join(tempDirPath, 'signature_adjusted_trans_$ts.png'))..writeAsBytesSync(transBytes);
+  final transFile = File(
+    p.join(tempDirPath, 'signature_adjusted_trans_$ts.png'),
+  )..writeAsBytesSync(transBytes);
 
   final solidBytes = img.encodeJpg(solidImg, quality: 95);
-  final solidFile = File(p.join(tempDirPath, 'signature_adjusted_white_$ts.jpg'))..writeAsBytesSync(solidBytes);
+  final solidFile = File(
+    p.join(tempDirPath, 'signature_adjusted_white_$ts.jpg'),
+  )..writeAsBytesSync(solidBytes);
 
   return {
     'transPath': transFile.path,
