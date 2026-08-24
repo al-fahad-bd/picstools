@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/widgets/neo_toast.dart';
+import '../../../../core/widgets/app_native_ad.dart';
 import '../../../../core/services/service_locator.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/settings_bloc.dart';
@@ -102,7 +104,15 @@ class _SettingsViewContent extends StatelessWidget {
                   context.read<SettingsBloc>().add(TapDeveloperEvent());
                 },
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+
+              // Native Advanced Ad (Hidden for Pro users)
+              const AppNativeAd(
+                templateType: TemplateType.medium,
+                margin: EdgeInsets.symmetric(vertical: 8),
+              ),
+
+              const SizedBox(height: 16),
 
               // AI Models Section
               Text(
@@ -128,4 +138,3 @@ class _SettingsViewContent extends StatelessWidget {
     );
   }
 }
-

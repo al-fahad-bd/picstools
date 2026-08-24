@@ -9,6 +9,7 @@ abstract class AdService {
   String get bannerAdUnitId;
   String get interstitialAdUnitId;
   String get rewardedAdUnitId;
+  String get nativeAdUnitId;
   Future<void> loadInterstitialAd();
   Future<void> showInterstitialAd({VoidCallback? onDismissed});
   Future<void> loadRewardedAd();
@@ -36,6 +37,11 @@ class AdServiceImpl implements AdService {
   static const String _iosTestInterstitialId =
       'ca-app-pub-3940256099942544/4411468910';
 
+  static const String _androidTestNativeId =
+      'ca-app-pub-3940256099942544/2247696110';
+  static const String _iosTestNativeId =
+      'ca-app-pub-3940256099942544/3986624511';
+
   // Rewarded Interstitial format (No "Reward: 10 coins" or "Reward granted" game popups)
   static const String _androidTestRewardedId =
       'ca-app-pub-3940256099942544/5354046379';
@@ -49,6 +55,9 @@ class AdServiceImpl implements AdService {
   static const String _prodAndroidInterstitialId =
       'ca-app-pub-2023704770887121/8378451332';
   static const String? _prodIosInterstitialId = null;
+  static const String _prodAndroidNativeId =
+      'ca-app-pub-2023704770887121/5442181287';
+  static const String? _prodIosNativeId = null;
   static const String? _prodAndroidRewardedId = null;
   static const String? _prodIosRewardedId = null;
 
@@ -138,6 +147,17 @@ class AdServiceImpl implements AdService {
       return Platform.isAndroid ? _androidTestRewardedId : _iosTestRewardedId;
     }
     return Platform.isAndroid ? _prodAndroidRewardedId! : _prodIosRewardedId!;
+  }
+
+  @override
+  String get nativeAdUnitId {
+    if (kDebugMode) {
+      return Platform.isAndroid ? _androidTestNativeId : _iosTestNativeId;
+    }
+    if (Platform.isAndroid) {
+      return _prodAndroidNativeId;
+    }
+    return _prodIosNativeId ?? _iosTestNativeId;
   }
 
   @override
@@ -311,6 +331,9 @@ class MockAdServiceImpl implements AdService {
 
   @override
   String get rewardedAdUnitId => 'mock_rewarded_unit_id';
+
+  @override
+  String get nativeAdUnitId => 'mock_native_unit_id';
 
   @override
   Future<void> loadInterstitialAd() async {}

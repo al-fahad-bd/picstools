@@ -51,6 +51,15 @@ void main() {
           equals('ca-app-pub-3940256099942544/6978759866'), // iOS
         ),
       );
+
+      // Official Google Sample Ad Unit IDs for Native Advanced
+      expect(
+        adService.nativeAdUnitId,
+        anyOf(
+          equals('ca-app-pub-3940256099942544/2247696110'), // Android
+          equals('ca-app-pub-3940256099942544/3986624511'), // iOS
+        ),
+      );
     });
 
     test('showRewardedAd immediately rewards Pro users without showing ad', () async {
