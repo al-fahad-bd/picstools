@@ -26,3 +26,21 @@
 -keep class com.google.firebase.** { *; }
 -dontwarn com.google.firebase.**
 -dontwarn com.android.billingclient.**
+
+# AndroidX Startup, WorkManager & Room Database
+-keep class androidx.startup.** { *; }
+-keep class androidx.work.** { *; }
+-keep class androidx.work.impl.** { *; }
+-keep class androidx.work.impl.WorkDatabase_Impl { *; }
+-keep class * extends androidx.room.RoomDatabase { *; }
+-keep class * extends androidx.work.Worker { *; }
+-keep class * extends androidx.work.ListenableWorker { *; }
+-dontwarn androidx.work.**
+-dontwarn androidx.room.**
+
+# Google Mobile Ads & Play Services
+-keep class com.google.android.gms.ads.** { *; }
+-keep class com.google.ads.** { *; }
+-dontwarn com.google.android.gms.ads.**
+-dontwarn com.google.ads.**
+
