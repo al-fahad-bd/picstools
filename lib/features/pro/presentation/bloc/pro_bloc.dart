@@ -63,6 +63,18 @@ class ProBloc extends Bloc<ProEvent, ProState> {
     on<PurchaseProEvent>(_onPurchasePro);
     on<RestorePurchasesEvent>(_onRestorePurchases);
     on<ManageSubscriptionEvent>(_onManageSubscription);
+
+    purchaseService.isProListenable.addListener(_onProStatusChanged);
+  }
+
+  void _onProStatusChanged() {
+    add(LoadProStatusEvent());
+  }
+
+  @override
+  Future<void> close() {
+    purchaseService.isProListenable.removeListener(_onProStatusChanged);
+    return super.close();
   }
 
   void _onLoadProStatus(LoadProStatusEvent event, Emitter<ProState> emit) {

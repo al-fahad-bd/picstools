@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:path/path.dart' as path;
 
 import '../../../../core/constants/neo_colors.dart';
@@ -20,6 +19,7 @@ import '../../../../core/utils/file_utils.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/image_picker_service.dart';
 import '../../../../core/services/file_save_service.dart';
+import '../../../../core/services/file_share_service.dart';
 import '../../bloc/resizer_bloc.dart';
 
 class ResizeView extends StatelessWidget {
@@ -381,9 +381,11 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                           onPressed: () {
                             final box = context.findRenderObject() as RenderBox?;
                             final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
-                            Share.shareXFiles([
-                              XFile(imageFile.path),
-                            ], text: 'Resized with PicsTools!', sharePositionOrigin: origin);
+                            getIt<FileShareService>().shareFiles(
+                              files: [XFile(imageFile.path)],
+                              text: 'Resized with PicsTools!',
+                              sharePositionOrigin: origin,
+                            );
                           },
                         ),
                       ),
@@ -1234,7 +1236,11 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                   .toList();
               final box = context.findRenderObject() as RenderBox?;
               final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
-              Share.shareXFiles(xFiles, text: 'Resized with PicsTools!', sharePositionOrigin: origin);
+              getIt<FileShareService>().shareFiles(
+                files: xFiles,
+                text: 'Resized with PicsTools!',
+                sharePositionOrigin: origin,
+              );
             },
           ),
           const SizedBox(height: 12),

@@ -9,13 +9,16 @@ import 'package:flutter/widgets.dart';
 abstract class InAppPurchaseService {
   Future<void> initialize();
   bool isProUser();
+  ValueListenable<bool> get isProListenable;
   Future<bool> purchaseProSubscription();
   Future<bool> restorePurchases();
   Future<bool> checkSubscriptionStatus();
   Future<void> openManageSubscriptions();
 }
 
-class InAppPurchaseServiceImpl with WidgetsBindingObserver implements InAppPurchaseService {
+class InAppPurchaseServiceImpl
+    with WidgetsBindingObserver
+    implements InAppPurchaseService {
   static const String proSubscriptionId = 'picstools_pro_monthly';
   static const String _proPrefKey = 'is_pro_user_cached';
   static const String _playStoreSubUrl =
@@ -27,13 +30,19 @@ class InAppPurchaseServiceImpl with WidgetsBindingObserver implements InAppPurch
 
   final InAppPurchase _iap = InAppPurchase.instance;
   final SharedPreferences _prefs;
+  final ValueNotifier<bool> _isProNotifier = ValueNotifier<bool>(false);
   StreamSubscription<List<PurchaseDetails>>? _subscription;
   bool _isPro = false;
+  bool _isSilentChecking = false;
   Completer<bool>? _pendingPurchaseCompleter;
 
   InAppPurchaseServiceImpl(this._prefs) {
     _isPro = _prefs.getBool(_proPrefKey) ?? false;
+    _isProNotifier.value = _isPro;
   }
+
+  @override
+  ValueListenable<bool> get isProListenable => _isProNotifier;
 
   @override
   Future<void> initialize() async {
@@ -62,17 +71,38 @@ class InAppPurchaseServiceImpl with WidgetsBindingObserver implements InAppPurch
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed &&
-        _pendingPurchaseCompleter != null &&
-        !_pendingPurchaseCompleter!.isCompleted) {
-      // User returned to the app (dismissed Google Play bottom sheet by outside tap or back)
-      // Allow a brief 800ms window for any incoming billing stream event
-      Future.delayed(const Duration(milliseconds: 800), () {
-        if (_pendingPurchaseCompleter != null &&
-            !_pendingPurchaseCompleter!.isCompleted) {
-          _completePending(_isPro);
-        }
-      });
+    if (state == AppLifecycleState.resumed) {
+      if (_pendingPurchaseCompleter != null &&
+          !_pendingPurchaseCompleter!.isCompleted) {
+        // User returned to the app (dismissed Google Play bottom sheet by outside tap or back)
+        // Allow a brief 800ms window for any incoming billing stream event
+        Future.delayed(const Duration(milliseconds: 800), () {
+          if (_pendingPurchaseCompleter != null &&
+              !_pendingPurchaseCompleter!.isCompleted) {
+            _completePending(_isPro);
+          }
+        });
+      }
+
+      // Automatically verify active subscription in background upon returning to app
+      _silentCheckSubscription();
+    }
+  }
+
+  Future<void> _silentCheckSubscription() async {
+    if (_isSilentChecking) return;
+    _isSilentChecking = true;
+    try {
+      debugPrint(
+        '🔄 [InAppPurchaseService] App resumed. Verifying subscription status with store...',
+      );
+      await checkSubscriptionStatus();
+    } catch (e) {
+      debugPrint(
+        '❌ [InAppPurchaseService] Error during silent subscription check on resume: $e',
+      );
+    } finally {
+      _isSilentChecking = false;
     }
   }
 
@@ -107,8 +137,15 @@ class InAppPurchaseServiceImpl with WidgetsBindingObserver implements InAppPurch
   }
 
   Future<void> _setProUser(bool isPro) async {
+    final hasChanged = _isPro != isPro;
     _isPro = isPro;
+    _isProNotifier.value = isPro;
     await _prefs.setBool(_proPrefKey, isPro);
+    if (hasChanged) {
+      debugPrint(
+        '📢 [InAppPurchaseService] Pro status updated: isPro = $isPro',
+      );
+    }
   }
 
   @override
@@ -166,8 +203,9 @@ class InAppPurchaseServiceImpl with WidgetsBindingObserver implements InAppPurch
       return false;
     }
 
-    final ProductDetailsResponse response =
-        await _iap.queryProductDetails({proSubscriptionId});
+    final ProductDetailsResponse response = await _iap.queryProductDetails({
+      proSubscriptionId,
+    });
 
     if (response.notFoundIDs.contains(proSubscriptionId) ||
         response.productDetails.isEmpty) {
@@ -235,11 +273,16 @@ class InAppPurchaseServiceImpl with WidgetsBindingObserver implements InAppPurch
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _subscription?.cancel();
+    _isProNotifier.dispose();
   }
 }
 
 class MockInAppPurchaseServiceImpl implements InAppPurchaseService {
   bool _isPro = false;
+  final ValueNotifier<bool> _isProNotifier = ValueNotifier<bool>(false);
+
+  @override
+  ValueListenable<bool> get isProListenable => _isProNotifier;
 
   @override
   Future<void> initialize() async {}
@@ -247,12 +290,18 @@ class MockInAppPurchaseServiceImpl implements InAppPurchaseService {
   @override
   bool isProUser() => _isPro;
 
+  void setProForTesting(bool val) {
+    _isPro = val;
+    _isProNotifier.value = val;
+  }
+
   @override
   Future<bool> checkSubscriptionStatus() async => _isPro;
 
   @override
   Future<bool> purchaseProSubscription() async {
     _isPro = true;
+    _isProNotifier.value = true;
     return true;
   }
 

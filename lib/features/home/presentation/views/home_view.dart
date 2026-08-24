@@ -8,6 +8,8 @@ import '../../../../core/widgets/neo_text_field.dart';
 import '../../../../core/widgets/neo_doodles.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/monetization/in_app_purchase_service.dart';
+import '../../../../core/services/monetization/ad_service.dart';
+import '../../../../core/widgets/app_banner_ad.dart';
 import '../bloc/home_bloc.dart';
 import '../widgets/home_header.dart';
 import '../widgets/category_selector.dart';
@@ -36,85 +38,91 @@ class _HomeViewContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final isPro = getIt<InAppPurchaseService>().isProUser();
 
-    return BlocBuilder<HomeBloc, HomeState>(
-      builder: (context, state) {
-        final loadedState = state is HomeLoadedState
-            ? state
-            : const HomeLoadedState(allTools: [], filteredTools: []);
+    return ValueListenableBuilder<bool>(
+      valueListenable: getIt<InAppPurchaseService>().isProListenable,
+      builder: (context, isPro, _) {
+        return BlocBuilder<HomeBloc, HomeState>(
+          builder: (context, state) {
+            final loadedState = state is HomeLoadedState
+                ? state
+                : const HomeLoadedState(allTools: [], filteredTools: []);
 
-        return SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header Row with App Icon and PRO badge
-              HomeHeader(
-                isDark: isDark,
-                isPro: isPro,
-                onProTap: onNavigateToPro ?? () => context.push('/pro'),
-              ),
-              const SizedBox(height: 18),
-
-              // Title Header with Highlight Pill
-              Row(
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: RichText(
-                      text: TextSpan(
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w900,
-                          height: 1.2,
-                          color: isDark
-                              ? NeoColors.textPrimaryDark
-                              : NeoColors.textPrimaryLight,
-                        ),
-                        children: [
-                          const TextSpan(text: '8 Essential '),
-                          WidgetSpan(
-                            alignment: PlaceholderAlignment.middle,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: NeoColors.yellow,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: NeoColors.borderLight,
-                                  width: 2,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: NeoColors.borderLight,
-                                    offset: Offset(2, 2),
-                                    blurRadius: 0,
-                                  ),
-                                ],
-                              ),
-                              child: Text(
-                                'IMAGE TOOLS',
-                                style: GoogleFonts.spaceGrotesk(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w900,
-                                  color: NeoColors.borderLight,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  // Header Row with App Icon and PRO badge
+                  HomeHeader(
+                    isDark: isDark,
+                    isPro: isPro,
+                    onProTap: onNavigateToPro ?? () => context.push('/pro'),
                   ),
-                  const NeoSparkleDoodle(size: 24, color: NeoColors.cyan),
-                ],
-              ),
-              const SizedBox(height: 14),
+                  const SizedBox(height: 18),
 
-              // Search Field
+                  // Title Header with Highlight Pill
+                  Row(
+                    children: [
+                      Expanded(
+                        child: RichText(
+                          text: TextSpan(
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w900,
+                              height: 1.2,
+                              color: isDark
+                                  ? NeoColors.textPrimaryDark
+                                  : NeoColors.textPrimaryLight,
+                            ),
+                            children: [
+                              const TextSpan(text: '8 Essential '),
+                              WidgetSpan(
+                                alignment: PlaceholderAlignment.middle,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: NeoColors.yellow,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: NeoColors.borderLight,
+                                      width: 2,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: NeoColors.borderLight,
+                                        offset: Offset(2, 2),
+                                        blurRadius: 0,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    'IMAGE TOOLS',
+                                    style: GoogleFonts.spaceGrotesk(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w900,
+                                      color: NeoColors.borderLight,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const NeoSparkleDoodle(size: 24, color: NeoColors.cyan),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+
+                  // AdMob Test Banner Ad (Strictly hidden for Pro users)
+                  if (!isPro)
+                    const AppBannerAd(margin: EdgeInsets.only(bottom: 12)),
+
+                  // Search Field
               NeoTextField(
                 hintText: 'Search tools (compress, resize, pdf)...',
                 prefixIcon: const Icon(Icons.search_rounded),
@@ -189,19 +197,29 @@ class _HomeViewContent extends StatelessWidget {
                     return ToolCardItem(
                       tool: tool,
                       isDark: isDark,
-                      onTap: () => context.push(tool.route),
+                      onTap: () {
+                        getIt<AdService>().showInterstitialAd(
+                          onDismissed: () {
+                            if (context.mounted) {
+                              context.push(tool.route);
+                            }
+                          },
+                        );
+                      },
                     );
                   },
                 ),
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-              // Featured Pro Banner
-              ProBannerCard(
-                isPro: isPro,
-                onTap: onNavigateToPro ?? () => context.push('/pro'),
+                // Featured Pro Banner
+                ProBannerCard(
+                  isPro: isPro,
+                  onTap: onNavigateToPro ?? () => context.push('/pro'),
+                ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         );
       },
     );

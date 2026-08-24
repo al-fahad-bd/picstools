@@ -14,6 +14,7 @@ import '../../../../core/widgets/neo_crop_canvas.dart';
 import '../../../../core/utils/file_utils.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/file_save_service.dart';
+import '../../../../core/services/file_share_service.dart';
 import '../../bloc/signature_bloc.dart';
 import '../../services/signature_service.dart';
 import 'checkered_pattern_painter.dart';
@@ -240,8 +241,8 @@ class SignatureSuccessView extends StatelessWidget {
                         final origin = box != null
                             ? box.localToGlobal(Offset.zero) & box.size
                             : null;
-                        Share.shareXFiles(
-                          [XFile(res.transparentPngFile.path)],
+                        getIt<FileShareService>().shareFiles(
+                          files: [XFile(res.transparentPngFile.path)],
                           text: 'Transparent Digital Signature',
                           sharePositionOrigin: origin,
                         );
@@ -269,8 +270,8 @@ class SignatureSuccessView extends StatelessWidget {
                         final origin = box != null
                             ? box.localToGlobal(Offset.zero) & box.size
                             : null;
-                        Share.shareXFiles(
-                          [XFile(res.solidBackgroundFile.path)],
+                        getIt<FileShareService>().shareFiles(
+                          files: [XFile(res.solidBackgroundFile.path)],
                           text: 'White Background Signature',
                           sharePositionOrigin: origin,
                         );
@@ -298,8 +299,8 @@ class SignatureSuccessView extends StatelessWidget {
                         final origin = box != null
                             ? box.localToGlobal(Offset.zero) & box.size
                             : null;
-                        Share.shareXFiles(
-                          [
+                        getIt<FileShareService>().shareFiles(
+                          files: [
                             XFile(res.transparentPngFile.path),
                             XFile(res.solidBackgroundFile.path),
                           ],

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/constants/neo_styles.dart';
@@ -17,6 +16,7 @@ import '../../../../core/utils/file_utils.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/image_picker_service.dart';
 import '../../../../core/services/file_save_service.dart';
+import '../../../../core/services/file_share_service.dart';
 import '../../bloc/converter_bloc.dart';
 
 class ConvertView extends StatelessWidget {
@@ -619,8 +619,8 @@ class _ConvertViewContent extends StatelessWidget {
               final xFiles = state.results.map((r) => XFile(r.convertedFile.path)).toList();
               final box = context.findRenderObject() as RenderBox?;
               final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
-              Share.shareXFiles(
-                xFiles, 
+              getIt<FileShareService>().shareFiles(
+                files: xFiles,
                 text: 'Converted with PicsTools!',
                 sharePositionOrigin: origin,
               );

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:printing/printing.dart';
 import 'package:path/path.dart' as path;
 
@@ -20,6 +19,7 @@ import '../../../../core/utils/file_utils.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/image_picker_service.dart';
 import '../../../../core/services/file_save_service.dart';
+import '../../../../core/services/file_share_service.dart';
 import '../../../cropper/services/image_cropper_service.dart';
 import '../../services/image_pdf_service.dart';
 import '../../bloc/pdf_bloc.dart';
@@ -1059,8 +1059,8 @@ class _PdfViewContent extends StatelessWidget {
                   final origin = box != null
                       ? box.localToGlobal(Offset.zero) & box.size
                       : null;
-                  Share.shareXFiles(
-                    [XFile(state.result.pdfFile.path)],
+                  getIt<FileShareService>().shareFiles(
+                    files: [XFile(state.result.pdfFile.path)],
                     text: 'Created with PicsTools!',
                     sharePositionOrigin: origin,
                   );

@@ -54,15 +54,23 @@ class _SplashViewState extends State<SplashView>
   }
 
   Future<void> _startSplashSequence() async {
-    final sound = getIt<SoundService>();
-    sound.playPopSound();
+    try {
+      if (getIt.isRegistered<SoundService>()) {
+        getIt<SoundService>().playPopSound();
+      }
+    } catch (_) {}
+
     _controller.forward();
 
     await Future.delayed(const Duration(milliseconds: 2300));
     if (!mounted) return;
 
     // Start background sound right as splash screen ends
-    getIt<AudioService>().playBackgroundSound();
+    try {
+      if (getIt.isRegistered<AudioService>()) {
+        getIt<AudioService>().playBackgroundSound();
+      }
+    } catch (_) {}
 
     context.go('/onboarding');
   }

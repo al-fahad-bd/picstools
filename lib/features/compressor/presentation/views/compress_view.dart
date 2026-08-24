@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:path/path.dart' as path;
 
 import '../../../../core/constants/neo_colors.dart';
@@ -19,6 +18,7 @@ import '../../../../core/utils/file_utils.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/image_picker_service.dart';
 import '../../../../core/services/file_save_service.dart';
+import '../../../../core/services/file_share_service.dart';
 import '../../bloc/compressor_bloc.dart';
 
 class CompressView extends StatelessWidget {
@@ -382,8 +382,8 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                             final origin = box != null
                                 ? box.localToGlobal(Offset.zero) & box.size
                                 : null;
-                            Share.shareXFiles(
-                              [XFile(imageFile.path)],
+                            getIt<FileShareService>().shareFiles(
+                              files: [XFile(imageFile.path)],
                               text: 'Compressed with PicsTools!',
                               sharePositionOrigin: origin,
                             );
@@ -1115,8 +1115,8 @@ class _CompressViewContentState extends State<_CompressViewContent> {
               final origin = box != null
                   ? box.localToGlobal(Offset.zero) & box.size
                   : null;
-              Share.shareXFiles(
-                xFiles,
+              getIt<FileShareService>().shareFiles(
+                files: xFiles,
                 text: 'Compressed with PicsTools!',
                 sharePositionOrigin: origin,
               );

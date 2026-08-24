@@ -14,6 +14,7 @@ import '../../../../core/widgets/neo_toast.dart';
 import '../../../../core/services/history_service.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/file_save_service.dart';
+import '../../../../core/services/file_share_service.dart';
 import '../../../../core/utils/file_utils.dart';
 import '../../../signature/presentation/widgets/checkered_pattern_painter.dart';
 
@@ -146,8 +147,8 @@ class HistoryDetailsView extends StatelessWidget {
         ? box.localToGlobal(Offset.zero) & box.size
         : null;
 
-    Share.shareXFiles(
-      [XFile(file.path)],
+    getIt<FileShareService>().shareFiles(
+      files: [XFile(file.path)],
       text: 'Shared from PicsTools (${item.toolName})',
       sharePositionOrigin: origin,
     );

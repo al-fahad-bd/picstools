@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/services/file_save_service.dart';
+import '../../../../core/services/file_share_service.dart';
 import '../../../../core/services/image_picker_service.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/sound_service.dart';
@@ -112,9 +112,11 @@ class _BackgroundRemoverViewContentState
   Future<void> _shareResult(File pngFile) async {
     _playSound('click');
     try {
-      await Share.shareXFiles([
-        XFile(pngFile.path, mimeType: 'image/png'),
-      ], text: 'Transparent PNG created with Pics Tools');
+      final shareService = getIt<FileShareService>();
+      await shareService.shareFiles(
+        files: [XFile(pngFile.path, mimeType: 'image/png')],
+        text: 'Transparent PNG created with Pics Tools',
+      );
     } catch (_) {}
   }
 
