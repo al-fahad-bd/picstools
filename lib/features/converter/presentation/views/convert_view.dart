@@ -25,10 +25,8 @@ class ConvertView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ConverterBloc(
-        converterService: getIt(),
-        historyService: getIt(),
-      ),
+      create: (context) =>
+          ConverterBloc(converterService: getIt(), historyService: getIt()),
       child: const _ConvertViewContent(),
     );
   }
@@ -128,7 +126,9 @@ class _ConvertViewContent extends StatelessWidget {
             textAlign: TextAlign.center,
             style: GoogleFonts.spaceGrotesk(
               fontSize: 14,
-              color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+              color: isDark
+                  ? NeoColors.textSecondaryDark
+                  : NeoColors.textSecondaryLight,
             ),
           ),
           const SizedBox(height: 36),
@@ -145,7 +145,10 @@ class _ConvertViewContent extends StatelessWidget {
                     radius: 12,
                     shadow: 2,
                   ),
-                  child: const Icon(Icons.photo_library_rounded, color: NeoColors.borderLight),
+                  child: const Icon(
+                    Icons.photo_library_rounded,
+                    color: NeoColors.borderLight,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -170,13 +173,18 @@ class _ConvertViewContent extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right_rounded, color: NeoColors.borderLight),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: NeoColors.borderLight,
+                ),
               ],
             ),
           ),
           const SizedBox(height: 14),
           NeoCard(
-            backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+            backgroundColor: isDark
+                ? NeoColors.darkSurface
+                : NeoColors.lightSurface,
             shadowOffset: 3,
             onTap: () => _pickImage(context, ImageSource.camera),
             child: Row(
@@ -188,7 +196,10 @@ class _ConvertViewContent extends StatelessWidget {
                     radius: 12,
                     shadow: 2,
                   ),
-                  child: const Icon(Icons.camera_alt_rounded, color: NeoColors.borderLight),
+                  child: const Icon(
+                    Icons.camera_alt_rounded,
+                    color: NeoColors.borderLight,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -206,7 +217,9 @@ class _ConvertViewContent extends StatelessWidget {
                         'Capture instant photo to convert',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 12,
-                          color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+                          color: isDark
+                              ? NeoColors.textSecondaryDark
+                              : NeoColors.textSecondaryLight,
                         ),
                       ),
                     ],
@@ -229,13 +242,27 @@ class _ConvertViewContent extends StatelessWidget {
     final bloc = context.read<ConverterBloc>();
     final allFormats = [
       {'name': 'JPG', 'sub': 'Standard Photo', 'color': NeoColors.yellow},
-      {'name': 'PNG', 'sub': 'Lossless & Transparency', 'color': NeoColors.cyan},
+      {
+        'name': 'PNG',
+        'sub': 'Lossless & Transparency',
+        'color': NeoColors.cyan,
+      },
       {'name': 'WEBP', 'sub': 'Modern Web Format', 'color': NeoColors.green},
     ];
 
-    bool allJpg = state.files.isNotEmpty && state.files.every((f) => f.path.toLowerCase().endsWith('.jpg') || f.path.toLowerCase().endsWith('.jpeg'));
-    bool allPng = state.files.isNotEmpty && state.files.every((f) => f.path.toLowerCase().endsWith('.png'));
-    bool allWebp = state.files.isNotEmpty && state.files.every((f) => f.path.toLowerCase().endsWith('.webp'));
+    bool allJpg =
+        state.files.isNotEmpty &&
+        state.files.every(
+          (f) =>
+              f.path.toLowerCase().endsWith('.jpg') ||
+              f.path.toLowerCase().endsWith('.jpeg'),
+        );
+    bool allPng =
+        state.files.isNotEmpty &&
+        state.files.every((f) => f.path.toLowerCase().endsWith('.png'));
+    bool allWebp =
+        state.files.isNotEmpty &&
+        state.files.every((f) => f.path.toLowerCase().endsWith('.webp'));
 
     final formats = allFormats.where((fmt) {
       if (allJpg && fmt['name'] == 'JPG') return false;
@@ -290,10 +317,7 @@ class _ConvertViewContent extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: NeoColors.red,
                             shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 1.5,
-                            ),
+                            border: Border.all(color: Colors.white, width: 1.5),
                           ),
                           child: const Icon(
                             Icons.close_rounded,
@@ -348,7 +372,10 @@ class _ConvertViewContent extends StatelessWidget {
                 NeoButton(
                   label: 'CHANGE',
                   backgroundColor: NeoColors.yellow,
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   onPressed: () => bloc.add(ResetConverterEvent()),
                 ),
               ],
@@ -370,9 +397,14 @@ class _ConvertViewContent extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: NeoCard(
-                  backgroundColor: isSelected ? (fmt['color'] as Color) : (isDark ? NeoColors.darkSurface : NeoColors.lightSurface),
+                  backgroundColor: isSelected
+                      ? (fmt['color'] as Color)
+                      : (isDark
+                            ? NeoColors.darkSurface
+                            : NeoColors.lightSurface),
                   shadowOffset: isSelected ? 4 : 2,
-                  onTap: () => bloc.add(SetTargetFormatEvent(fmt['name'] as String)),
+                  onTap: () =>
+                      bloc.add(SetTargetFormatEvent(fmt['name'] as String)),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -393,7 +425,9 @@ class _ConvertViewContent extends StatelessWidget {
                               fontSize: 12,
                               color: isSelected
                                   ? NeoColors.borderLight.withValues(alpha: 0.8)
-                                  : (isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight),
+                                  : (isDark
+                                        ? NeoColors.textSecondaryDark
+                                        : NeoColors.textSecondaryLight),
                             ),
                           ),
                         ],
@@ -405,7 +439,11 @@ class _ConvertViewContent extends StatelessWidget {
                             color: NeoColors.borderLight,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.check, size: 16, color: Colors.white),
+                          child: const Icon(
+                            Icons.check,
+                            size: 16,
+                            color: Colors.white,
+                          ),
                         ),
                     ],
                   ),
@@ -417,7 +455,9 @@ class _ConvertViewContent extends StatelessWidget {
 
           if (state.targetFormat != 'PNG') ...[
             NeoCard(
-              backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+              backgroundColor: isDark
+                  ? NeoColors.darkSurface
+                  : NeoColors.lightSurface,
               child: NeoSlider(
                 label: 'Encoder Quality',
                 value: state.quality.toDouble(),
@@ -425,7 +465,8 @@ class _ConvertViewContent extends StatelessWidget {
                 max: 100,
                 divisions: 90,
                 activeColor: NeoColors.green,
-                onChanged: (val) => bloc.add(SetConvertQualityEvent(val.round())),
+                onChanged: (val) =>
+                    bloc.add(SetConvertQualityEvent(val.round())),
               ),
             ),
             const SizedBox(height: 36),
@@ -433,7 +474,10 @@ class _ConvertViewContent extends StatelessWidget {
 
           NeoButton(
             label: 'CONVERT TO ${state.targetFormat}',
-            icon: const Icon(Icons.transform_rounded, color: NeoColors.borderLight),
+            icon: const Icon(
+              Icons.transform_rounded,
+              color: NeoColors.borderLight,
+            ),
             backgroundColor: NeoColors.green,
             fullWidth: true,
             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -458,8 +502,12 @@ class _ConvertViewContent extends StatelessWidget {
             width: 84,
             height: 84,
             decoration: NeoStyles.neoDecoration(
-              backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.softGreen,
-              borderColor: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+              backgroundColor: isDark
+                  ? NeoColors.darkSurface
+                  : NeoColors.softGreen,
+              borderColor: isDark
+                  ? NeoColors.borderDark
+                  : NeoColors.borderLight,
               radius: 20,
               shadow: 4,
             ),
@@ -485,7 +533,9 @@ class _ConvertViewContent extends StatelessWidget {
             'Processing file ${state.currentIndex} of ${state.totalCount}',
             style: GoogleFonts.spaceGrotesk(
               fontSize: 14,
-              color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+              color: isDark
+                  ? NeoColors.textSecondaryDark
+                  : NeoColors.textSecondaryLight,
             ),
           ),
           const SizedBox(height: 24),
@@ -494,7 +544,9 @@ class _ConvertViewContent extends StatelessWidget {
             child: LinearProgressIndicator(
               value: state.progress,
               minHeight: 12,
-              backgroundColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+              backgroundColor: isDark
+                  ? Colors.grey.shade800
+                  : Colors.grey.shade300,
               valueColor: const AlwaysStoppedAnimation<Color>(NeoColors.green),
             ),
           ),
@@ -547,7 +599,9 @@ class _ConvertViewContent extends StatelessWidget {
             itemBuilder: (context, index) {
               final item = state.results[index];
               return NeoCard(
-                backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+                backgroundColor: isDark
+                    ? NeoColors.darkSurface
+                    : NeoColors.lightSurface,
                 child: Row(
                   children: [
                     ClipRRect(
@@ -575,7 +629,9 @@ class _ConvertViewContent extends StatelessWidget {
                             'Size: ${FileUtils.formatBytes(item.convertedSizeBytes)}',
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 12,
-                              color: isDark ? NeoColors.textSecondaryDark : NeoColors.textSecondaryLight,
+                              color: isDark
+                                  ? NeoColors.textSecondaryDark
+                                  : NeoColors.textSecondaryLight,
                             ),
                           ),
                         ],
@@ -590,7 +646,10 @@ class _ConvertViewContent extends StatelessWidget {
 
           NeoButton(
             label: 'SAVE TO DEVICE',
-            icon: const Icon(Icons.download_rounded, color: NeoColors.borderLight),
+            icon: const Icon(
+              Icons.download_rounded,
+              color: NeoColors.borderLight,
+            ),
             backgroundColor: NeoColors.green,
             fullWidth: true,
             onPressed: () async {
@@ -616,9 +675,13 @@ class _ConvertViewContent extends StatelessWidget {
             backgroundColor: NeoColors.cyan,
             fullWidth: true,
             onPressed: () {
-              final xFiles = state.results.map((r) => XFile(r.convertedFile.path)).toList();
+              final xFiles = state.results
+                  .map((r) => XFile(r.convertedFile.path))
+                  .toList();
               final box = context.findRenderObject() as RenderBox?;
-              final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
+              final origin = box != null
+                  ? box.localToGlobal(Offset.zero) & box.size
+                  : null;
               getIt<FileShareService>().shareFiles(
                 files: xFiles,
                 text: 'Converted with PicsTools!',
@@ -629,7 +692,10 @@ class _ConvertViewContent extends StatelessWidget {
           const SizedBox(height: 12),
           NeoButton(
             label: 'CONVERT MORE PHOTOS',
-            icon: const Icon(Icons.refresh_rounded, color: NeoColors.borderLight),
+            icon: const Icon(
+              Icons.refresh_rounded,
+              color: NeoColors.borderLight,
+            ),
             backgroundColor: NeoColors.yellow,
             fullWidth: true,
             onPressed: () => bloc.add(ResetConverterEvent()),

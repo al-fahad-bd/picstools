@@ -8,7 +8,6 @@ import '../../../../core/widgets/neo_text_field.dart';
 import '../../../../core/widgets/neo_doodles.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/monetization/in_app_purchase_service.dart';
-import '../../../../core/services/monetization/ad_service.dart';
 import '../../../../core/widgets/app_banner_ad.dart';
 import '../bloc/home_bloc.dart';
 import '../widgets/home_header.dart';
@@ -123,99 +122,94 @@ class _HomeViewContent extends StatelessWidget {
                     const AppBannerAd(margin: EdgeInsets.only(bottom: 12)),
 
                   // Search Field
-              NeoTextField(
-                hintText: 'Search tools (compress, resize, pdf)...',
-                prefixIcon: const Icon(Icons.search_rounded),
-                onChanged: (q) =>
-                    context.read<HomeBloc>().add(SearchToolsEvent(q)),
-              ),
-              const SizedBox(height: 16),
+                  NeoTextField(
+                    hintText: 'Search tools (compress, resize, pdf)...',
+                    prefixIcon: const Icon(Icons.search_rounded),
+                    onChanged: (q) =>
+                        context.read<HomeBloc>().add(SearchToolsEvent(q)),
+                  ),
+                  const SizedBox(height: 16),
 
-              // Category Selector
-              CategorySelector(
-                selectedCategory: loadedState.selectedCategory,
-                isDark: isDark,
-                onSelectCategory: (cat) =>
-                    context.read<HomeBloc>().add(FilterCategoryEvent(cat)),
-              ),
-              const SizedBox(height: 18),
+                  // Category Selector
+                  CategorySelector(
+                    selectedCategory: loadedState.selectedCategory,
+                    isDark: isDark,
+                    onSelectCategory: (cat) =>
+                        context.read<HomeBloc>().add(FilterCategoryEvent(cat)),
+                  ),
+                  const SizedBox(height: 18),
 
-              // Tools Grid
-              if (loadedState.filteredTools.isEmpty)
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(32),
-                  decoration: NeoStyles.neoDecoration(
-                    backgroundColor: isDark
-                        ? NeoColors.darkSurface
-                        : NeoColors.lightSurface,
-                    radius: 16,
-                    shadow: 4,
-                  ),
-                  child: Column(
-                    children: [
-                      const Icon(
-                        Icons.search_off_rounded,
-                        size: 48,
-                        color: NeoColors.borderLight,
+                  // Tools Grid
+                  if (loadedState.filteredTools.isEmpty)
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(32),
+                      decoration: NeoStyles.neoDecoration(
+                        backgroundColor: isDark
+                            ? NeoColors.darkSurface
+                            : NeoColors.lightSurface,
+                        radius: 16,
+                        shadow: 4,
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'No Tools Found',
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w900,
-                        ),
+                      child: Column(
+                        children: [
+                          const Icon(
+                            Icons.search_off_rounded,
+                            size: 48,
+                            color: NeoColors.borderLight,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'No Tools Found',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Try searching for another keyword like "compress" or "pdf".',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 13,
+                              color: isDark
+                                  ? NeoColors.textSecondaryDark
+                                  : NeoColors.textSecondaryLight,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Try searching for another keyword like "compress" or "pdf".',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 13,
-                          color: isDark
-                              ? NeoColors.textSecondaryDark
-                              : NeoColors.textSecondaryLight,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              else
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: loadedState.filteredTools.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 14,
-                    mainAxisSpacing: 14,
-                    childAspectRatio: 0.74,
-                  ),
-                  itemBuilder: (context, index) {
-                    final tool = loadedState.filteredTools[index];
-                    return ToolCardItem(
-                      tool: tool,
-                      isDark: isDark,
-                      onTap: () {
-                        getIt<AdService>().showInterstitialAd(
-                          onDismissed: () {
-                            if (context.mounted) {
-                              context.push(tool.route);
-                            }
+                    )
+                  else
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: loadedState.filteredTools.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 14,
+                            mainAxisSpacing: 14,
+                            childAspectRatio: 0.74,
+                          ),
+                      itemBuilder: (context, index) {
+                        final tool = loadedState.filteredTools[index];
+                        return ToolCardItem(
+                          tool: tool,
+                          isDark: isDark,
+                          onTap: () {
+                            context.push(tool.route);
                           },
                         );
                       },
-                    );
-                  },
-                ),
-                const SizedBox(height: 24),
+                    ),
+                  const SizedBox(height: 24),
 
-                // Featured Pro Banner
-                ProBannerCard(
-                  isPro: isPro,
-                  onTap: onNavigateToPro ?? () => context.push('/pro'),
-                ),
+                  // Featured Pro Banner
+                  ProBannerCard(
+                    isPro: isPro,
+                    onTap: onNavigateToPro ?? () => context.push('/pro'),
+                  ),
                 ],
               ),
             );

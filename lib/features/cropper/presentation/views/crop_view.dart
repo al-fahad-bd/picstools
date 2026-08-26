@@ -416,8 +416,12 @@ class _CropViewContent extends StatelessWidget {
             width: 84,
             height: 84,
             decoration: NeoStyles.neoDecoration(
-              backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.softPink,
-              borderColor: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+              backgroundColor: isDark
+                  ? NeoColors.darkSurface
+                  : NeoColors.softPink,
+              borderColor: isDark
+                  ? NeoColors.borderDark
+                  : NeoColors.borderLight,
               radius: 20,
               shadow: 4,
             ),
@@ -532,7 +536,9 @@ class _CropViewContent extends StatelessWidget {
             fullWidth: true,
             onPressed: () {
               final box = context.findRenderObject() as RenderBox?;
-              final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
+              final origin = box != null
+                  ? box.localToGlobal(Offset.zero) & box.size
+                  : null;
               getIt<FileShareService>().shareFiles(
                 files: [XFile(state.result.croppedFile.path)],
                 text: 'Cropped with PicsTools!',

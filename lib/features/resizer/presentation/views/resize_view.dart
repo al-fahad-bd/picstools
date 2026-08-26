@@ -201,8 +201,9 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
           ),
           const SizedBox(height: 14),
           NeoCard(
-            backgroundColor:
-                isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+            backgroundColor: isDark
+                ? NeoColors.darkSurface
+                : NeoColors.lightSurface,
             shadowOffset: 3,
             onTap: () => _pickImage(context, ImageSource.camera),
             child: Row(
@@ -379,8 +380,11 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                             vertical: 12,
                           ),
                           onPressed: () {
-                            final box = context.findRenderObject() as RenderBox?;
-                            final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
+                            final box =
+                                context.findRenderObject() as RenderBox?;
+                            final origin = box != null
+                                ? box.localToGlobal(Offset.zero) & box.size
+                                : null;
                             getIt<FileShareService>().shareFiles(
                               files: [XFile(imageFile.path)],
                               text: 'Resized with PicsTools!',
@@ -528,8 +532,9 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                           return Stack(
                             children: [
                               GestureDetector(
-                                onTap: () =>
-                                    setState(() => _selectedPreviewIndex = index),
+                                onTap: () => setState(
+                                  () => _selectedPreviewIndex = index,
+                                ),
                                 child: Container(
                                   width: 56,
                                   height: 56,
@@ -546,10 +551,7 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                                   ),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(6),
-                                    child: Image.file(
-                                      file,
-                                      fit: BoxFit.cover,
-                                    ),
+                                    child: Image.file(file, fit: BoxFit.cover),
                                   ),
                                 ),
                               ),
@@ -1051,8 +1053,12 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
             width: 84,
             height: 84,
             decoration: NeoStyles.neoDecoration(
-              backgroundColor: isDark ? NeoColors.darkSurface : NeoColors.softCyan,
-              borderColor: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+              backgroundColor: isDark
+                  ? NeoColors.darkSurface
+                  : NeoColors.softCyan,
+              borderColor: isDark
+                  ? NeoColors.borderDark
+                  : NeoColors.borderLight,
               radius: 20,
               shadow: 4,
             ),
@@ -1235,7 +1241,9 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                   .map((r) => XFile(r.resizedFile.path))
                   .toList();
               final box = context.findRenderObject() as RenderBox?;
-              final origin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
+              final origin = box != null
+                  ? box.localToGlobal(Offset.zero) & box.size
+                  : null;
               getIt<FileShareService>().shareFiles(
                 files: xFiles,
                 text: 'Resized with PicsTools!',
