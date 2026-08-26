@@ -23,6 +23,7 @@ import '../../../../core/services/file_share_service.dart';
 import '../../../../core/services/monetization/in_app_purchase_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../../../core/widgets/app_native_ad.dart';
+import '../../../../core/widgets/neo_download_dialog.dart';
 import '../../bloc/resizer_bloc.dart';
 
 class ResizeView extends StatelessWidget {
@@ -421,6 +422,14 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                             vertical: 12,
                           ),
                           onPressed: () async {
+                            final proceed = await NeoDownloadDialog.show(
+                              modalContext,
+                              title: 'Download Resized Photo',
+                              subtitle:
+                                  'Save precision-resized photo to your device gallery',
+                            );
+                            if (!proceed) return;
+
                             final saver = getIt<FileSaveService>();
                             final saved = await saver.saveFileToPublicStorage(
                               sourceFile: imageFile,
@@ -1228,6 +1237,14 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
             backgroundColor: NeoColors.green,
             fullWidth: true,
             onPressed: () async {
+              final proceed = await NeoDownloadDialog.show(
+                context,
+                title: 'Download ${state.results.length} Resized Photos',
+                subtitle:
+                    'Export all resized photos instantly to your device gallery',
+              );
+              if (!proceed) return;
+
               final saver = getIt<FileSaveService>();
               for (final res in state.results) {
                 await saver.saveFileToPublicStorage(

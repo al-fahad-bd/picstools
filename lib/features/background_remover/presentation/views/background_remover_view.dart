@@ -13,6 +13,7 @@ import '../../../../core/services/sound_service.dart';
 import '../../../../core/services/monetization/in_app_purchase_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../../../core/widgets/app_native_ad.dart';
+import '../../../../core/widgets/neo_download_dialog.dart';
 import '../../../../core/widgets/neo_back_button.dart';
 import '../../../../core/widgets/neo_toast.dart';
 import '../bloc/background_remover_bloc.dart';
@@ -79,6 +80,15 @@ class _BackgroundRemoverViewContentState
 
   Future<void> _saveResult(BuildContext context, File pngFile) async {
     if (_isSaving) return;
+
+    final proceed = await NeoDownloadDialog.show(
+      context,
+      title: 'Download Transparent PNG',
+      subtitle:
+          'Export crystal-clear cutout image with alpha transparency to your gallery',
+    );
+    if (!proceed) return;
+
     setState(() => _isSaving = true);
     _playSound('save');
 

@@ -21,6 +21,7 @@ import '../../../../core/services/file_share_service.dart';
 import '../../../../core/services/monetization/in_app_purchase_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../../../core/widgets/app_native_ad.dart';
+import '../../../../core/widgets/neo_download_dialog.dart';
 import '../../bloc/cropper_bloc.dart';
 
 class CropView extends StatelessWidget {
@@ -528,6 +529,14 @@ class _CropViewContent extends StatelessWidget {
             backgroundColor: NeoColors.green,
             fullWidth: true,
             onPressed: () async {
+              final proceed = await NeoDownloadDialog.show(
+                context,
+                title: 'Download Cropped Photo',
+                subtitle:
+                    'Save your perfectly cropped photo directly to device gallery',
+              );
+              if (!proceed) return;
+
               final saver = getIt<FileSaveService>();
               final saved = await saver.saveFileToPublicStorage(
                 sourceFile: state.result.croppedFile,

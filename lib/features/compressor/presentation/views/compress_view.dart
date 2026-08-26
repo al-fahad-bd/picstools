@@ -22,6 +22,7 @@ import '../../../../core/services/file_share_service.dart';
 import '../../../../core/services/monetization/in_app_purchase_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../../../core/widgets/app_native_ad.dart';
+import '../../../../core/widgets/neo_download_dialog.dart';
 import '../../bloc/compressor_bloc.dart';
 
 class CompressView extends StatelessWidget {
@@ -419,6 +420,14 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                             vertical: 12,
                           ),
                           onPressed: () async {
+                            final proceed = await NeoDownloadDialog.show(
+                              modalContext,
+                              title: 'Download Compressed Photo',
+                              subtitle:
+                                  'Save high-resolution compressed image to your device gallery',
+                            );
+                            if (!proceed) return;
+
                             final saver = getIt<FileSaveService>();
                             final saved = await saver.saveFileToPublicStorage(
                               sourceFile: imageFile,
@@ -1100,6 +1109,14 @@ class _CompressViewContentState extends State<_CompressViewContent> {
             backgroundColor: NeoColors.green,
             fullWidth: true,
             onPressed: () async {
+              final proceed = await NeoDownloadDialog.show(
+                context,
+                title: 'Download ${state.results.length} Compressed Photos',
+                subtitle:
+                    'Export all optimized images instantly to your device gallery',
+              );
+              if (!proceed) return;
+
               final saver = getIt<FileSaveService>();
               for (final res in state.results) {
                 await saver.saveFileToPublicStorage(

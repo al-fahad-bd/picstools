@@ -23,6 +23,7 @@ import '../../../../core/services/file_share_service.dart';
 import '../../../../core/services/monetization/in_app_purchase_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../../../core/widgets/app_native_ad.dart';
+import '../../../../core/widgets/neo_download_dialog.dart';
 import '../../../cropper/services/image_cropper_service.dart';
 import '../../services/image_pdf_service.dart';
 import '../../bloc/pdf_bloc.dart';
@@ -1042,6 +1043,14 @@ class _PdfViewContent extends StatelessWidget {
                 fullWidth: true,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 onPressed: () async {
+                  final proceed = await NeoDownloadDialog.show(
+                    context,
+                    title: 'Download PDF Document',
+                    subtitle:
+                        'Export professional multi-page PDF directly to device storage',
+                  );
+                  if (!proceed) return;
+
                   final saver = getIt<FileSaveService>();
                   final saved = await saver.saveFileToPublicStorage(
                     sourceFile: state.result.pdfFile,

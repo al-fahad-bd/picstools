@@ -43,7 +43,7 @@ class ModelDownloadingCard extends StatelessWidget {
                   border: Border.all(color: NeoColors.borderLight, width: 1.5),
                 ),
                 child: Text(
-                  '⚡ DOWNLOADING MODEL',
+                  '🚀 DOWNLOADING MODEL',
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 10.5,
                     fontWeight: FontWeight.w900,

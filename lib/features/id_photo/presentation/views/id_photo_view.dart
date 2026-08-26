@@ -21,6 +21,7 @@ import '../../../../core/services/file_share_service.dart';
 import '../../../../core/services/monetization/in_app_purchase_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../../../core/widgets/app_native_ad.dart';
+import '../../../../core/widgets/neo_download_dialog.dart';
 import '../../models/id_photo_preset.dart';
 import '../../services/id_photo_service.dart';
 import '../../bloc/id_photo_bloc.dart';
@@ -1089,6 +1090,14 @@ class _IdPhotoViewContent extends StatelessWidget {
             backgroundColor: NeoColors.green,
             fullWidth: true,
             onPressed: () async {
+              final proceed = await NeoDownloadDialog.show(
+                context,
+                title: 'Download Passport Photos',
+                subtitle:
+                    'Export printable ID photo sheet & single portrait to your device',
+              );
+              if (!proceed) return;
+
               final saver = getIt<FileSaveService>();
               await saver.saveFileToPublicStorage(
                 sourceFile: res.singlePhotoFile,

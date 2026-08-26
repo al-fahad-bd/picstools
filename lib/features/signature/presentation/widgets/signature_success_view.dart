@@ -11,6 +11,7 @@ import '../../../../core/widgets/neo_badge.dart';
 import '../../../../core/widgets/neo_button.dart';
 import '../../../../core/widgets/neo_toast.dart';
 import '../../../../core/widgets/neo_crop_canvas.dart';
+import '../../../../core/widgets/neo_download_dialog.dart';
 import '../../../../core/utils/file_utils.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/file_save_service.dart';
@@ -37,6 +38,14 @@ class SignatureSuccessView extends StatelessWidget {
     List<File> files,
     String label,
   ) async {
+    final proceed = await NeoDownloadDialog.show(
+      context,
+      title: 'Download $label',
+      subtitle:
+          'Export transparent digital signature asset directly to device storage',
+    );
+    if (!proceed) return;
+
     final saver = getIt<FileSaveService>();
     for (final f in files) {
       await saver.saveFileToPublicStorage(

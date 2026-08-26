@@ -11,6 +11,7 @@ import '../../../../core/widgets/neo_card.dart';
 import '../../../../core/widgets/neo_badge.dart';
 import '../../../../core/widgets/neo_button.dart';
 import '../../../../core/widgets/neo_toast.dart';
+import '../../../../core/widgets/neo_download_dialog.dart';
 import '../../../../core/services/history_service.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/file_save_service.dart';
@@ -109,6 +110,14 @@ class HistoryDetailsView extends StatelessWidget {
       );
       return;
     }
+
+    final proceed = await NeoDownloadDialog.show(
+      context,
+      title: 'Download File to Storage',
+      subtitle:
+          'Save processed high-resolution file directly to your device memory',
+    );
+    if (!proceed) return;
 
     try {
       final saver = getIt<FileSaveService>();

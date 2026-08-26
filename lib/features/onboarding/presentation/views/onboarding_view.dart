@@ -57,7 +57,7 @@ class _OnboardingViewState extends State<OnboardingView> {
       imagePath: 'assets/images/onboarding_compress.png',
       accentColor: NeoColors.yellow,
       softBgColor: NeoColors.softYellow,
-      tag: '⚡ FAST & EFFICIENT',
+      tag: '🚀 FAST & EFFICIENT',
       icon: Icons.compress_rounded,
     ),
     OnboardingSlide(
@@ -373,9 +373,12 @@ class _OnboardingViewState extends State<OnboardingView> {
                                                 style: GoogleFonts.spaceGrotesk(
                                                   fontSize: 22,
                                                   fontWeight: FontWeight.w900,
-                                                  color: slide.highlightTextColor ??
+                                                  color:
+                                                      slide
+                                                          .highlightTextColor ??
                                                       NeoColors.getContrastColor(
-                                                          slide.accentColor),
+                                                        slide.accentColor,
+                                                      ),
                                                   letterSpacing: -0.5,
                                                 ),
                                               ),
