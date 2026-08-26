@@ -7,6 +7,7 @@ class NeoSwitch extends StatelessWidget {
   final ValueChanged<bool> onChanged;
   final Color activeTrackColor;
   final Color inactiveTrackColor;
+  final Color activeThumbIconColor;
 
   const NeoSwitch({
     super.key,
@@ -14,6 +15,7 @@ class NeoSwitch extends StatelessWidget {
     required this.onChanged,
     this.activeTrackColor = NeoColors.yellow,
     this.inactiveTrackColor = const Color(0xFFE4E4E7),
+    this.activeThumbIconColor = Colors.white,
   });
 
   @override
@@ -35,10 +37,7 @@ class NeoSwitch extends StatelessWidget {
         decoration: BoxDecoration(
           color: trackClr,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: borderClr,
-            width: NeoStyles.borderWidth,
-          ),
+          border: Border.all(color: borderClr, width: NeoStyles.borderWidth),
           boxShadow: [
             BoxShadow(
               color: borderClr,
@@ -57,18 +56,17 @@ class NeoSwitch extends StatelessWidget {
             decoration: BoxDecoration(
               color: value
                   ? NeoColors.borderLight
-                  : (isDark ? NeoColors.textPrimaryDark : NeoColors.lightSurface),
+                  : (isDark
+                        ? NeoColors.textPrimaryDark
+                        : NeoColors.lightSurface),
               shape: BoxShape.circle,
-              border: Border.all(
-                color: borderClr,
-                width: 1.5,
-              ),
+              border: Border.all(color: borderClr, width: 1.5),
             ),
             child: Icon(
               value ? Icons.volume_up_rounded : Icons.volume_off_rounded,
               size: 11,
               color: value
-                  ? NeoColors.yellow
+                  ? activeThumbIconColor
                   : (isDark ? NeoColors.darkBg : NeoColors.textSecondaryLight),
             ),
           ),

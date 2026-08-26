@@ -22,6 +22,13 @@ class ToggleSoundEvent extends SettingsEvent {
   List<Object?> get props => [isEnabled];
 }
 
+class SelectSoundTrackEvent extends SettingsEvent {
+  final String trackId;
+  const SelectSoundTrackEvent(this.trackId);
+  @override
+  List<Object?> get props => [trackId];
+}
+
 class ChangeThemeModeEvent extends SettingsEvent {
   final ThemeMode themeMode;
   const ChangeThemeModeEvent(this.themeMode);
@@ -46,6 +53,7 @@ class SettingsInitialState extends SettingsState {}
 
 class SettingsLoadedState extends SettingsState {
   final bool isSoundEnabled;
+  final String currentTrackId;
   final bool isDeveloperUnlocked;
   final ThemeMode themeMode;
   final int developerTapCount;
@@ -56,6 +64,7 @@ class SettingsLoadedState extends SettingsState {
 
   const SettingsLoadedState({
     required this.isSoundEnabled,
+    this.currentTrackId = 'zen_ambient',
     required this.isDeveloperUnlocked,
     this.themeMode = ThemeMode.system,
     this.developerTapCount = 0,
@@ -67,6 +76,7 @@ class SettingsLoadedState extends SettingsState {
 
   SettingsLoadedState copyWith({
     bool? isSoundEnabled,
+    String? currentTrackId,
     bool? isDeveloperUnlocked,
     ThemeMode? themeMode,
     int? developerTapCount,
@@ -78,6 +88,7 @@ class SettingsLoadedState extends SettingsState {
   }) {
     return SettingsLoadedState(
       isSoundEnabled: isSoundEnabled ?? this.isSoundEnabled,
+      currentTrackId: currentTrackId ?? this.currentTrackId,
       isDeveloperUnlocked: isDeveloperUnlocked ?? this.isDeveloperUnlocked,
       themeMode: themeMode ?? this.themeMode,
       developerTapCount: developerTapCount ?? this.developerTapCount,
@@ -91,6 +102,7 @@ class SettingsLoadedState extends SettingsState {
   @override
   List<Object?> get props => [
         isSoundEnabled,
+        currentTrackId,
         isDeveloperUnlocked,
         themeMode,
         developerTapCount,
@@ -114,6 +126,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   }) : super(SettingsInitialState()) {
     on<LoadSettingsEvent>(_onLoadSettings);
     on<ToggleSoundEvent>(_onToggleSound);
+    on<SelectSoundTrackEvent>(_onSelectSoundTrack);
     on<ChangeThemeModeEvent>(_onChangeThemeMode);
     on<TapDeveloperEvent>(_onTapDeveloper);
     on<DeleteAiModelEvent>(_onDeleteAiModel);
@@ -125,6 +138,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     Emitter<SettingsState> emit,
   ) async {
     final isSound = audioService.isSoundEnabled;
+    final currentTrack = audioService.currentTrackId;
     final isDevUnlocked = prefs.getBool('developer_mode_unlocked') ?? false;
     final modelInfo = await modelStorageDataSource.getStoredModelInfo();
 
@@ -138,6 +152,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
     emit(SettingsLoadedState(
       isSoundEnabled: isSound,
+      currentTrackId: currentTrack,
       isDeveloperUnlocked: isDevUnlocked,
       themeMode: themeMode,
       aiModelInfo: modelInfo,
@@ -152,6 +167,21 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     if (state is SettingsLoadedState) {
       final current = state as SettingsLoadedState;
       emit(current.copyWith(isSoundEnabled: event.isEnabled, clearToast: true));
+    }
+  }
+
+  Future<void> _onSelectSoundTrack(
+    SelectSoundTrackEvent event,
+    Emitter<SettingsState> emit,
+  ) async {
+    await audioService.selectTrack(event.trackId);
+    if (state is SettingsLoadedState) {
+      final current = state as SettingsLoadedState;
+      emit(current.copyWith(
+        currentTrackId: event.trackId,
+        isSoundEnabled: true,
+        clearToast: true,
+      ));
     }
   }
 

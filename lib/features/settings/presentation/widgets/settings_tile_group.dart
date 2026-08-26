@@ -3,16 +3,20 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/constants/neo_styles.dart';
+import '../../../../core/services/audio_service.dart';
 import '../../../../core/widgets/neo_card.dart';
 import '../../../../core/widgets/neo_switch.dart';
+import 'sound_selection_bottom_sheet.dart';
 
 class SettingsTileGroup extends StatelessWidget {
   final bool isDark;
   final ThemeMode themeMode;
   final bool isSoundEnabled;
+  final String currentTrackId;
   final bool isDeveloperUnlocked;
   final ValueChanged<ThemeMode> onChangeThemeMode;
   final ValueChanged<bool> onToggleSound;
+  final ValueChanged<String> onSelectTrack;
   final VoidCallback onTapVersion;
 
   const SettingsTileGroup({
@@ -20,9 +24,11 @@ class SettingsTileGroup extends StatelessWidget {
     required this.isDark,
     required this.themeMode,
     required this.isSoundEnabled,
+    required this.currentTrackId,
     required this.isDeveloperUnlocked,
     required this.onChangeThemeMode,
     required this.onToggleSound,
+    required this.onSelectTrack,
     required this.onTapVersion,
   });
 
@@ -213,41 +219,97 @@ class SettingsTileGroup extends StatelessWidget {
           ),
           const Divider(),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.music_note_rounded,
-                  color: isDark ? NeoColors.yellow : NeoColors.purple,
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Background Sound',
-                        style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        'Relaxing ambient music loop',
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 11,
-                          color: isDark
-                              ? NeoColors.textSecondaryDark
-                              : NeoColors.textSecondaryLight,
-                        ),
-                      ),
-                    ],
+          InkWell(
+            onTap: () {
+              SoundSelectionBottomSheet.show(
+                context: context,
+                isDark: isDark,
+                isSoundEnabled: isSoundEnabled,
+                currentTrackId: currentTrackId,
+                onToggleSound: onToggleSound,
+                onSelectTrack: onSelectTrack,
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.music_note_rounded,
+                    color: NeoColors.cyan,
                   ),
-                ),
-                NeoSwitch(
-                  value: isSoundEnabled,
-                  activeTrackColor: NeoColors.yellow,
-                  onChanged: onToggleSound,
-                ),
-              ],
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          spacing: 6,
+                          runSpacing: 2,
+                          children: [
+                            Text(
+                              'Background Sound',
+                              style: GoogleFonts.spaceGrotesk(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? NeoColors.darkBg
+                                    : NeoColors.softCyan,
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(
+                                  color: isDark
+                                      ? NeoColors.borderDark
+                                      : NeoColors.cyan,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                AudioService.tracks
+                                    .firstWhere(
+                                      (t) => t.id == currentTrackId,
+                                      orElse: () => AudioService.tracks.first,
+                                    )
+                                    .title,
+                                style: GoogleFonts.spaceGrotesk(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: isDark
+                                      ? NeoColors.cyan
+                                      : NeoColors.borderLight,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          isSoundEnabled
+                              ? 'Tap to choose from 5 relaxing audio loops'
+                              : 'Audio muted • Tap to customize tracks',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 11,
+                            color: isDark
+                                ? NeoColors.textSecondaryDark
+                                : NeoColors.textSecondaryLight,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  NeoSwitch(
+                    value: isSoundEnabled,
+                    activeTrackColor: NeoColors.cyan,
+                    onChanged: onToggleSound,
+                  ),
+                ],
+              ),
             ),
           ),
 

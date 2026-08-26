@@ -94,12 +94,18 @@ class _SettingsViewContent extends StatelessWidget {
                 isDark: isDark,
                 themeMode: loaded.themeMode,
                 isSoundEnabled: loaded.isSoundEnabled,
+                currentTrackId: loaded.currentTrackId,
                 isDeveloperUnlocked: loaded.isDeveloperUnlocked,
                 onChangeThemeMode: (mode) {
                   context.read<SettingsBloc>().add(ChangeThemeModeEvent(mode));
                 },
                 onToggleSound: (val) {
                   context.read<SettingsBloc>().add(ToggleSoundEvent(val));
+                },
+                onSelectTrack: (trackId) {
+                  context.read<SettingsBloc>().add(
+                    SelectSoundTrackEvent(trackId),
+                  );
                 },
                 onTapVersion: () {
                   context.read<SettingsBloc>().add(TapDeveloperEvent());
