@@ -7,8 +7,10 @@ import '../../../../core/constants/neo_styles.dart';
 import '../../../../core/widgets/neo_text_field.dart';
 import '../../../../core/widgets/neo_doodles.dart';
 import '../../../../core/services/service_locator.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../../../core/services/monetization/in_app_purchase_service.dart';
 import '../../../../core/widgets/app_banner_ad.dart';
+import '../../../../core/widgets/app_native_ad.dart';
 import '../bloc/home_bloc.dart';
 import '../widgets/home_header.dart';
 import '../widgets/category_selector.dart';
@@ -203,13 +205,28 @@ class _HomeViewContent extends StatelessWidget {
                         );
                       },
                     ),
-                  const SizedBox(height: 24),
+
+                  if (!isPro)
+                    const AppBannerAd(
+                      margin: EdgeInsets.only(top: 20, bottom: 8),
+                    ),
+
+                  const SizedBox(height: 16),
 
                   // Featured Pro Banner
                   ProBannerCard(
                     isPro: isPro,
                     onTap: onNavigateToPro ?? () => context.push('/pro'),
                   ),
+
+                  if (!isPro) ...[
+                    const SizedBox(height: 20),
+                    // Native Ad at the bottom of Home Screen
+                    const AppNativeAd(
+                      templateType: TemplateType.medium,
+                      margin: EdgeInsets.only(bottom: 24),
+                    ),
+                  ],
                 ],
               ),
             );

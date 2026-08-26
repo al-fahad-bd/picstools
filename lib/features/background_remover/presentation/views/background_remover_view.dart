@@ -10,6 +10,9 @@ import '../../../../core/services/file_share_service.dart';
 import '../../../../core/services/image_picker_service.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/sound_service.dart';
+import '../../../../core/services/monetization/in_app_purchase_service.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../../../../core/widgets/app_native_ad.dart';
 import '../../../../core/widgets/neo_back_button.dart';
 import '../../../../core/widgets/neo_toast.dart';
 import '../bloc/background_remover_bloc.dart';
@@ -46,7 +49,8 @@ class _BackgroundRemoverViewContent extends StatefulWidget {
 
 class _BackgroundRemoverViewContentState
     extends State<_BackgroundRemoverViewContent> {
-  int _previewMode = 0; // 0 = Split Slider, 1 = Transparent Only, 2 = Original Only
+  int _previewMode =
+      0; // 0 = Split Slider, 1 = Transparent Only, 2 = Original Only
   bool _isSaving = false;
 
   void _playSound(String type) {
@@ -175,9 +179,26 @@ class _BackgroundRemoverViewContentState
             }
           },
           builder: (context, state) {
+            final isPro = getIt<InAppPurchaseService>().isProUser();
+
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
-              child: _buildStateContent(context, state, isDark),
+              child: Column(
+                children: [
+                  _buildStateContent(context, state, isDark),
+
+                  // Native Ad below content on selection/download screens (Strictly for Free users)
+                  if (!isPro &&
+                      (state is ModelReadyState ||
+                          state is ModelNotDownloadedState)) ...[
+                    const SizedBox(height: 20),
+                    const AppNativeAd(
+                      templateType: TemplateType.medium,
+                      margin: EdgeInsets.only(top: 8, bottom: 20),
+                    ),
+                  ],
+                ],
+              ),
             );
           },
         ),
@@ -191,10 +212,7 @@ class _BackgroundRemoverViewContentState
     bool isDark,
   ) {
     if (state is BackgroundRemoverLoadingState) {
-      return BgRemoverLoadingCard(
-        message: state.message,
-        isDark: isDark,
-      );
+      return BgRemoverLoadingCard(message: state.message, isDark: isDark);
     }
 
     if (state is ModelNotDownloadedState) {
@@ -231,10 +249,7 @@ class _BackgroundRemoverViewContentState
     }
 
     if (state is BackgroundRemovingState) {
-      return ProcessingCard(
-        originalImage: state.originalImage,
-        isDark: isDark,
-      );
+      return ProcessingCard(originalImage: state.originalImage, isDark: isDark);
     }
 
     if (state is BackgroundRemovalSuccessState) {
@@ -252,8 +267,8 @@ class _BackgroundRemoverViewContentState
         onReset: () {
           _playSound('click');
           context.read<BackgroundRemoverBloc>().add(
-                ResetBackgroundRemoverEvent(),
-              );
+            ResetBackgroundRemoverEvent(),
+          );
         },
       );
     }
@@ -265,8 +280,8 @@ class _BackgroundRemoverViewContentState
         onRetry: () {
           _playSound('click');
           context.read<BackgroundRemoverBloc>().add(
-                ResetBackgroundRemoverEvent(),
-              );
+            ResetBackgroundRemoverEvent(),
+          );
         },
       );
     }

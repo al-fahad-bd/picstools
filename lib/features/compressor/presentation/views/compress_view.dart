@@ -19,6 +19,9 @@ import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/image_picker_service.dart';
 import '../../../../core/services/file_save_service.dart';
 import '../../../../core/services/file_share_service.dart';
+import '../../../../core/services/monetization/in_app_purchase_service.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../../../../core/widgets/app_native_ad.dart';
 import '../../bloc/compressor_bloc.dart';
 
 class CompressView extends StatelessWidget {
@@ -102,7 +105,9 @@ class _CompressViewContentState extends State<_CompressViewContent> {
 
   // 1. Initial State: Picker Options
   Widget _buildEmptyState(BuildContext context, bool isDark) {
-    return Padding(
+    final isPro = getIt<InAppPurchaseService>().isProUser();
+
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(20.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -245,6 +250,15 @@ class _CompressViewContentState extends State<_CompressViewContent> {
               ],
             ),
           ),
+
+          // Native Ad below all content (Strictly for Free users)
+          if (!isPro) ...[
+            const SizedBox(height: 20),
+            const AppNativeAd(
+              templateType: TemplateType.medium,
+              margin: EdgeInsets.only(top: 8, bottom: 20),
+            ),
+          ],
         ],
       ),
     );

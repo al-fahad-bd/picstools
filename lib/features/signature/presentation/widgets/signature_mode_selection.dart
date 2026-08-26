@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/constants/neo_styles.dart';
 import '../../../../core/widgets/neo_card.dart';
 import '../../../../core/widgets/neo_badge.dart';
+import '../../../../core/services/service_locator.dart';
+import '../../../../core/services/monetization/in_app_purchase_service.dart';
+import '../../../../core/widgets/app_native_ad.dart';
 
 class SignatureModeSelection extends StatelessWidget {
   final bool isDark;
@@ -261,6 +265,15 @@ class SignatureModeSelection extends StatelessWidget {
               ],
             ),
           ),
+
+          // Native Ad below all content (Strictly for Free users)
+          if (!getIt<InAppPurchaseService>().isProUser()) ...[
+            const SizedBox(height: 20),
+            const AppNativeAd(
+              templateType: TemplateType.medium,
+              margin: EdgeInsets.only(top: 8, bottom: 20),
+            ),
+          ],
         ],
       ),
     );

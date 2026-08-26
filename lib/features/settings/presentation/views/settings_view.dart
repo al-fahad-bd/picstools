@@ -7,6 +7,7 @@ import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/widgets/neo_toast.dart';
 import '../../../../core/widgets/app_native_ad.dart';
 import '../../../../core/services/service_locator.dart';
+import '../../../../core/services/monetization/in_app_purchase_service.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/settings_bloc.dart';
 import '../widgets/settings_tile_group.dart';
@@ -104,15 +105,14 @@ class _SettingsViewContent extends StatelessWidget {
                   context.read<SettingsBloc>().add(TapDeveloperEvent());
                 },
               ),
-              const SizedBox(height: 16),
-
-              // Native Advanced Ad (Hidden for Pro users)
-              const AppNativeAd(
-                templateType: TemplateType.medium,
-                margin: EdgeInsets.symmetric(vertical: 8),
-              ),
-
-              const SizedBox(height: 16),
+              // Native Advanced Ad (Strictly for Free users)
+              if (!getIt<InAppPurchaseService>().isProUser()) ...[
+                const AppNativeAd(
+                  templateType: TemplateType.medium,
+                  margin: EdgeInsets.symmetric(vertical: 8),
+                ),
+                const SizedBox(height: 16),
+              ],
 
               // AI Models Section
               Text(

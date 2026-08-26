@@ -17,6 +17,9 @@ import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/image_picker_service.dart';
 import '../../../../core/services/file_save_service.dart';
 import '../../../../core/services/file_share_service.dart';
+import '../../../../core/services/monetization/in_app_purchase_service.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../../../../core/widgets/app_native_ad.dart';
 import '../../bloc/converter_bloc.dart';
 
 class ConvertView extends StatelessWidget {
@@ -92,10 +95,11 @@ class _ConvertViewContent extends StatelessWidget {
   }
 
   Widget _buildEmptyState(BuildContext context, bool isDark) {
-    return Padding(
+    final isPro = getIt<InAppPurchaseService>().isProUser();
+
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(20.0),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
             width: 100,
@@ -229,6 +233,15 @@ class _ConvertViewContent extends StatelessWidget {
               ],
             ),
           ),
+
+          // Native Ad below all content (Strictly for Free users)
+          if (!isPro) ...[
+            const SizedBox(height: 20),
+            const AppNativeAd(
+              templateType: TemplateType.medium,
+              margin: EdgeInsets.only(top: 8, bottom: 20),
+            ),
+          ],
         ],
       ),
     );
