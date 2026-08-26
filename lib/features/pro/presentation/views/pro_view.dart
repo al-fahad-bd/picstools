@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/widgets/neo_button.dart';
-import '../../../../core/widgets/neo_card.dart';
 import '../../../../core/widgets/neo_toast.dart';
 import '../../../../core/services/service_locator.dart';
 import '../bloc/pro_bloc.dart';
-import '../widgets/pro_header.dart';
-import '../widgets/pro_feature_card.dart';
+import '../widgets/pro_video_hero.dart';
+import '../widgets/pro_plan_selector.dart';
+import '../widgets/pro_comparison_table.dart';
+import '../widgets/pro_social_proof.dart';
+import '../widgets/pro_trust_badges.dart';
+import '../widgets/pro_active_dashboard.dart';
 
 class ProView extends StatelessWidget {
   final VoidCallback? onNavigateToHome;
@@ -25,10 +27,17 @@ class ProView extends StatelessWidget {
   }
 }
 
-class _ProViewContent extends StatelessWidget {
+class _ProViewContent extends StatefulWidget {
   final VoidCallback? onNavigateToHome;
 
   const _ProViewContent({this.onNavigateToHome});
+
+  @override
+  State<_ProViewContent> createState() => _ProViewContentState();
+}
+
+class _ProViewContentState extends State<_ProViewContent> {
+  ProPlanType _selectedPlan = ProPlanType.annual;
 
   @override
   Widget build(BuildContext context) {
@@ -54,261 +63,160 @@ class _ProViewContent extends StatelessWidget {
             (state is ProErrorState && state.isPro);
 
         return RefreshIndicator(
-          color: NeoColors.pink,
-          backgroundColor: isDark
-              ? NeoColors.darkSurface
-              : NeoColors.lightSurface,
+          color: NeoColors.yellow,
+          backgroundColor:
+              isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
           onRefresh: () async {
             context.read<ProBloc>().add(RefreshProStatusEvent());
             await Future.delayed(const Duration(milliseconds: 600));
           },
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.zero, // Edge-to-edge for video hero
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                ProHeader(isDark: isDark, isPro: isPro),
-                const SizedBox(height: 24),
                 if (isPro) ...[
-                  // Pro Membership Card
-                  NeoCard(
-                    backgroundColor: isDark
-                        ? const Color(0xFF1E293B)
-                        : const Color(0xFFE8F5E9),
-                    padding: const EdgeInsets.all(16.0),
+                  // ---------------- PRO ACTIVE VIP DASHBOARD ----------------
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: ProActiveDashboard(
+                      isDark: isDark,
+                      onNavigateToHome: widget.onNavigateToHome,
+                      onManageSubscription: () {
+                        context.read<ProBloc>().add(ManageSubscriptionEvent());
+                      },
+                    ),
+                  ),
+                ] else ...[
+                  // ---------------- COMMERCIAL PAYWALL VIEW ----------------
+                  // 1. Full-Width 0-Padding Background Video Hero (Top to Middle of screen)
+                  ProVideoHero(isDark: isDark),
+
+                  // 2. Paywall Options & Conversion Components with standard side padding
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.verified_user_rounded,
-                              color: NeoColors.green,
-                              size: 22,
+                        const SizedBox(height: 4),
+
+                        // Interactive Plan Selector (Annual 50% OFF vs Monthly)
+                        ProPlanSelector(
+                          isDark: isDark,
+                          initialPlan: _selectedPlan,
+                          onPlanChanged: (plan) {
+                            setState(() => _selectedPlan = plan);
+                          },
+                        ),
+                        const SizedBox(height: 16),
+
+                        // High-Converting Purchase Action CTA Button
+                        NeoButton(
+                          label: _selectedPlan == ProPlanType.annual
+                              ? 'START 7-DAY FREE TRIAL • \$17.99/YR'
+                              : 'UPGRADE NOW • \$2.99 / MONTH',
+                          icon: const Icon(
+                            Icons.star_rounded,
+                            color: Colors.black,
+                            size: 20,
+                          ),
+                          backgroundColor: NeoColors.yellow,
+                          textColor: Colors.black,
+                          fullWidth: true,
+                          isLoading: isLoading,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          onPressed: isLoading
+                              ? null
+                              : () {
+                                  context
+                                      .read<ProBloc>()
+                                      .add(PurchaseProEvent());
+                                },
+                        ),
+                        const SizedBox(height: 8),
+
+                        Center(
+                          child: Text(
+                            _selectedPlan == ProPlanType.annual
+                                ? '✨ 7 days free, then \$17.99/year (\$1.49/mo). Cancel anytime.'
+                                : '⚡ Renews monthly at \$2.99. Cancel anytime in 1 tap.',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: isDark
+                                  ? NeoColors.textSecondaryDark
+                                  : NeoColors.textSecondaryLight,
                             ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'PLAN: MONTHLY PRO',
-                              style: GoogleFonts.spaceGrotesk(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Feature Comparison Table
+                        ProComparisonTable(isDark: isDark),
+                        const SizedBox(height: 16),
+
+                        // Creator Reviews & Social Proof
+                        ProSocialProof(isDark: isDark),
+                        const SizedBox(height: 16),
+
+                        // Security & Guarantee Badges
+                        ProTrustBadges(isDark: isDark),
+                        const SizedBox(height: 20),
+
+                        // Secondary Action: Restore Purchases
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextButton.icon(
+                              icon: Icon(
+                                Icons.restore_rounded,
+                                size: 16,
                                 color: isDark
-                                    ? NeoColors.textPrimaryDark
-                                    : NeoColors.textPrimaryLight,
+                                    ? NeoColors.textSecondaryDark
+                                    : NeoColors.textSecondaryLight,
+                              ),
+                              onPressed: isLoading
+                                  ? null
+                                  : () {
+                                      context
+                                          .read<ProBloc>()
+                                          .add(RestorePurchasesEvent());
+                                    },
+                              label: Text(
+                                'Restore Purchases',
+                                style: GoogleFonts.spaceGrotesk(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: isDark
+                                      ? NeoColors.textSecondaryDark
+                                      : NeoColors.textSecondaryLight,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'Your subscription is active and managed via the app store. You have unlimited access to all tools.',
-                          style: GoogleFonts.spaceGrotesk(
-                            fontSize: 12,
-                            color: isDark
-                                ? NeoColors.textSecondaryDark
-                                : NeoColors.textSecondaryLight,
+                        const SizedBox(height: 10),
+
+                        // Legal & Privacy Note
+                        Center(
+                          child: Text(
+                            'Payment charged via Google Play / App Store account at confirmation. Subscription auto-renews unless cancelled in account settings at least 24 hours before end of billing period.',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 10,
+                              color: isDark
+                                  ? Colors.grey.shade600
+                                  : Colors.grey.shade500,
+                              height: 1.3,
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 14),
-                        NeoButton(
-                          label: 'MANAGE / CANCEL SUBSCRIPTION',
-                          icon: Icon(
-                            Icons.open_in_new_rounded,
-                            size: 16,
-                            color: isDark
-                                ? NeoColors.textPrimaryDark
-                                : NeoColors.textPrimaryLight,
-                          ),
-                          backgroundColor: isDark
-                              ? NeoColors.darkSurface
-                              : NeoColors.lightSurface,
-                          textColor: isDark
-                              ? NeoColors.textPrimaryDark
-                              : NeoColors.textPrimaryLight,
-                          fullWidth: true,
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          onPressed: () {
-                            context.read<ProBloc>().add(
-                              ManageSubscriptionEvent(),
-                            );
-                          },
-                        ),
+                        const SizedBox(height: 24),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  // Unlocked Privileges Header
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.stars_rounded,
-                          color: NeoColors.yellow,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'UNLOCKED PRO PRIVILEGES',
-                          style: GoogleFonts.spaceGrotesk(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 0.5,
-                            color: isDark
-                                ? NeoColors.textSecondaryDark
-                                : NeoColors.textSecondaryLight,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  ProFeatureCard(
-                    icon: Icons.block_rounded,
-                    label: '100% Ad-Free Experience',
-                    subtitle: 'Clean, distraction-free environment',
-                    isUnlocked: true,
-                    isDark: isDark,
-                    accentColor: NeoColors.pink,
-                  ),
-                  ProFeatureCard(
-                    icon: Icons.layers_rounded,
-                    label: 'Unlimited Batch Processing',
-                    subtitle: 'Process entire photo collections at once',
-                    isUnlocked: true,
-                    isDark: isDark,
-                    accentColor: NeoColors.yellow,
-                  ),
-                  ProFeatureCard(
-                    icon: Icons.high_quality_rounded,
-                    label: 'Ultra HD Lossless Engine',
-                    subtitle: 'Max clarity with zero quality loss',
-                    isUnlocked: true,
-                    isDark: isDark,
-                    accentColor: NeoColors.cyan,
-                  ),
-                  ProFeatureCard(
-                    icon: Icons.picture_as_pdf_rounded,
-                    label: 'Advanced PDF & Security',
-                    subtitle: 'High compression and PDF encryption',
-                    isUnlocked: true,
-                    isDark: isDark,
-                    accentColor: NeoColors.purple,
-                  ),
-                  ProFeatureCard(
-                    icon: Icons.auto_awesome_rounded,
-                    label: 'Full Neural AI Processing',
-                    subtitle: 'High-speed local ONNX background removal',
-                    isUnlocked: true,
-                    isDark: isDark,
-                    accentColor: NeoColors.green,
-                  ),
-                  ProFeatureCard(
-                    icon: Icons.cloud_sync_rounded,
-                    label: 'Cloud Backup & Multi-Device Sync',
-                    subtitle: 'Safely sync history and Pro across all devices',
-                    isUnlocked: true,
-                    isDark: isDark,
-                    accentColor: NeoColors.purple,
-                  ),
-                  const SizedBox(height: 20),
-                  NeoButton(
-                    label: 'EXPLORE PRO TOOLS',
-                    icon: const Icon(
-                      Icons.rocket_launch_rounded,
-                      size: 18,
-                      color: NeoColors.borderLight,
-                    ),
-                    backgroundColor: NeoColors.green,
-                    fullWidth: true,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    onPressed: () {
-                      if (onNavigateToHome != null) {
-                        onNavigateToHome!();
-                      } else {
-                        context.go('/home');
-                      }
-                    },
-                  ),
-                ] else ...[
-                  ProFeatureCard(
-                    icon: Icons.block_rounded,
-                    label: 'Remove All Advertisements',
-                    subtitle: 'Enjoy clean, uninterrupted workflows',
-                    isDark: isDark,
-                  ),
-                  ProFeatureCard(
-                    icon: Icons.cloud_sync_rounded,
-                    label: 'Cloud Backup & Multi-Device Sync',
-                    subtitle: 'Sync Pro status & export history across devices',
-                    isDark: isDark,
-                  ),
-                  ProFeatureCard(
-                    icon: Icons.layers_rounded,
-                    label: 'Unlimited Batch Processing',
-                    subtitle: 'Compress & convert multiple files',
-                    isDark: isDark,
-                  ),
-                  ProFeatureCard(
-                    icon: Icons.high_quality_rounded,
-                    label: 'Ultra HD Lossless Engine',
-                    subtitle: 'Studio-grade export resolution',
-                    isDark: isDark,
-                  ),
-                  ProFeatureCard(
-                    icon: Icons.picture_as_pdf_rounded,
-                    label: 'Advanced PDF Export & Encryption',
-                    subtitle: 'Protect documents with passwords',
-                    isDark: isDark,
-                  ),
-                  const SizedBox(height: 8),
-                  NeoButton(
-                    label: 'UPGRADE NOW - \$2.99 / MONTH',
-                    backgroundColor: NeoColors.yellow,
-                    fullWidth: true,
-                    isLoading: isLoading,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    onPressed: isLoading
-                        ? null
-                        : () {
-                            context.read<ProBloc>().add(PurchaseProEvent());
-                          },
                   ),
                 ],
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      onPressed: isLoading
-                          ? null
-                          : () {
-                              context.read<ProBloc>().add(RestorePurchasesEvent());
-                            },
-                      child: Text(
-                        'Restore Purchases',
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: isDark
-                              ? NeoColors.textSecondaryDark
-                              : NeoColors.textSecondaryLight,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'Pull down to refresh subscription status',
-                  style: GoogleFonts.spaceGrotesk(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    color: isDark
-                        ? NeoColors.textSecondaryDark.withValues(alpha: 0.6)
-                        : NeoColors.textSecondaryLight.withValues(alpha: 0.6),
-                  ),
-                ),
               ],
             ),
           ),

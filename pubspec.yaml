@@ -36,6 +36,7 @@ dependencies:
   firebase_core: ^4.13.0
   firebase_auth: ^6.5.7
   google_mobile_ads: ^9.1.0
+  video_player: ^2.14.0
 
 dev_dependencies:
   flutter_test:
@@ -60,3 +61,4 @@ flutter:
     - assets/images/
     - assets/models/
     - assets/audio/
+    - assets/videos/

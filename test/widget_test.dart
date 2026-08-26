@@ -66,8 +66,8 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('PicsTools Pro'), findsOneWidget);
-    expect(find.text('Unlock maximum image productivity'), findsOneWidget);
+    expect(find.text('PicsTools PRO'), findsOneWidget);
+    expect(find.text('ANNUAL ACCESS'), findsOneWidget);
   });
 
   testWidgets('HomeView layout does not overflow on small viewports (320px)', (WidgetTester tester) async {
