@@ -729,7 +729,6 @@ class _CompressViewContentState extends State<_CompressViewContent> {
           ),
           const SizedBox(height: 24),
 
-          // Custom Quality Slider
           NeoCard(
             backgroundColor: isDark
                 ? NeoColors.darkSurface
@@ -812,7 +811,9 @@ class _CompressViewContentState extends State<_CompressViewContent> {
             backgroundColor: NeoColors.yellow,
             fullWidth: true,
             padding: const EdgeInsets.symmetric(vertical: 16),
-            onPressed: () => bloc.add(StartCompressionEvent()),
+            onPressed: () {
+              bloc.add(StartCompressionEvent());
+            },
           ),
         ],
       ),

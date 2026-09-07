@@ -98,7 +98,7 @@ class _OnboardingViewState extends State<OnboardingView> {
     } catch (_) {}
 
     if (mounted) {
-      context.go('/home');
+      context.go('/onboarding_paywall');
     }
   }
 

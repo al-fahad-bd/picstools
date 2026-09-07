@@ -4,8 +4,15 @@ import '../../../../core/constants/neo_colors.dart';
 
 class ProImageHero extends StatelessWidget {
   final bool isDark;
+  final bool showCloseButton;
+  final VoidCallback? onClose;
 
-  const ProImageHero({super.key, required this.isDark});
+  const ProImageHero({
+    super.key,
+    required this.isDark,
+    this.showCloseButton = false,
+    this.onClose,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +122,7 @@ class ProImageHero extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            'PICSTOOLS PRO',
+                            'PicsTools PRO',
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 12,
                               fontWeight: FontWeight.w900,
@@ -126,6 +133,23 @@ class ProImageHero extends StatelessWidget {
                         ],
                       ),
                     ),
+                    if (showCloseButton)
+                      GestureDetector(
+                        onTap: onClose,
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.5),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 1),
+                          ),
+                          child: const Icon(
+                            Icons.close_rounded,
+                            size: 20,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),

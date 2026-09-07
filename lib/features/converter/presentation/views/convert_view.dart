@@ -495,7 +495,9 @@ class _ConvertViewContent extends StatelessWidget {
             backgroundColor: NeoColors.green,
             fullWidth: true,
             padding: const EdgeInsets.symmetric(vertical: 16),
-            onPressed: () => bloc.add(StartConversionEvent()),
+            onPressed: () {
+              bloc.add(StartConversionEvent());
+            },
           ),
         ],
       ),

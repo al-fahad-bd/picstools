@@ -1,7 +1,9 @@
 import 'package:go_router/go_router.dart';
+import 'package:picstools/features/pro/presentation/views/pro_view.dart';
 import '../../core/services/history_service.dart';
 import '../../features/splash/presentation/views/splash_view.dart';
 import '../../features/onboarding/presentation/views/onboarding_view.dart';
+import '../../features/onboarding/presentation/views/onboarding_gift_view.dart';
 import '../../features/main_nav/presentation/views/main_nav_view.dart';
 import '../../features/history/presentation/views/history_details_view.dart';
 import '../../features/compressor/presentation/views/compress_view.dart';
@@ -20,13 +22,23 @@ abstract class AppRouter {
   static GoRouter router = GoRouter(
     initialLocation: '/splash',
     routes: [
-      GoRoute(
-        path: '/splash',
-        builder: (context, state) => const SplashView(),
-      ),
+      GoRoute(path: '/splash', builder: (context, state) => const SplashView()),
       GoRoute(
         path: '/onboarding',
         builder: (context, state) => const OnboardingView(),
+      ),
+      GoRoute(
+        path: '/onboarding_paywall',
+        builder: (context, state) => ProView(
+          isFromOnboarding: true,
+          onNavigateToHome: () {
+            context.go('/onboarding_gift');
+          },
+        ),
+      ),
+      GoRoute(
+        path: '/onboarding_gift',
+        builder: (context, state) => const OnboardingGiftView(),
       ),
       GoRoute(
         path: '/home',
@@ -75,10 +87,7 @@ abstract class AppRouter {
         path: '/tool/convert',
         builder: (context, state) => const ConvertView(),
       ),
-      GoRoute(
-        path: '/tool/pdf',
-        builder: (context, state) => const PdfView(),
-      ),
+      GoRoute(path: '/tool/pdf', builder: (context, state) => const PdfView()),
       GoRoute(
         path: '/tool/id_photo',
         builder: (context, state) => const IdPhotoView(),

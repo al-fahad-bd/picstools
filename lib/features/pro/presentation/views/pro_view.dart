@@ -14,22 +14,34 @@ import '../widgets/pro_active_dashboard.dart';
 
 class ProView extends StatelessWidget {
   final VoidCallback? onNavigateToHome;
+  final bool isFromOnboarding;
 
-  const ProView({super.key, this.onNavigateToHome});
+  const ProView({
+    super.key,
+    this.onNavigateToHome,
+    this.isFromOnboarding = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => getIt<ProBloc>()..add(LoadProStatusEvent()),
-      child: _ProViewContent(onNavigateToHome: onNavigateToHome),
+      child: _ProViewContent(
+        onNavigateToHome: onNavigateToHome,
+        isFromOnboarding: isFromOnboarding,
+      ),
     );
   }
 }
 
 class _ProViewContent extends StatefulWidget {
   final VoidCallback? onNavigateToHome;
+  final bool isFromOnboarding;
 
-  const _ProViewContent({this.onNavigateToHome});
+  const _ProViewContent({
+    this.onNavigateToHome,
+    this.isFromOnboarding = false,
+  });
 
   @override
   State<_ProViewContent> createState() => _ProViewContentState();
@@ -68,38 +80,48 @@ class _ProViewContentState extends State<_ProViewContent> {
             (state is ProPurchaseSuccessState && state.isPro) ||
             (state is ProErrorState && state.isPro);
 
-        return RefreshIndicator(
-          color: NeoColors.yellow,
-          backgroundColor: isDark
-              ? NeoColors.darkSurface
-              : NeoColors.lightSurface,
-          onRefresh: () async {
-            context.read<ProBloc>().add(RefreshProStatusEvent());
-            await Future.delayed(const Duration(milliseconds: 600));
-          },
-          child: SingleChildScrollView(
-            controller: _scrollController,
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: EdgeInsets.zero,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (isPro) ...[
-                  // ---------------- PRO ACTIVE VIP DASHBOARD ----------------
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: ProActiveDashboard(
+        return Scaffold(
+          backgroundColor: isDark ? NeoColors.darkBg : NeoColors.lightBg,
+          body: RefreshIndicator(
+            color: NeoColors.yellow,
+            backgroundColor: isDark
+                ? NeoColors.darkSurface
+                : NeoColors.lightSurface,
+            onRefresh: () async {
+              context.read<ProBloc>().add(RefreshProStatusEvent());
+              await Future.delayed(const Duration(milliseconds: 600));
+            },
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.zero,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (isPro) ...[
+                    // ---------------- PRO ACTIVE VIP DASHBOARD ----------------
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: ProActiveDashboard(
+                        isDark: isDark,
+                        onNavigateToHome: widget.onNavigateToHome,
+                        onManageSubscription: () {
+                          context.read<ProBloc>().add(ManageSubscriptionEvent());
+                        },
+                      ),
+                    ),
+                  ] else ...[
+                    // ---------------- COMMERCIAL PAYWALL VIEW ----------------
+                    // 1. Edge-to-Edge Hero Image (Hero image with unobstructed subject & phone)
+                    ProImageHero(
                       isDark: isDark,
-                      onNavigateToHome: widget.onNavigateToHome,
-                      onManageSubscription: () {
-                        context.read<ProBloc>().add(ManageSubscriptionEvent());
+                      showCloseButton: widget.isFromOnboarding,
+                      onClose: () {
+                        if (widget.onNavigateToHome != null) {
+                          widget.onNavigateToHome!();
+                        }
                       },
                     ),
-                  ),
-                ] else ...[
-                  // ---------------- COMMERCIAL PAYWALL VIEW ----------------
-                  // 1. Edge-to-Edge Hero Image (Hero image with unobstructed subject & phone)
-                  ProImageHero(isDark: isDark),
 
                   // 2. Paywall Options & Conversion Components
                   Padding(
@@ -272,6 +294,7 @@ class _ProViewContentState extends State<_ProViewContent> {
                   ),
                 ],
               ],
+            ),
             ),
           ),
         );

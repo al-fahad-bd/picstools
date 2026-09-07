@@ -12,6 +12,7 @@ import 'package:picstools/core/services/monetization/in_app_purchase_service.dar
 import 'package:picstools/core/services/monetization/ad_service.dart';
 import 'package:picstools/core/services/auth_service.dart';
 import 'package:picstools/features/history/presentation/views/history_details_view.dart';
+import 'package:picstools/features/onboarding/presentation/views/onboarding_gift_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -132,5 +133,18 @@ void main() {
       if (s is! HomeLoadedState) return false;
       return s.filteredTools.any((t) => t.id == 'pdf') && s.filteredTools.length == 1;
     })));
+  });
+
+  testWidgets('OnboardingGiftView renders celebratory content properly', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: OnboardingGiftView(),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.textContaining("Here's 3 Days Ad-Free"), findsOneWidget);
+    expect(find.text('VIP ACCESS PASS'), findsOneWidget);
+    expect(find.text('CLAIM GIFT & START CREATING 🚀'), findsOneWidget);
   });
 }

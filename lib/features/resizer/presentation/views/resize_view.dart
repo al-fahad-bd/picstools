@@ -1021,7 +1021,9 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
             backgroundColor: NeoColors.cyan,
             fullWidth: true,
             padding: const EdgeInsets.symmetric(vertical: 16),
-            onPressed: () => bloc.add(StartResizeEvent()),
+            onPressed: () {
+              bloc.add(StartResizeEvent());
+            },
           ),
         ],
       ),

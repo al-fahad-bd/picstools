@@ -1,11 +1,14 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../service_locator.dart';
 import 'in_app_purchase_service.dart';
 
 abstract class AdService {
   Future<void> initialize();
   bool shouldShowAds();
+  bool isVipActive();
   String get bannerAdUnitId;
   String get interstitialAdUnitId;
   String get rewardedAdUnitId;
@@ -105,11 +108,29 @@ class AdServiceImpl implements AdService {
   /// Gatekeeper: Never show ads to Pro users or if ads disabled
   @override
   bool shouldShowAds() {
-    // If user has unlocked Pro subscription, NEVER show any ads
-    if (_iapService.isProUser()) {
+    // If user has unlocked Pro subscription or has VIP status, NEVER show any ads
+    if (_iapService.isProUser() || isVipActive()) {
       return false;
     }
     return true;
+  }
+
+  @override
+  bool isVipActive() {
+    try {
+      if (getIt.isRegistered<SharedPreferences>()) {
+        final prefs = getIt<SharedPreferences>();
+        final vipStartTime = prefs.getInt('vip_gift_start_time');
+        if (vipStartTime != null) {
+          final startTime = DateTime.fromMillisecondsSinceEpoch(vipStartTime);
+          final difference = DateTime.now().difference(startTime);
+          if (difference.inDays < 3) {
+            return true; // Still within 3-day VIP period
+          }
+        }
+      }
+    } catch (_) {}
+    return false;
   }
 
   /// Strict Anti-Ban Guardrail:
@@ -322,6 +343,9 @@ class MockAdServiceImpl implements AdService {
 
   @override
   bool shouldShowAds() => false;
+
+  @override
+  bool isVipActive() => false;
 
   @override
   String get bannerAdUnitId => 'mock_banner_unit_id';

@@ -72,7 +72,16 @@ class _SplashViewState extends State<SplashView>
       }
     } catch (_) {}
 
-    context.go('/onboarding');
+    // Check if onboarding is completed
+    final prefs = getIt<SharedPreferences>();
+    final completed = prefs.getBool('onboarding_completed') ?? false;
+
+    if (completed) {
+      // context.go('/home');
+      context.go('/onboarding');
+    } else {
+      context.go('/onboarding');
+    }
   }
 
   @override

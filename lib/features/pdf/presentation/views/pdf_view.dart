@@ -857,7 +857,9 @@ class _PdfViewContent extends StatelessWidget {
             textColor: NeoColors.lightSurface,
             fullWidth: true,
             padding: const EdgeInsets.symmetric(vertical: 16),
-            onPressed: () => bloc.add(StartPdfGenerationEvent()),
+            onPressed: () {
+              bloc.add(StartPdfGenerationEvent());
+            },
           ),
         ],
       ),

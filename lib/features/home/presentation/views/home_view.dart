@@ -9,6 +9,7 @@ import '../../../../core/widgets/neo_doodles.dart';
 import '../../../../core/services/service_locator.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../../../core/services/monetization/in_app_purchase_service.dart';
+import '../../../../core/services/monetization/ad_service.dart';
 import '../../../../core/widgets/app_banner_ad.dart';
 import '../../../../core/widgets/app_native_ad.dart';
 import '../bloc/home_bloc.dart';
@@ -16,6 +17,9 @@ import '../widgets/home_header.dart';
 import '../widgets/category_selector.dart';
 import '../widgets/tool_card_item.dart';
 import '../widgets/pro_banner_card.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../onboarding/presentation/widgets/vip_expiration_modal.dart';
 
 class HomeView extends StatelessWidget {
   final VoidCallback? onNavigateToPro;
@@ -31,10 +35,45 @@ class HomeView extends StatelessWidget {
   }
 }
 
-class _HomeViewContent extends StatelessWidget {
+class _HomeViewContent extends StatefulWidget {
   final VoidCallback? onNavigateToPro;
 
   const _HomeViewContent({this.onNavigateToPro});
+
+  @override
+  State<_HomeViewContent> createState() => _HomeViewContentState();
+}
+
+class _HomeViewContentState extends State<_HomeViewContent> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkVipExpiration();
+    });
+  }
+
+  Future<void> _checkVipExpiration() async {
+    try {
+      if (getIt.isRegistered<SharedPreferences>()) {
+        final prefs = getIt<SharedPreferences>();
+        final vipStartTime = prefs.getInt('vip_gift_start_time');
+        final hasShownExpired = prefs.getBool('vip_gift_expired_shown') ?? false;
+
+        if (vipStartTime != null && !hasShownExpired) {
+          final startTime = DateTime.fromMillisecondsSinceEpoch(vipStartTime);
+          final difference = DateTime.now().difference(startTime);
+          
+          if (difference.inDays >= 3) {
+            await prefs.setBool('vip_gift_expired_shown', true);
+            if (mounted) {
+              VipExpirationModal.show(context);
+            }
+          }
+        }
+      }
+    } catch (_) {}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +82,9 @@ class _HomeViewContent extends StatelessWidget {
     return ValueListenableBuilder<bool>(
       valueListenable: getIt<InAppPurchaseService>().isProListenable,
       builder: (context, isPro, _) {
+        final isVip = getIt<AdService>().isVipActive();
+        final shouldHideAds = isPro || isVip;
+
         return BlocBuilder<HomeBloc, HomeState>(
           builder: (context, state) {
             final loadedState = state is HomeLoadedState
@@ -58,7 +100,8 @@ class _HomeViewContent extends StatelessWidget {
                   HomeHeader(
                     isDark: isDark,
                     isPro: isPro,
-                    onProTap: onNavigateToPro ?? () => context.push('/pro'),
+                    isVip: isVip,
+                    onProTap: widget.onNavigateToPro ?? () => context.push('/pro'),
                   ),
                   const SizedBox(height: 18),
 
@@ -119,8 +162,8 @@ class _HomeViewContent extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
 
-                  // AdMob Test Banner Ad (Strictly hidden for Pro users)
-                  if (!isPro)
+                  // AdMob Test Banner Ad (Strictly hidden for Pro users and VIPs)
+                  if (!shouldHideAds)
                     const AppBannerAd(margin: EdgeInsets.only(bottom: 12)),
 
                   // Search Field
@@ -206,7 +249,7 @@ class _HomeViewContent extends StatelessWidget {
                       },
                     ),
 
-                  if (!isPro)
+                  if (!shouldHideAds)
                     const AppBannerAd(
                       margin: EdgeInsets.only(top: 20, bottom: 8),
                     ),
@@ -216,10 +259,10 @@ class _HomeViewContent extends StatelessWidget {
                   // Featured Pro Banner
                   ProBannerCard(
                     isPro: isPro,
-                    onTap: onNavigateToPro ?? () => context.push('/pro'),
+                    onTap: widget.onNavigateToPro ?? () => context.push('/pro'),
                   ),
 
-                  if (!isPro) ...[
+                  if (!shouldHideAds) ...[
                     const SizedBox(height: 20),
                     // Native Ad at the bottom of Home Screen
                     const AppNativeAd(
