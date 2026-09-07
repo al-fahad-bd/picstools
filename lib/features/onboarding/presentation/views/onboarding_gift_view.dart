@@ -434,6 +434,7 @@ class _OnboardingGiftViewState extends State<OnboardingGiftView>
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             onPressed: () async {
                               final prefs = getIt<SharedPreferences>();
+                              await prefs.setBool('onboarding_completed', true);
                               await prefs.setInt(
                                 'vip_gift_start_time',
                                 DateTime.now().millisecondsSinceEpoch,

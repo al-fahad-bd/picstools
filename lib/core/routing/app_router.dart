@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:picstools/features/pro/presentation/views/pro_view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/services/history_service.dart';
 import '../../core/services/service_locator.dart';
 import '../../core/services/monetization/in_app_purchase_service.dart';
@@ -27,6 +28,15 @@ abstract class AppRouter {
       GoRoute(path: '/splash', builder: (context, state) => const SplashView()),
       GoRoute(
         path: '/onboarding',
+        redirect: (context, state) {
+          if (getIt.isRegistered<SharedPreferences>()) {
+            final prefs = getIt<SharedPreferences>();
+            if (prefs.getBool('onboarding_completed') == true) {
+              return '/home';
+            }
+          }
+          return null;
+        },
         builder: (context, state) => const OnboardingView(),
       ),
       GoRoute(
@@ -34,6 +44,9 @@ abstract class AppRouter {
         builder: (context, state) => ProView(
           isFromOnboarding: true,
           onNavigateToHome: () {
+            if (getIt.isRegistered<SharedPreferences>()) {
+              getIt<SharedPreferences>().setBool('onboarding_completed', true);
+            }
             final isPro = getIt.isRegistered<InAppPurchaseService>() &&
                 getIt<InAppPurchaseService>().isProUser();
             if (isPro) {

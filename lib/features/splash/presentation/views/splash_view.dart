@@ -77,8 +77,7 @@ class _SplashViewState extends State<SplashView>
     final completed = prefs.getBool('onboarding_completed') ?? false;
 
     if (completed) {
-      // context.go('/home');
-      context.go('/onboarding');
+      context.go('/home');
     } else {
       context.go('/onboarding');
     }
