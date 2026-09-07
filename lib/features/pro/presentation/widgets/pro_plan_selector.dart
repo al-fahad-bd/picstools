@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/neo_colors.dart';
-import '../../../../core/constants/neo_styles.dart';
-import '../../../../core/widgets/neo_badge.dart';
-import '../../../../core/widgets/neo_card.dart';
 
 enum ProPlanType { annual, monthly }
 
@@ -59,29 +56,37 @@ class _ProPlanSelectorState extends State<ProPlanSelector>
 
     return Column(
       children: [
-        // 1. Annual Best Value Plan (Highlighted)
+        // 1. Annual Best Value Plan (Highlighted with high border radius, no hard shadow)
         GestureDetector(
           onTap: () => _selectPlan(ProPlanType.annual),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              NeoCard(
-                backgroundColor: _selectedPlan == ProPlanType.annual
-                    ? (isDark
-                          ? const Color(0xFF2A2400)
-                          : const Color(0xFFFFFBEA))
-                    : (isDark ? NeoColors.darkSurface : NeoColors.lightSurface),
-                borderColor: _selectedPlan == ProPlanType.annual
-                    ? NeoColors.yellow
-                    : (isDark ? NeoColors.borderDark : NeoColors.borderLight),
-                shadowOffset: _selectedPlan == ProPlanType.annual ? 4 : 2,
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
+                  horizontal: 18,
+                  vertical: 16,
+                ),
+                decoration: BoxDecoration(
+                  color: _selectedPlan == ProPlanType.annual
+                      ? (isDark
+                            ? const Color(0xFF26200A)
+                            : const Color(0xFFFFFDE8))
+                      : (isDark ? const Color(0xFF1E1E22) : Colors.white),
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(
+                    color: _selectedPlan == ProPlanType.annual
+                        ? NeoColors.yellow
+                        : (isDark
+                              ? const Color(0xFF333338)
+                              : const Color(0xFFE2E2E8)),
+                    width: _selectedPlan == ProPlanType.annual ? 2.2 : 1.2,
+                  ),
                 ),
                 child: Row(
                   children: [
-                    // Custom Radio
+                    // Modern Rounded Radio
                     Container(
                       width: 22,
                       height: 22,
@@ -92,7 +97,7 @@ class _ProPlanSelectorState extends State<ProPlanSelector>
                             : Colors.transparent,
                         border: Border.all(
                           color: _selectedPlan == ProPlanType.annual
-                              ? NeoColors.borderLight
+                              ? NeoColors.yellow
                               : (isDark
                                     ? Colors.grey.shade600
                                     : Colors.grey.shade400),
@@ -101,9 +106,9 @@ class _ProPlanSelectorState extends State<ProPlanSelector>
                       ),
                       child: _selectedPlan == ProPlanType.annual
                           ? const Icon(
-                              Icons.check,
-                              size: 14,
-                              color: NeoColors.borderLight,
+                              Icons.check_rounded,
+                              size: 15,
+                              color: Colors.black,
                             )
                           : null,
                     ),
@@ -118,26 +123,38 @@ class _ProPlanSelectorState extends State<ProPlanSelector>
                                 'ANNUAL ACCESS',
                                 style: GoogleFonts.spaceGrotesk(
                                   fontSize: 15,
-                                  fontWeight: FontWeight.w900,
-                                  color: isDark
-                                      ? Colors.white
-                                      : NeoColors.borderLight,
+                                  fontWeight: FontWeight.w800,
+                                  color: isDark ? Colors.white : Colors.black,
+                                  letterSpacing: -0.2,
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              const NeoBadge(
-                                label: 'BEST VALUE',
-                                backgroundColor: NeoColors.yellow,
-                                textColor: Colors.black,
-                                fontSize: 9,
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 7,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: NeoColors.yellow,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  'BEST VALUE',
+                                  style: GoogleFonts.spaceGrotesk(
+                                    fontSize: 9.5,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.black,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 2),
+                          const SizedBox(height: 3),
                           Text(
                             '7 Days Free Trial • Billed \$17.99 / yr',
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 11.5,
+                              fontWeight: FontWeight.w500,
                               color: isDark
                                   ? NeoColors.textSecondaryDark
                                   : NeoColors.textSecondaryLight,
@@ -152,7 +169,7 @@ class _ProPlanSelectorState extends State<ProPlanSelector>
                         Text(
                           '\$1.49',
                           style: GoogleFonts.spaceGrotesk(
-                            fontSize: 20,
+                            fontSize: 21,
                             fontWeight: FontWeight.w900,
                             color: isDark ? NeoColors.yellow : Colors.black,
                           ),
@@ -172,28 +189,29 @@ class _ProPlanSelectorState extends State<ProPlanSelector>
                   ],
                 ),
               ),
-              // Floating Animated 50% OFF Badge
+
+              // Floating 50% OFF Badge (Rounded Pill)
               Positioned(
-                top: -10,
+                top: -9,
                 right: 18,
                 child: ScaleTransition(
                   scale: _pulseAnimation,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 10,
-                      vertical: 3,
+                      vertical: 3.5,
                     ),
-                    decoration: NeoStyles.neoDecoration(
-                      backgroundColor: NeoColors.pink,
-                      radius: 8,
-                      shadow: 2,
+                    decoration: BoxDecoration(
+                      color: NeoColors.pink,
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      '🔥 SAVE 50%',
+                      '⚡️ SAVE 50%',
                       style: GoogleFonts.spaceGrotesk(
-                        fontSize: 10.5,
+                        fontSize: 12,
                         fontWeight: FontWeight.w900,
                         color: Colors.white,
+                        letterSpacing: 0.3,
                       ),
                     ),
                   ),
@@ -204,21 +222,29 @@ class _ProPlanSelectorState extends State<ProPlanSelector>
         ),
         const SizedBox(height: 12),
 
-        // 2. Monthly Flexible Plan
+        // 2. Monthly Flexible Plan (Rounded Card, No Shadow)
         GestureDetector(
           onTap: () => _selectPlan(ProPlanType.monthly),
-          child: NeoCard(
-            backgroundColor: _selectedPlan == ProPlanType.monthly
-                ? (isDark ? const Color(0xFF2A2400) : const Color(0xFFFFFBEA))
-                : (isDark ? NeoColors.darkSurface : NeoColors.lightSurface),
-            borderColor: _selectedPlan == ProPlanType.monthly
-                ? NeoColors.yellow
-                : (isDark ? NeoColors.borderDark : NeoColors.borderLight),
-            shadowOffset: _selectedPlan == ProPlanType.monthly ? 4 : 2,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+            decoration: BoxDecoration(
+              color: _selectedPlan == ProPlanType.monthly
+                  ? (isDark ? const Color(0xFF26200A) : const Color(0xFFFFFDE8))
+                  : (isDark ? const Color(0xFF1E1E22) : Colors.white),
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(
+                color: _selectedPlan == ProPlanType.monthly
+                    ? NeoColors.yellow
+                    : (isDark
+                          ? const Color(0xFF333338)
+                          : const Color(0xFFE2E2E8)),
+                width: _selectedPlan == ProPlanType.monthly ? 2.2 : 1.2,
+              ),
+            ),
             child: Row(
               children: [
-                // Custom Radio
+                // Modern Rounded Radio
                 Container(
                   width: 22,
                   height: 22,
@@ -229,7 +255,7 @@ class _ProPlanSelectorState extends State<ProPlanSelector>
                         : Colors.transparent,
                     border: Border.all(
                       color: _selectedPlan == ProPlanType.monthly
-                          ? NeoColors.borderLight
+                          ? NeoColors.yellow
                           : (isDark
                                 ? Colors.grey.shade600
                                 : Colors.grey.shade400),
@@ -238,9 +264,9 @@ class _ProPlanSelectorState extends State<ProPlanSelector>
                   ),
                   child: _selectedPlan == ProPlanType.monthly
                       ? const Icon(
-                          Icons.check,
-                          size: 14,
-                          color: NeoColors.borderLight,
+                          Icons.check_rounded,
+                          size: 15,
+                          color: Colors.black,
                         )
                       : null,
                 ),
@@ -253,15 +279,17 @@ class _ProPlanSelectorState extends State<ProPlanSelector>
                         'MONTHLY FLEXIBLE',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 15,
-                          fontWeight: FontWeight.w900,
-                          color: isDark ? Colors.white : NeoColors.borderLight,
+                          fontWeight: FontWeight.w800,
+                          color: isDark ? Colors.white : Colors.black,
+                          letterSpacing: -0.2,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 3),
                       Text(
                         'Cancel anytime • Pay month-to-month',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 11.5,
+                          fontWeight: FontWeight.w500,
                           color: isDark
                               ? NeoColors.textSecondaryDark
                               : NeoColors.textSecondaryLight,
@@ -276,7 +304,7 @@ class _ProPlanSelectorState extends State<ProPlanSelector>
                     Text(
                       '\$2.99',
                       style: GoogleFonts.spaceGrotesk(
-                        fontSize: 20,
+                        fontSize: 21,
                         fontWeight: FontWeight.w900,
                         color: isDark ? Colors.white : Colors.black,
                       ),

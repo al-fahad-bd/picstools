@@ -6,10 +6,9 @@ import '../../../../core/widgets/neo_button.dart';
 import '../../../../core/widgets/neo_toast.dart';
 import '../../../../core/services/service_locator.dart';
 import '../bloc/pro_bloc.dart';
-import '../widgets/pro_video_hero.dart';
+import '../widgets/pro_image_hero.dart';
 import '../widgets/pro_plan_selector.dart';
-import '../widgets/pro_comparison_table.dart';
-import '../widgets/pro_social_proof.dart';
+import '../widgets/pro_benefits_list.dart';
 import '../widgets/pro_trust_badges.dart';
 import '../widgets/pro_active_dashboard.dart';
 
@@ -64,15 +63,16 @@ class _ProViewContentState extends State<_ProViewContent> {
 
         return RefreshIndicator(
           color: NeoColors.yellow,
-          backgroundColor:
-              isDark ? NeoColors.darkSurface : NeoColors.lightSurface,
+          backgroundColor: isDark
+              ? NeoColors.darkSurface
+              : NeoColors.lightSurface,
           onRefresh: () async {
             context.read<ProBloc>().add(RefreshProStatusEvent());
             await Future.delayed(const Duration(milliseconds: 600));
           },
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: EdgeInsets.zero, // Edge-to-edge for video hero
+            padding: EdgeInsets.zero,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -90,16 +90,65 @@ class _ProViewContentState extends State<_ProViewContent> {
                   ),
                 ] else ...[
                   // ---------------- COMMERCIAL PAYWALL VIEW ----------------
-                  // 1. Full-Width 0-Padding Background Video Hero (Top to Middle of screen)
-                  ProVideoHero(isDark: isDark),
+                  // 1. Edge-to-Edge Hero Image (Hero image with unobstructed subject & phone)
+                  ProImageHero(isDark: isDark),
 
-                  // 2. Paywall Options & Conversion Components with standard side padding
+                  // 2. Paywall Options & Conversion Components
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                        // Headline and feature overview
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2.5,
+                              ),
+                              decoration: BoxDecoration(
+                                color: NeoColors.pink,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                'CREATIVE STUDIO ACCESS',
+                                style: GoogleFonts.spaceGrotesk(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white,
+                                  letterSpacing: 0.6,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Get PicsTools Pro',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900,
+                            color: isDark
+                                ? NeoColors.textPrimaryDark
+                                : NeoColors.textPrimaryLight,
+                            height: 1.15,
+                            letterSpacing: -0.4,
+                          ),
+                        ),
                         const SizedBox(height: 4),
+                        Text(
+                          'Batch processing, high-speed editing, and 100% ad-free experience.',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: isDark
+                                ? NeoColors.textSecondaryDark
+                                : NeoColors.textSecondaryLight,
+                            height: 1.3,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
 
                         // Interactive Plan Selector (Annual 50% OFF vs Monthly)
                         ProPlanSelector(
@@ -129,18 +178,19 @@ class _ProViewContentState extends State<_ProViewContent> {
                           onPressed: isLoading
                               ? null
                               : () {
-                                  context
-                                      .read<ProBloc>()
-                                      .add(PurchaseProEvent());
+                                  context.read<ProBloc>().add(
+                                    PurchaseProEvent(),
+                                  );
                                 },
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 6),
 
                         Center(
                           child: Text(
                             _selectedPlan == ProPlanType.annual
                                 ? '✨ 7 days free, then \$17.99/year (\$1.49/mo). Cancel anytime.'
                                 : '⚡ Renews monthly at \$2.99. Cancel anytime in 1 tap.',
+                            textAlign: TextAlign.center,
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
@@ -150,15 +200,11 @@ class _ProViewContentState extends State<_ProViewContent> {
                             ),
                           ),
                         ),
+                        const SizedBox(height: 24),
+
+                        // Core Pro Benefits List (Clean & Accurate)
+                        ProBenefitsList(isDark: isDark),
                         const SizedBox(height: 20),
-
-                        // Feature Comparison Table
-                        ProComparisonTable(isDark: isDark),
-                        const SizedBox(height: 16),
-
-                        // Creator Reviews & Social Proof
-                        ProSocialProof(isDark: isDark),
-                        const SizedBox(height: 16),
 
                         // Security & Guarantee Badges
                         ProTrustBadges(isDark: isDark),
@@ -179,9 +225,9 @@ class _ProViewContentState extends State<_ProViewContent> {
                               onPressed: isLoading
                                   ? null
                                   : () {
-                                      context
-                                          .read<ProBloc>()
-                                          .add(RestorePurchasesEvent());
+                                      context.read<ProBloc>().add(
+                                        RestorePurchasesEvent(),
+                                      );
                                     },
                               label: Text(
                                 'Restore Purchases',
@@ -212,7 +258,7 @@ class _ProViewContentState extends State<_ProViewContent> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 32),
                       ],
                     ),
                   ),

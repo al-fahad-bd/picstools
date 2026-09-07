@@ -92,6 +92,8 @@ class _MainNavViewState extends State<MainNavView> {
         },
       ),
       body: SafeArea(
+        top: _currentNavIndex != 2,
+        bottom: true,
         child: IndexedStack(
           index: _currentNavIndex,
           children: [
