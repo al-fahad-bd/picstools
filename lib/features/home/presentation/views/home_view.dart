@@ -64,7 +64,7 @@ class _HomeViewContentState extends State<_HomeViewContent> {
           final startTime = DateTime.fromMillisecondsSinceEpoch(vipStartTime);
           final difference = DateTime.now().difference(startTime);
           
-          if (difference.inDays >= 3) {
+          if (difference.inHours >= 24) {
             await prefs.setBool('vip_gift_expired_shown', true);
             if (mounted) {
               VipExpirationModal.show(context);

@@ -261,7 +261,7 @@ class _OnboardingGiftViewState extends State<OnboardingGiftView>
                         children: [
                           // Headline
                           Text(
-                            'Here\'s 3 Days Ad-Free\nOn Us!',
+                            'Here\'s 24 Hours Ad-Free\nOn Us!',
                             textAlign: TextAlign.center,
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 26,
@@ -355,7 +355,7 @@ class _OnboardingGiftViewState extends State<OnboardingGiftView>
                                           ),
                                         ),
                                         child: Text(
-                                          '72 HOURS',
+                                          '24 HOURS',
                                           style: GoogleFonts.spaceGrotesk(
                                             fontWeight: FontWeight.w800,
                                             fontSize: 11,

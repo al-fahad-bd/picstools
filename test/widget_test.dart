@@ -13,6 +13,7 @@ import 'package:picstools/core/services/monetization/ad_service.dart';
 import 'package:picstools/core/services/auth_service.dart';
 import 'package:picstools/features/history/presentation/views/history_details_view.dart';
 import 'package:picstools/features/onboarding/presentation/views/onboarding_gift_view.dart';
+import 'package:picstools/features/settings/presentation/widgets/sound_selection_bottom_sheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -143,8 +144,30 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.textContaining("Here's 3 Days Ad-Free"), findsOneWidget);
+    expect(find.textContaining("Here's 24 Hours Ad-Free"), findsOneWidget);
     expect(find.text('VIP ACCESS PASS'), findsOneWidget);
     expect(find.text('CLAIM GIFT & START CREATING 🚀'), findsOneWidget);
+  });
+
+  testWidgets('SoundSelectionBottomSheet renders header, scrollable tracks, and fixed DONE button', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SoundSelectionBottomSheet(
+            isDark: false,
+            isSoundEnabled: true,
+            currentTrackId: 'zen_ambient',
+            onToggleSound: (_) {},
+            onSelectTrack: (_) {},
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('Background Music'), findsOneWidget);
+    expect(find.text('CHOOSE SOUNDTRACK'), findsOneWidget);
+    expect(find.text('DONE'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }

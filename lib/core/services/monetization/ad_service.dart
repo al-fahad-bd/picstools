@@ -124,8 +124,8 @@ class AdServiceImpl implements AdService {
         if (vipStartTime != null) {
           final startTime = DateTime.fromMillisecondsSinceEpoch(vipStartTime);
           final difference = DateTime.now().difference(startTime);
-          if (difference.inDays < 3) {
-            return true; // Still within 3-day VIP period
+          if (difference.inHours < 24) {
+            return true; // Still within 24-hour VIP period
           }
         }
       }

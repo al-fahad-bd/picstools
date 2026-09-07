@@ -69,7 +69,7 @@ class VipExpirationModal extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Your 3-day ad-free VIP pass has expired. You can continue using PicsTools for free with ads, or upgrade to Pro for an ad-free experience and advanced features.',
+              'Your 24-hour ad-free VIP pass has expired. You can continue using PicsTools for free with ads, or upgrade to Pro for an ad-free experience and advanced features.',
               textAlign: TextAlign.center,
               style: GoogleFonts.spaceGrotesk(
                 fontSize: 15,
