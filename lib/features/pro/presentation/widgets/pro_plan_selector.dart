@@ -192,7 +192,7 @@ class _ProPlanSelectorState extends State<ProPlanSelector>
 
               // Floating 50% OFF Badge (Rounded Pill)
               Positioned(
-                top: -9,
+                top: -12,
                 right: 18,
                 child: ScaleTransition(
                   scale: _pulseAnimation,
