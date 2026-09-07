@@ -37,6 +37,13 @@ class _ProViewContent extends StatefulWidget {
 
 class _ProViewContentState extends State<_ProViewContent> {
   ProPlanType _selectedPlan = ProPlanType.annual;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +78,7 @@ class _ProViewContentState extends State<_ProViewContent> {
             await Future.delayed(const Duration(milliseconds: 600));
           },
           child: SingleChildScrollView(
+            controller: _scrollController,
             physics: const AlwaysScrollableScrollPhysics(),
             padding: EdgeInsets.zero,
             child: Column(
