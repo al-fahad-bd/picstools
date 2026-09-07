@@ -261,7 +261,7 @@ class _OnboardingGiftViewState extends State<OnboardingGiftView>
                         children: [
                           // Headline
                           Text(
-                            'Here\'s 3 Days Ad-Free\nOn Us! 🎉',
+                            'Here\'s 3 Days Ad-Free\nOn Us!',
                             textAlign: TextAlign.center,
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 26,
