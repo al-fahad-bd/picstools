@@ -13,7 +13,12 @@ class LoadProStatusEvent extends ProEvent {}
 
 class RefreshProStatusEvent extends ProEvent {}
 
-class PurchaseProEvent extends ProEvent {}
+class PurchaseProEvent extends ProEvent {
+  final String? productId;
+  const PurchaseProEvent({this.productId});
+  @override
+  List<Object?> get props => [productId];
+}
 
 class RestorePurchasesEvent extends ProEvent {}
 
@@ -108,7 +113,9 @@ class ProBloc extends Bloc<ProEvent, ProState> {
   ) async {
     emit(ProLoadingState());
     try {
-      final success = await purchaseService.purchaseProSubscription();
+      final success = await purchaseService.purchaseProSubscription(
+        productId: event.productId,
+      );
       final isPro = purchaseService.isProUser();
       if (success || isPro) {
         emit(

@@ -1,6 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:picstools/features/pro/presentation/views/pro_view.dart';
 import '../../core/services/history_service.dart';
+import '../../core/services/service_locator.dart';
+import '../../core/services/monetization/in_app_purchase_service.dart';
 import '../../features/splash/presentation/views/splash_view.dart';
 import '../../features/onboarding/presentation/views/onboarding_view.dart';
 import '../../features/onboarding/presentation/views/onboarding_gift_view.dart';
@@ -32,12 +34,26 @@ abstract class AppRouter {
         builder: (context, state) => ProView(
           isFromOnboarding: true,
           onNavigateToHome: () {
-            context.go('/onboarding_gift');
+            final isPro = getIt.isRegistered<InAppPurchaseService>() &&
+                getIt<InAppPurchaseService>().isProUser();
+            if (isPro) {
+              context.go('/home');
+            } else {
+              context.go('/onboarding_gift');
+            }
           },
         ),
       ),
       GoRoute(
         path: '/onboarding_gift',
+        redirect: (context, state) {
+          final isPro = getIt.isRegistered<InAppPurchaseService>() &&
+              getIt<InAppPurchaseService>().isProUser();
+          if (isPro) {
+            return '/home';
+          }
+          return null;
+        },
         builder: (context, state) => const OnboardingGiftView(),
       ),
       GoRoute(

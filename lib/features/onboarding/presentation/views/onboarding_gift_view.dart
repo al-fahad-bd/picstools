@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/services/service_locator.dart';
+import '../../../../core/services/monetization/in_app_purchase_service.dart';
 import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/widgets/neo_button.dart';
 import '../../../../core/widgets/neo_badge.dart';
@@ -28,6 +29,17 @@ class _OnboardingGiftViewState extends State<OnboardingGiftView>
   @override
   void initState() {
     super.initState();
+
+    // If user is already Pro, never show the temporary 24-hour trial gift screen
+    if (getIt.isRegistered<InAppPurchaseService>() &&
+        getIt<InAppPurchaseService>().isProUser()) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.go('/home');
+        }
+      });
+      return;
+    }
 
     // Entrance pop & slide animation
     _entranceController = AnimationController(

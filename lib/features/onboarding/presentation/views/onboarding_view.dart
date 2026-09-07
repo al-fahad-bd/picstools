@@ -10,6 +10,7 @@ import '../../../../core/widgets/neo_badge.dart';
 import '../../../../core/widgets/neo_doodles.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../core/services/monetization/in_app_purchase_service.dart';
 
 class OnboardingSlide {
   final String titlePrefix;
@@ -98,7 +99,13 @@ class _OnboardingViewState extends State<OnboardingView> {
     } catch (_) {}
 
     if (mounted) {
-      context.go('/onboarding_paywall');
+      final isPro = getIt.isRegistered<InAppPurchaseService>() &&
+          getIt<InAppPurchaseService>().isProUser();
+      if (isPro) {
+        context.go('/home');
+      } else {
+        context.go('/onboarding_paywall');
+      }
     }
   }
 

@@ -10,7 +10,7 @@ abstract class InAppPurchaseService {
   Future<void> initialize();
   bool isProUser();
   ValueListenable<bool> get isProListenable;
-  Future<bool> purchaseProSubscription();
+  Future<bool> purchaseProSubscription({String? productId});
   Future<bool> restorePurchases();
   Future<bool> checkSubscriptionStatus();
   Future<void> openManageSubscriptions();
@@ -19,10 +19,16 @@ abstract class InAppPurchaseService {
 class InAppPurchaseServiceImpl
     with WidgetsBindingObserver
     implements InAppPurchaseService {
-  static const String proSubscriptionId = 'picstools_pro_monthly';
+  static const String proMonthlySubscriptionId = 'picstools_pro_monthly';
+  static const String proYearlySubscriptionId = 'picstools_pro_yearly';
+  static const String proSubscriptionId = proMonthlySubscriptionId;
+  static const Set<String> allProSubscriptionIds = {
+    proMonthlySubscriptionId,
+    proYearlySubscriptionId,
+  };
   static const String _proPrefKey = 'is_pro_user_cached';
   static const String _playStoreSubUrl =
-      'https://play.google.com/store/account/subscriptions?package=com.deltrix.picstools&sku=picstools_pro_monthly';
+      'https://play.google.com/store/account/subscriptions?package=com.deltrix.picstools';
   static const String _playStoreSubFallbackUrl =
       'https://play.google.com/store/account/subscriptions';
   static const String _appleSubUrl =
@@ -115,7 +121,8 @@ class InAppPurchaseServiceImpl
 
   Future<void> _onPurchaseDetails(List<PurchaseDetails> purchases) async {
     for (final purchase in purchases) {
-      if (purchase.productID == proSubscriptionId) {
+      if (allProSubscriptionIds.contains(purchase.productID) ||
+          purchase.productID == proSubscriptionId) {
         if (purchase.status == PurchaseStatus.purchased ||
             purchase.status == PurchaseStatus.restored) {
           await _setProUser(true);
@@ -164,7 +171,8 @@ class InAppPurchaseServiceImpl
     try {
       tempSub = _iap.purchaseStream.listen((purchases) {
         for (final purchase in purchases) {
-          if (purchase.productID == proSubscriptionId &&
+          if ((allProSubscriptionIds.contains(purchase.productID) ||
+                  purchase.productID == proSubscriptionId) &&
               (purchase.status == PurchaseStatus.purchased ||
                   purchase.status == PurchaseStatus.restored)) {
             activeProFound = true;
@@ -192,7 +200,7 @@ class InAppPurchaseServiceImpl
   }
 
   @override
-  Future<bool> purchaseProSubscription() async {
+  Future<bool> purchaseProSubscription({String? productId}) async {
     // If already Pro or previously purchased, check status first
     if (_isPro) {
       return true;
@@ -203,13 +211,15 @@ class InAppPurchaseServiceImpl
       return false;
     }
 
+    final targetId = productId ?? proYearlySubscriptionId;
+
     final ProductDetailsResponse response = await _iap.queryProductDetails({
-      proSubscriptionId,
+      targetId,
     });
 
-    if (response.notFoundIDs.contains(proSubscriptionId) ||
+    if (response.notFoundIDs.contains(targetId) ||
         response.productDetails.isEmpty) {
-      debugPrint('Product $proSubscriptionId not found in store.');
+      debugPrint('Product $targetId not found in store.');
       return false;
     }
 
@@ -299,7 +309,7 @@ class MockInAppPurchaseServiceImpl implements InAppPurchaseService {
   Future<bool> checkSubscriptionStatus() async => _isPro;
 
   @override
-  Future<bool> purchaseProSubscription() async {
+  Future<bool> purchaseProSubscription({String? productId}) async {
     _isPro = true;
     _isProNotifier.value = true;
     return true;

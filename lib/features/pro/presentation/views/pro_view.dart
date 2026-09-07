@@ -5,6 +5,7 @@ import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/widgets/neo_button.dart';
 import '../../../../core/widgets/neo_toast.dart';
 import '../../../../core/services/service_locator.dart';
+import '../../../../core/services/monetization/in_app_purchase_service.dart';
 import '../bloc/pro_bloc.dart';
 import '../widgets/pro_image_hero.dart';
 import '../widgets/pro_plan_selector.dart';
@@ -100,8 +101,27 @@ class _ProViewContentState extends State<_ProViewContent> {
                 children: [
                   if (isPro) ...[
                     // ---------------- PRO ACTIVE VIP DASHBOARD ----------------
+                    // 1. Edge-to-Edge Hero Image (Same image as free view, ~50% visibility for ideal layout balance)
+                    ProImageHero(
+                      isDark: isDark,
+                      heightFactor: 0.46,
+                      badgeLabel: '👑 VIP PRO ACTIVE',
+                      badgeIcon: Icons.verified_rounded,
+                      badgeColor: NeoColors.green,
+                      badgeTextColor: Colors.black,
+                      showCloseButton: widget.isFromOnboarding,
+                      onClose: () {
+                        if (widget.onNavigateToHome != null) {
+                          widget.onNavigateToHome!();
+                        } else if (Navigator.of(context).canPop()) {
+                          Navigator.of(context).pop();
+                        }
+                      },
+                    ),
+
+                    // 2. VIP Dashboard Components below the Hero
                     Padding(
-                      padding: const EdgeInsets.all(20.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: ProActiveDashboard(
                         isDark: isDark,
                         onNavigateToHome: widget.onNavigateToHome,
@@ -208,8 +228,16 @@ class _ProViewContentState extends State<_ProViewContent> {
                           onPressed: isLoading
                               ? null
                               : () {
+                                  final targetProductId =
+                                      _selectedPlan == ProPlanType.annual
+                                          ? InAppPurchaseServiceImpl
+                                              .proYearlySubscriptionId
+                                          : InAppPurchaseServiceImpl
+                                              .proMonthlySubscriptionId;
                                   context.read<ProBloc>().add(
-                                    PurchaseProEvent(),
+                                    PurchaseProEvent(
+                                      productId: targetProductId,
+                                    ),
                                   );
                                 },
                         ),

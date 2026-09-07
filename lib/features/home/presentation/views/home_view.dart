@@ -55,6 +55,10 @@ class _HomeViewContentState extends State<_HomeViewContent> {
 
   Future<void> _checkVipExpiration() async {
     try {
+      if (getIt.isRegistered<InAppPurchaseService>() &&
+          getIt<InAppPurchaseService>().isProUser()) {
+        return; // Active Pro subscriber — never show VIP expiration modal
+      }
       if (getIt.isRegistered<SharedPreferences>()) {
         final prefs = getIt<SharedPreferences>();
         final vipStartTime = prefs.getInt('vip_gift_start_time');
