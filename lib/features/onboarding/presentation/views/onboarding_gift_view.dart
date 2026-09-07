@@ -411,7 +411,7 @@ class _OnboardingGiftViewState extends State<OnboardingGiftView>
                             ),
                           ),
 
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 40),
 
                           // Neo CTA Button
                           NeoButton(
