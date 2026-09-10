@@ -14,8 +14,6 @@ class SettingsTileGroup extends StatelessWidget {
   final bool isSoundEnabled;
   final String currentTrackId;
   final bool isDeveloperUnlocked;
-  final bool isSignedIn;
-  final VoidCallback? onDeleteAccount;
   final ValueChanged<ThemeMode> onChangeThemeMode;
   final ValueChanged<bool> onToggleSound;
   final ValueChanged<String> onSelectTrack;
@@ -32,8 +30,6 @@ class SettingsTileGroup extends StatelessWidget {
     required this.onToggleSound,
     required this.onSelectTrack,
     required this.onTapVersion,
-    this.isSignedIn = false,
-    this.onDeleteAccount,
   });
 
   Widget _buildThemeChip({
@@ -221,46 +217,6 @@ class SettingsTileGroup extends StatelessWidget {
               ),
             ),
           ),
-
-          if (isSignedIn && onDeleteAccount != null) ...[
-            const Divider(),
-            InkWell(
-              onTap: onDeleteAccount,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                child: Row(
-                  children: [
-                    const Icon(Icons.delete_forever_rounded, color: NeoColors.red),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Delete Account',
-                            style: GoogleFonts.spaceGrotesk(
-                              fontWeight: FontWeight.bold,
-                              color: NeoColors.red,
-                            ),
-                          ),
-                          Text(
-                            'Permanently delete cloud profile & credentials',
-                            style: GoogleFonts.spaceGrotesk(
-                              fontSize: 11,
-                              color: isDark
-                                  ? NeoColors.textSecondaryDark
-                                  : NeoColors.textSecondaryLight,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Icon(Icons.chevron_right_rounded, color: NeoColors.red),
-                  ],
-                ),
-              ),
-            ),
-          ],
           const Divider(),
 
           InkWell(
