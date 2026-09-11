@@ -44,6 +44,14 @@ class _TestHistoryService implements HistoryService {
       _controller.add(List.unmodifiable(items));
     }
   }
+
+  @override
+  Future<void> resetSyncStatus() async {
+    for (int i = 0; i < items.length; i++) {
+      items[i] = items[i].copyWith(clearCloudSync: true);
+    }
+    _controller.add(List.unmodifiable(items));
+  }
 }
 
 void main() {

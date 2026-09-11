@@ -67,7 +67,7 @@ Future<void> initServiceLocator() async {
   await adService.initialize();
   getIt.registerSingleton<AdService>(adService);
 
-  final authService = FirebaseAuthServiceImpl();
+  final authService = FirebaseAuthServiceImpl(prefs: prefs);
   await authService.initialize();
   // Silently restore/sign-in anonymously if user already completed onboarding
   if (prefs.getBool('onboarding_completed') == true) {

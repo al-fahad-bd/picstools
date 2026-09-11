@@ -77,6 +77,7 @@ class CloudSyncServiceImpl implements CloudSyncService {
   final _statusController = StreamController<SyncStatus>.broadcast();
   SyncStatus _currentStatus = const SyncStatus();
   StreamSubscription<List<HistoryItem>>? _historySub;
+  StreamSubscription<String?>? _authSub;
 
   CloudSyncServiceImpl({
     required this.authService,
@@ -87,6 +88,9 @@ class CloudSyncServiceImpl implements CloudSyncService {
   }) {
     _loadLastSyncTime();
     _historySub = historyService.historyStream.listen((_) {
+      refreshStatus();
+    });
+    _authSub = authService.authStateChanges.listen((_) {
       refreshStatus();
     });
     refreshStatus();
@@ -286,6 +290,7 @@ class CloudSyncServiceImpl implements CloudSyncService {
 
   void dispose() {
     _historySub?.cancel();
+    _authSub?.cancel();
     _statusController.close();
   }
 }

@@ -388,7 +388,7 @@ class AccountSyncCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Ready to Link Account',
+                        'Not Signed In',
                         style: GoogleFonts.inter(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -402,7 +402,7 @@ class AccountSyncCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Sign in with Google to automatically back up your history & sync across all your devices.',
+              'Sign in to automatically back up your history & sync across all your devices.',
               style: GoogleFonts.inter(
                 fontSize: 12,
                 color: isDark ? Colors.white70 : Colors.black87,

@@ -3,6 +3,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class AccountDeletionCooldownException implements Exception {
+  final String message;
+  final Duration remaining;
+  const AccountDeletionCooldownException(this.message, this.remaining);
+
+  @override
+  String toString() => message;
+}
 
 abstract class AuthService {
   Future<void> initialize();
@@ -23,6 +33,9 @@ abstract class AuthService {
   Future<bool> signInWithGoogle();
   Future<bool> sendPasswordReset(String email);
   Future<void> signOut();
+  Future<void> deleteAccount();
+  Duration? get accountDeletionCooldownRemaining;
+  bool get isDeletionCooldownActive;
   String? get currentUserId;
   String? get userEmail;
   String? get displayName;
@@ -34,8 +47,12 @@ abstract class AuthService {
 }
 
 class FirebaseAuthServiceImpl implements AuthService {
+  static const String _lastDeletedTimestampKey =
+      'picstools_last_account_deleted_at';
+
   final FirebaseAuth _auth;
   final FirebaseFirestore? firestore;
+  final SharedPreferences? prefs;
   int? _cachedAge;
   String? _cachedName;
   bool _googleSignInInitialized = false;
@@ -43,6 +60,7 @@ class FirebaseAuthServiceImpl implements AuthService {
   FirebaseAuthServiceImpl({
     FirebaseAuth? auth,
     this.firestore,
+    this.prefs,
   })  : _auth = auth ?? FirebaseAuth.instance;
 
   FirebaseFirestore? get _db {
@@ -371,6 +389,69 @@ class FirebaseAuthServiceImpl implements AuthService {
   }
 
   @override
+  Duration? get accountDeletionCooldownRemaining {
+    final raw = prefs?.getString(_lastDeletedTimestampKey);
+    if (raw == null) return null;
+    final lastDeleted = DateTime.tryParse(raw);
+    if (lastDeleted == null) return null;
+    final elapsed = DateTime.now().difference(lastDeleted);
+    if (elapsed < const Duration(hours: 24)) {
+      return const Duration(hours: 24) - elapsed;
+    }
+    return null;
+  }
+
+  @override
+  bool get isDeletionCooldownActive =>
+      accountDeletionCooldownRemaining != null &&
+      accountDeletionCooldownRemaining!.inSeconds > 0;
+
+  @override
+  Future<void> deleteAccount() async {
+    final remaining = accountDeletionCooldownRemaining;
+    if (remaining != null && remaining.inSeconds > 0) {
+      final hours = remaining.inHours;
+      final minutes = remaining.inMinutes % 60;
+      final timeMsg = hours > 0
+          ? '$hours hours and $minutes minutes'
+          : '$minutes minutes';
+      throw AccountDeletionCooldownException(
+        'Account was recently deleted. To prevent system abuse, account deletion is limited to once every 24 hours. Please try again in $timeMsg.',
+        remaining,
+      );
+    }
+
+    final user = _auth.currentUser;
+    if (user != null) {
+      final uid = user.uid;
+      try {
+        final db = _db;
+        if (db != null) {
+          await db.collection('users').doc(uid).delete();
+        }
+      } catch (e) {
+        debugPrint('⚠️ [PicsTools Auth] Error removing Firestore user doc: $e');
+      }
+
+      try {
+        await GoogleSignIn.instance.signOut();
+      } catch (_) {}
+
+      await user.delete();
+      _cachedName = null;
+      _cachedAge = null;
+
+      // Record deletion timestamp for 24-hour abuse cooldown
+      await prefs?.setString(
+        _lastDeletedTimestampKey,
+        DateTime.now().toIso8601String(),
+      );
+
+      await signInAnonymously();
+    }
+  }
+
+  @override
   String? get currentUserId => _auth.currentUser?.uid;
 
   @override
@@ -493,6 +574,40 @@ class MockAuthServiceImpl implements AuthService {
     _mockPhotoUrl = null;
     _mockAge = null;
     _mockIsAnonymous = true;
+  }
+
+  DateTime? _mockLastDeletedTime;
+
+  void setMockLastDeletedTime(DateTime? time) {
+    _mockLastDeletedTime = time;
+  }
+
+  @override
+  Duration? get accountDeletionCooldownRemaining {
+    if (_mockLastDeletedTime == null) return null;
+    final elapsed = DateTime.now().difference(_mockLastDeletedTime!);
+    if (elapsed < const Duration(hours: 24)) {
+      return const Duration(hours: 24) - elapsed;
+    }
+    return null;
+  }
+
+  @override
+  bool get isDeletionCooldownActive =>
+      accountDeletionCooldownRemaining != null &&
+      accountDeletionCooldownRemaining!.inSeconds > 0;
+
+  @override
+  Future<void> deleteAccount() async {
+    final remaining = accountDeletionCooldownRemaining;
+    if (remaining != null && remaining.inSeconds > 0) {
+      throw AccountDeletionCooldownException(
+        'Account was recently deleted. To prevent system abuse, account deletion is limited to once every 24 hours.',
+        remaining,
+      );
+    }
+    _mockLastDeletedTime = DateTime.now();
+    await signOut();
   }
 
   @override

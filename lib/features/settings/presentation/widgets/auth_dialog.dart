@@ -213,7 +213,7 @@ class _AuthDialogState extends State<AuthDialog> {
                         Text(
                           _isForgotPassword
                               ? 'Reset Password'
-                              : (_isSignUp ? 'Create & Link Account' : 'Sign In to Pro'),
+                              : (_isSignUp ? 'Create Account' : 'Sign In'),
                           style: GoogleFonts.spaceGrotesk(
                             fontSize: 20,
                             fontWeight: FontWeight.w900,
@@ -223,8 +223,8 @@ class _AuthDialogState extends State<AuthDialog> {
                           _isForgotPassword
                               ? 'Enter email to receive reset instructions'
                               : (_isSignUp
-                                  ? 'Sync history & Pro across devices'
-                                  : 'Restore cloud backup & Pro status'),
+                                  ? 'Save your profile & back up history to cloud'
+                                  : 'Access your cloud backups & history'),
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             color: isDark ? Colors.white70 : Colors.black54,
@@ -504,7 +504,7 @@ class _AuthDialogState extends State<AuthDialog> {
                               ? 'PROCESSING...'
                               : (_isForgotPassword
                                   ? 'SEND RESET LINK'
-                                  : (_isSignUp ? 'CREATE & LINK ACCOUNT' : 'SIGN IN')),
+                                  : (_isSignUp ? 'CREATE ACCOUNT' : 'SIGN IN')),
                           backgroundColor: _isSignUp ? NeoColors.green : NeoColors.purple,
                           textColor: _isSignUp ? NeoColors.textPrimaryLight : Colors.white,
                           isLoading: isLoading,

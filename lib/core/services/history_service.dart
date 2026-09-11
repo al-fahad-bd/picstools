@@ -42,6 +42,7 @@ class HistoryItem {
     DateTime? timestamp,
     String? cloudProcessedUrl,
     String? cloudR2Key,
+    bool clearCloudSync = false,
   }) {
     return HistoryItem(
       id: id ?? this.id,
@@ -51,8 +52,8 @@ class HistoryItem {
       originalSizeBytes: originalSizeBytes ?? this.originalSizeBytes,
       processedSizeBytes: processedSizeBytes ?? this.processedSizeBytes,
       timestamp: timestamp ?? this.timestamp,
-      cloudProcessedUrl: cloudProcessedUrl ?? this.cloudProcessedUrl,
-      cloudR2Key: cloudR2Key ?? this.cloudR2Key,
+      cloudProcessedUrl: clearCloudSync ? null : (cloudProcessedUrl ?? this.cloudProcessedUrl),
+      cloudR2Key: clearCloudSync ? null : (cloudR2Key ?? this.cloudR2Key),
     );
   }
 
@@ -88,6 +89,7 @@ abstract class HistoryService {
   Future<void> updateHistoryItem(HistoryItem item) async {}
   Future<void> deleteHistoryItem(String id);
   Future<void> clearHistory();
+  Future<void> resetSyncStatus() async {}
 }
 
 class HistoryServiceImpl implements HistoryService {
@@ -244,6 +246,17 @@ class HistoryServiceImpl implements HistoryService {
     }
     await _prefs.remove(_key);
     _historyController.add([]);
+  }
+
+  @override
+  Future<void> resetSyncStatus() async {
+    final list = await getHistory();
+    final updated = list
+        .map((item) => item.copyWith(clearCloudSync: true))
+        .toList();
+    final jsonList = updated.map((i) => jsonEncode(i.toJson())).toList();
+    await _prefs.setStringList(_key, jsonList);
+    _historyController.add(updated);
   }
 
   void dispose() {

@@ -65,7 +65,7 @@ void main() {
   });
 
   group('AuthBloc', () {
-    late AuthService mockAuthService;
+    late MockAuthServiceImpl mockAuthService;
     late AuthBloc authBloc;
 
     setUp(() async {
@@ -200,6 +200,58 @@ void main() {
       final state = authBloc.state as AuthStateChangedState;
       expect(state.isAnonymous, isTrue);
       expect(state.email, isNull);
+    });
+
+    test('DeleteAccountEvent deletes user account and reverts to guest state', () async {
+      await mockAuthService.signInWithEmailPassword('delete_me@example.com', 'pass123');
+
+      authBloc.add(DeleteAccountEvent());
+
+      await expectLater(
+        authBloc.stream,
+        emitsInOrder([
+          isA<AuthLoadingState>(),
+          isA<AuthSuccessMessageState>().having(
+            (s) => s.isAnonymous,
+            'isAnonymous',
+            isTrue,
+          ),
+          isA<AuthStateChangedState>().having(
+            (s) => s.isAnonymous,
+            'isAnonymous',
+            isTrue,
+          ),
+        ]),
+      );
+
+      expect(authBloc.state, isA<AuthStateChangedState>());
+      final state = authBloc.state as AuthStateChangedState;
+      expect(state.isAnonymous, isTrue);
+      expect(state.email, isNull);
+    });
+
+    test('DeleteAccountEvent enforces 24-hour cooldown when active', () async {
+      await mockAuthService.signInWithEmailPassword('user2@example.com', 'pass123');
+      mockAuthService.setMockLastDeletedTime(
+        DateTime.now().subtract(const Duration(hours: 2)),
+      );
+
+      expect(mockAuthService.isDeletionCooldownActive, isTrue);
+      expect(mockAuthService.accountDeletionCooldownRemaining, isNotNull);
+
+      authBloc.add(DeleteAccountEvent());
+
+      await expectLater(
+        authBloc.stream,
+        emitsInOrder([
+          isA<AuthLoadingState>(),
+          isA<AuthErrorState>().having(
+            (s) => s.errorMessage,
+            'errorMessage',
+            contains('limited to once every 24 hours'),
+          ),
+        ]),
+      );
     });
   });
 }

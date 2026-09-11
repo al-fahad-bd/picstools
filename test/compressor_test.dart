@@ -158,4 +158,7 @@ class _MockHistoryService implements HistoryService {
 
   @override
   Future<List<HistoryItem>> getHistory() async => [];
+
+  @override
+  Future<void> resetSyncStatus() async {}
 }

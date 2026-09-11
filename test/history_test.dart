@@ -220,4 +220,33 @@ void main() {
     expect(history.first.cloudProcessedUrl, equals('https://test.r2.dev/image.png'));
     expect(history.first.cloudR2Key, equals('users/test/image.png'));
   });
+
+  test('resetSyncStatus clears cloud sync metadata but keeps local files', () async {
+    final file = File('${tempTestDir.path}/reset_sync_test.png');
+    await file.writeAsString('test_bytes');
+
+    final item = HistoryItem(
+      id: 'reset_id',
+      toolName: 'Crop',
+      originalPath: 'orig',
+      processedPath: file.path,
+      originalSizeBytes: 100,
+      processedSizeBytes: 50,
+      timestamp: DateTime.now(),
+      cloudProcessedUrl: 'https://test.r2.dev/old.png',
+      cloudR2Key: 'users/old/old.png',
+    );
+
+    await historyService.addHistoryItem(item);
+    var history = await historyService.getHistory();
+    expect(history.first.isSynced, isTrue);
+
+    await historyService.resetSyncStatus();
+
+    history = await historyService.getHistory();
+    expect(history.first.isSynced, isFalse);
+    expect(history.first.cloudProcessedUrl, isNull);
+    expect(history.first.cloudR2Key, isNull);
+    expect(await File(history.first.processedPath).exists(), isTrue);
+  });
 }

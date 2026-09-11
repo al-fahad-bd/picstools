@@ -40,41 +40,45 @@ void main() {
       if (await testJpgFile2.exists()) await testJpgFile2.delete();
     });
 
-    test('RemoveResizeImageEvent removes an image and updates state correctly', () async {
-      final resizerService = ImageResizerService();
-      final bloc = ResizerBloc(
-        resizerService: resizerService,
-        historyService: _MockHistoryService(),
-      );
+    test(
+      'RemoveResizeImageEvent removes an image and updates state correctly',
+      () async {
+        final resizerService = ImageResizerService();
+        final bloc = ResizerBloc(
+          resizerService: resizerService,
+          historyService: _MockHistoryService(),
+        );
 
-      bloc.add(SelectResizeImagesEvent([testJpgFile1, testJpgFile2]));
-      await expectLater(
-        bloc.stream,
-        emits(isA<ResizerConfiguredState>().having(
-          (s) => s.files.length,
-          'files length',
-          2,
-        )),
-      );
+        bloc.add(SelectResizeImagesEvent([testJpgFile1, testJpgFile2]));
+        await expectLater(
+          bloc.stream,
+          emits(
+            isA<ResizerConfiguredState>().having(
+              (s) => s.files.length,
+              'files length',
+              2,
+            ),
+          ),
+        );
 
-      bloc.add(const RemoveResizeImageEvent(0));
-      await expectLater(
-        bloc.stream,
-        emits(isA<ResizerConfiguredState>().having(
-          (s) => s.files.length,
-          'files length',
-          1,
-        )),
-      );
+        bloc.add(const RemoveResizeImageEvent(0));
+        await expectLater(
+          bloc.stream,
+          emits(
+            isA<ResizerConfiguredState>().having(
+              (s) => s.files.length,
+              'files length',
+              1,
+            ),
+          ),
+        );
 
-      bloc.add(const RemoveResizeImageEvent(0));
-      await expectLater(
-        bloc.stream,
-        emits(isA<ResizerInitialState>()),
-      );
+        bloc.add(const RemoveResizeImageEvent(0));
+        await expectLater(bloc.stream, emits(isA<ResizerInitialState>()));
 
-      await bloc.close();
-    });
+        await bloc.close();
+      },
+    );
   });
 }
 
@@ -96,4 +100,7 @@ class _MockHistoryService implements HistoryService {
 
   @override
   Future<List<HistoryItem>> getHistory() async => [];
+
+  @override
+  Future<void> resetSyncStatus() async {}
 }

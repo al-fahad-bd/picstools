@@ -44,13 +44,13 @@ class PrivacyPolicyView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const NeoBadge(
-                      label: '100% LOCAL ON-DEVICE PROCESSING',
+                      label: '100% ON-DEVICE PROCESSING GUARANTEE',
                       backgroundColor: NeoColors.green,
                       fontSize: 11,
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Your Photos Never Leave Your Phone',
+                      'Your Photos Never Leave Your Phone for Processing',
                       style: GoogleFonts.spaceGrotesk(
                         fontSize: 22,
                         fontWeight: FontWeight.w900,
@@ -59,11 +59,11 @@ class PrivacyPolicyView extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'PicsTools processes all images, compressions, resizes, crops, format conversions, PDF compilations, digital signatures, and passport photos strictly offline on your device. We do NOT collect, transmit, or store any of your photos on external cloud servers.',
+                      'Unlike other photo apps that transmit your private images to remote servers to run AI models, PicsTools processes all image tools—AI background removal, compression, resizing, cropping, format conversion, PDF compilation, and ID photos—strictly offline on your device processor. Your photos are NEVER uploaded or sent to external servers for processing.',
                       style: GoogleFonts.spaceGrotesk(
                         fontSize: 13,
                         color: NeoColors.borderLight.withValues(alpha: 0.85),
-                        height: 1.4,
+                        height: 1.45,
                       ),
                     ),
                   ],
@@ -73,18 +73,30 @@ class PrivacyPolicyView extends StatelessWidget {
 
               // Policy Section 1: Anonymous & Account-Free Access
               _buildPolicySection(
-                title: '1. Anonymous & Account-Free Access',
+                title: '1. Fully Usable Without an Account',
                 icon: Icons.no_accounts_rounded,
                 color: NeoColors.cyan,
                 isDark: isDark,
                 content:
-                    'PicsTools does not require you to create an account, register, or provide personal information such as your real name, email address, password, or phone number. A randomized, anonymous identifier is generated solely to maintain your app preferences and secure service integrity. All image editing and file processing remain strictly offline on your device.',
+                    'PicsTools does not require you to create an account or sign in. You can use all editing and image processing tools completely anonymously. An anonymous local identifier is maintained only to store your theme and preferences locally on your device.',
               ),
               const SizedBox(height: 16),
 
-              // Policy Section 2: Permissions Usage
+              // Policy Section 2: Optional Multi-Device Cloud Sync
               _buildPolicySection(
-                title: '2. Device Permissions Usage',
+                title: '2. Optional Cloud Sync for Multi-Device Access',
+                icon: Icons.cloud_sync_rounded,
+                color: NeoColors.purple,
+                iconColor: Colors.white,
+                isDark: isDark,
+                content:
+                    'If you explicitly choose to sign in (via Google or Email), PicsTools provides optional cloud backup so you can access your saved history across multiple devices. Only your exported result images and history timestamps are stored in private, encrypted cloud storage (Cloudflare R2 & Firebase). This sync feature exists solely for your multi-device convenience—your photos are never sold, never shared, and never used to train public AI models.',
+              ),
+              const SizedBox(height: 16),
+
+              // Policy Section 3: Permissions Usage
+              _buildPolicySection(
+                title: '3. Device Permissions Usage',
                 icon: Icons.lock_outline_rounded,
                 color: NeoColors.yellow,
                 isDark: isDark,
@@ -94,27 +106,28 @@ class PrivacyPolicyView extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Policy Section 3: Third-Party Advertising
+              // Policy Section 4: Third-Party Services
               _buildPolicySection(
-                title: '3. Third-Party Ad Services',
+                title: '4. Third-Party Services',
                 icon: Icons.ad_units_rounded,
                 color: NeoColors.pink,
                 iconColor: Colors.white,
                 isDark: isDark,
                 content:
-                    'PicsTools uses standard non-intrusive mobile advertising networks (such as Google AdMob) to support free app maintenance. These networks may collect anonymized device identifiers in accordance with standard privacy laws.',
+                    '• Google AdMob: Displays standard non-intrusive mobile ads for free users.\n'
+                    '• Firebase & Cloudflare R2: Used solely to authenticate your account and securely back up your history across devices if you choose to sign in.',
               ),
               const SizedBox(height: 16),
 
-              // Policy Section 4: Data Control & Clearance
+              // Policy Section 5: Data Control & Account Deletion
               _buildPolicySection(
-                title: '4. Local Storage & Data Control',
+                title: '5. Data Control & Account Deletion',
                 icon: Icons.folder_special_rounded,
-                color: NeoColors.purple,
+                color: NeoColors.orange,
                 iconColor: Colors.white,
                 isDark: isDark,
                 content:
-                    'All history logs and app preferences are stored locally in your phone\'s private app directory. You can clear your processing history at any time using the button below.',
+                    'You maintain 100% control over your data. You can clear your local processing history anytime using the button below. If you created an account, you can also delete your account and its cloud data at any time directly in the app Settings.',
               ),
               const SizedBox(height: 28),
 
@@ -144,7 +157,7 @@ class PrivacyPolicyView extends StatelessWidget {
 
               Center(
                 child: Text(
-                  'PicsTools v1.0.0 • Updated August 2026',
+                  'PicsTools v1.0.0 • Updated September 2026',
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 12,
                     color: isDark

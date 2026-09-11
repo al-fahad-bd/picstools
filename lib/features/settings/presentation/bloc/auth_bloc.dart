@@ -49,6 +49,8 @@ class SignInWithGoogleEvent extends AuthEvent {}
 
 class SignOutEvent extends AuthEvent {}
 
+class DeleteAccountEvent extends AuthEvent {}
+
 // States
 abstract class AuthState extends Equatable {
   const AuthState();
@@ -120,6 +122,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignInWithGoogleEvent>(_onSignInWithGoogle);
     on<SendPasswordResetEvent>(_onSendPasswordReset);
     on<SignOutEvent>(_onSignOut);
+    on<DeleteAccountEvent>(_onDeleteAccount);
 
     _authSubscription = authService.authStateChanges.listen((_) {
       add(CheckAuthStatusEvent());
@@ -189,7 +192,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
       if (success) {
         emit(AuthSuccessMessageState(
-          '🎉 Account created & linked successfully!',
+          '🎉 Account created successfully!',
           isAnonymous: false,
           email: authService.userEmail,
           displayName: authService.displayName,
@@ -309,6 +312,41 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       uid: authService.currentUserId,
       photoUrl: null,
     ));
+  }
+
+  Future<void> _onDeleteAccount(
+    DeleteAccountEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoadingState());
+    try {
+      await authService.deleteAccount();
+      emit(const AuthSuccessMessageState(
+        'Account deleted. Reverted to guest session.',
+        isAnonymous: true,
+      ));
+      emit(AuthStateChangedState(
+        isSignedIn: authService.isSignedIn,
+        isAnonymous: true,
+        email: null,
+        displayName: null,
+        age: null,
+        uid: authService.currentUserId,
+        photoUrl: null,
+      ));
+    } on AccountDeletionCooldownException catch (e) {
+      emit(AuthErrorState(e.message));
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        emit(const AuthErrorState(
+          'Security check: Please sign in again before deleting your account.',
+        ));
+      } else {
+        emit(AuthErrorState(_mapFirebaseError(e)));
+      }
+    } catch (e) {
+      emit(AuthErrorState('Failed to delete account: $e'));
+    }
   }
 
   String _mapFirebaseError(FirebaseAuthException e) {
