@@ -76,18 +76,13 @@ class AccountSyncCard extends StatelessWidget {
                 ? authState.photoUrl
                 : getIt<AuthBloc>().authService.photoUrl);
 
-        // Free users do not see ANY sync/account widget
-        if (!isPro && !isSignedIn) {
-          return const SizedBox.shrink();
-        }
-
-        // State 1: Pro User & Signed In / Linked Account
+        // State 1: Signed In / Linked Account
         if (isSignedIn && userEmail != null) {
-          return _buildSignedInCard(context, userEmail, displayName, userAge, photoUrl);
+          return _buildSignedInCard(context, userEmail, displayName, userAge, photoUrl, isPro);
         }
 
-        // State 2: Pro User (Not linked to email account yet)
-        return _buildProUnlinkedCard(context, isLoading);
+        // State 2: Unlinked (Available to ALL users)
+        return _buildUnlinkedCard(context, isLoading, isPro);
       },
     );
   }
@@ -98,6 +93,7 @@ class AccountSyncCard extends StatelessWidget {
     String? displayName,
     int? age,
     String? photoUrl,
+    bool isPro,
   ) {
     final nameText = displayName != null && displayName.isNotEmpty
         ? (age != null ? '$displayName ($age yrs)' : displayName)
@@ -173,7 +169,7 @@ class AccountSyncCard extends StatelessWidget {
                             children: [
                               Flexible(
                                 child: Text(
-                                  nameText ?? 'Connected Pro Account',
+                                  nameText ?? (isPro ? 'Connected Pro Account' : 'Connected Account'),
                                   style: GoogleFonts.spaceGrotesk(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w900,
@@ -339,7 +335,7 @@ class AccountSyncCard extends StatelessWidget {
     }
   }
 
-  Widget _buildProUnlinkedCard(BuildContext context, bool isLoading) {
+  Widget _buildUnlinkedCard(BuildContext context, bool isLoading, bool isPro) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24.0),
       child: NeoCard(
@@ -380,12 +376,14 @@ class AccountSyncCard extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 6),
-                          const NeoBadge(
-                            label: 'PRO',
-                            backgroundColor: NeoColors.yellow,
-                            textColor: NeoColors.textPrimaryLight,
-                          ),
+                          if (isPro) ...[
+                            const SizedBox(width: 6),
+                            const NeoBadge(
+                              label: 'PRO',
+                              backgroundColor: NeoColors.yellow,
+                              textColor: NeoColors.textPrimaryLight,
+                            ),
+                          ],
                         ],
                       ),
                       const SizedBox(height: 2),
@@ -404,7 +402,7 @@ class AccountSyncCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Sign in with Google to automatically back up your history & sync your Pro status across all your devices.',
+              'Sign in with Google to automatically back up your history & sync across all your devices.',
               style: GoogleFonts.inter(
                 fontSize: 12,
                 color: isDark ? Colors.white70 : Colors.black87,
