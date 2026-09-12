@@ -9,6 +9,8 @@ import 'audio_service.dart';
 import 'auth_service.dart';
 import 'monetization/ad_service.dart';
 import 'monetization/in_app_purchase_service.dart';
+import 'storage/r2_storage_service.dart';
+import 'cloud_sync_service.dart';
 import '../../features/compressor/services/image_compressor_service.dart';
 import '../../features/resizer/services/image_resizer_service.dart';
 import '../../features/cropper/services/image_cropper_service.dart';
@@ -72,6 +74,19 @@ Future<void> initServiceLocator() async {
     authService.signInAnonymously();
   }
   getIt.registerSingleton<AuthService>(authService);
+
+  // Cloud Storage & Sync Services
+  getIt.registerLazySingleton<R2StorageService>(
+    () => R2StorageServiceImpl(),
+  );
+  getIt.registerLazySingleton<CloudSyncService>(
+    () => CloudSyncServiceImpl(
+      authService: getIt<AuthService>(),
+      historyService: getIt<HistoryService>(),
+      r2Service: getIt<R2StorageService>(),
+      prefs: getIt<SharedPreferences>(),
+    ),
+  );
 
   // Feature Processing Services
   getIt.registerLazySingleton<ImageCompressorService>(

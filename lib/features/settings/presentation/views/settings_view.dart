@@ -8,6 +8,7 @@ import '../../../../core/widgets/neo_toast.dart';
 import '../../../../core/widgets/app_native_ad.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/monetization/in_app_purchase_service.dart';
+import '../../../../core/services/cloud_sync_service.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/settings_bloc.dart';
 import '../widgets/settings_tile_group.dart';
@@ -19,6 +20,7 @@ class SettingsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    getIt<CloudSyncService>().refreshStatus();
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(

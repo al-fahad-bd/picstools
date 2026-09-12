@@ -14,6 +14,11 @@ class HistoryItem {
   final int originalSizeBytes;
   final int processedSizeBytes;
   final DateTime timestamp;
+  final String? cloudProcessedUrl;
+  final String? cloudR2Key;
+
+  bool get isSynced =>
+      cloudProcessedUrl != null && cloudProcessedUrl!.isNotEmpty;
 
   HistoryItem({
     required this.id,
@@ -23,6 +28,8 @@ class HistoryItem {
     required this.originalSizeBytes,
     required this.processedSizeBytes,
     required this.timestamp,
+    this.cloudProcessedUrl,
+    this.cloudR2Key,
   });
 
   HistoryItem copyWith({
@@ -33,6 +40,8 @@ class HistoryItem {
     int? originalSizeBytes,
     int? processedSizeBytes,
     DateTime? timestamp,
+    String? cloudProcessedUrl,
+    String? cloudR2Key,
   }) {
     return HistoryItem(
       id: id ?? this.id,
@@ -42,6 +51,8 @@ class HistoryItem {
       originalSizeBytes: originalSizeBytes ?? this.originalSizeBytes,
       processedSizeBytes: processedSizeBytes ?? this.processedSizeBytes,
       timestamp: timestamp ?? this.timestamp,
+      cloudProcessedUrl: cloudProcessedUrl ?? this.cloudProcessedUrl,
+      cloudR2Key: cloudR2Key ?? this.cloudR2Key,
     );
   }
 
@@ -53,6 +64,8 @@ class HistoryItem {
         'originalSizeBytes': originalSizeBytes,
         'processedSizeBytes': processedSizeBytes,
         'timestamp': timestamp.toIso8601String(),
+        'cloudProcessedUrl': cloudProcessedUrl,
+        'cloudR2Key': cloudR2Key,
       };
 
   factory HistoryItem.fromJson(Map<String, dynamic> json) => HistoryItem(
@@ -63,6 +76,8 @@ class HistoryItem {
         originalSizeBytes: json['originalSizeBytes'] as int,
         processedSizeBytes: json['processedSizeBytes'] as int,
         timestamp: DateTime.parse(json['timestamp'] as String),
+        cloudProcessedUrl: json['cloudProcessedUrl'] as String?,
+        cloudR2Key: json['cloudR2Key'] as String?,
       );
 }
 
@@ -70,6 +85,7 @@ abstract class HistoryService {
   Stream<List<HistoryItem>> get historyStream;
   Future<List<HistoryItem>> getHistory();
   Future<void> addHistoryItem(HistoryItem item);
+  Future<void> updateHistoryItem(HistoryItem item) async {}
   Future<void> deleteHistoryItem(String id);
   Future<void> clearHistory();
 }
@@ -188,6 +204,18 @@ class HistoryServiceImpl implements HistoryService {
     final jsonList = list.take(50).map((i) => jsonEncode(i.toJson())).toList();
     await _prefs.setStringList(_key, jsonList);
     _historyController.add(list.take(50).toList());
+  }
+
+  @override
+  Future<void> updateHistoryItem(HistoryItem updatedItem) async {
+    final list = await getHistory();
+    final index = list.indexWhere((item) => item.id == updatedItem.id);
+    if (index != -1) {
+      list[index] = updatedItem;
+      final jsonList = list.map((i) => jsonEncode(i.toJson())).toList();
+      await _prefs.setStringList(_key, jsonList);
+      _historyController.add(list);
+    }
   }
 
   @override

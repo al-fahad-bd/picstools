@@ -162,4 +162,62 @@ void main() {
     expect(await migratedFile.exists(), isTrue);
     expect(await migratedFile.readAsString(), equals('old_cache_content'));
   });
+
+  test('HistoryItem JSON serialization preserves cloud fields', () {
+    final now = DateTime.now();
+    final item = HistoryItem(
+      id: 'cloud_item_1',
+      toolName: 'Compress',
+      originalPath: '/path/to/orig.jpg',
+      processedPath: '/path/to/proc.jpg',
+      originalSizeBytes: 1000,
+      processedSizeBytes: 500,
+      timestamp: now,
+      cloudProcessedUrl: 'https://pub-eb2560872a184d01a125f4362bd0d6c4.r2.dev/users/123/history/cloud_item_1.jpg',
+      cloudR2Key: 'users/123/history/cloud_item_1.jpg',
+    );
+
+    expect(item.isSynced, isTrue);
+
+    final json = item.toJson();
+    expect(json['cloudProcessedUrl'], equals('https://pub-eb2560872a184d01a125f4362bd0d6c4.r2.dev/users/123/history/cloud_item_1.jpg'));
+    expect(json['cloudR2Key'], equals('users/123/history/cloud_item_1.jpg'));
+
+    final restored = HistoryItem.fromJson(json);
+    expect(restored.id, equals('cloud_item_1'));
+    expect(restored.cloudProcessedUrl, equals(item.cloudProcessedUrl));
+    expect(restored.cloudR2Key, equals(item.cloudR2Key));
+    expect(restored.isSynced, isTrue);
+  });
+
+  test('updateHistoryItem updates metadata in storage and emits to stream', () async {
+    final file = File('${tempTestDir.path}/update_test.png');
+    await file.writeAsString('test');
+
+    final item = HistoryItem(
+      id: 'update_id',
+      toolName: 'Resize',
+      originalPath: 'orig',
+      processedPath: file.path,
+      originalSizeBytes: 100,
+      processedSizeBytes: 50,
+      timestamp: DateTime.now(),
+    );
+
+    await historyService.addHistoryItem(item);
+    var history = await historyService.getHistory();
+    expect(history.first.isSynced, isFalse);
+
+    // Update with cloud info
+    final updated = history.first.copyWith(
+      cloudProcessedUrl: 'https://test.r2.dev/image.png',
+      cloudR2Key: 'users/test/image.png',
+    );
+    await historyService.updateHistoryItem(updated);
+
+    history = await historyService.getHistory();
+    expect(history.first.isSynced, isTrue);
+    expect(history.first.cloudProcessedUrl, equals('https://test.r2.dev/image.png'));
+    expect(history.first.cloudR2Key, equals('users/test/image.png'));
+  });
 }

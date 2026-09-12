@@ -136,6 +136,9 @@ class _MockHistoryService implements HistoryService {
   Future<void> addHistoryItem(HistoryItem item) async {}
 
   @override
+  Future<void> updateHistoryItem(HistoryItem item) async {}
+
+  @override
   Future<void> clearHistory() async {}
 
   @override

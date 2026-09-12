@@ -9,6 +9,7 @@ import '../../../../core/widgets/google_logo.dart';
 import '../../../../core/widgets/neo_toast.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/monetization/in_app_purchase_service.dart';
+import '../../../../core/services/cloud_sync_service.dart';
 import '../bloc/auth_bloc.dart';
 import 'auth_dialog.dart';
 
@@ -101,125 +102,241 @@ class AccountSyncCard extends StatelessWidget {
     final nameText = displayName != null && displayName.isNotEmpty
         ? (age != null ? '$displayName ($age yrs)' : displayName)
         : null;
+    final cloudSyncService = getIt<CloudSyncService>();
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 24.0),
-      child: NeoCard(
-        borderColor: NeoColors.green,
-        backgroundColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF0FDF4),
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    return StreamBuilder<SyncStatus>(
+      stream: cloudSyncService.statusStream,
+      initialData: cloudSyncService.currentStatus,
+      builder: (context, snapshot) {
+        final status = snapshot.data ?? cloudSyncService.currentStatus;
+
+        final badge = status.isFullySynced
+            ? const NeoBadge(
+                label: 'SYNCED',
+                backgroundColor: NeoColors.green,
+                textColor: NeoColors.textPrimaryLight,
+              )
+            : (status.pendingCount > 0
+                ? NeoBadge(
+                    label: '${status.pendingCount} UNSYNCED',
+                    backgroundColor: NeoColors.yellow,
+                    textColor: NeoColors.textPrimaryLight,
+                  )
+                : const NeoBadge(
+                    label: 'READY',
+                    backgroundColor: NeoColors.cyan,
+                    textColor: NeoColors.textPrimaryLight,
+                  ));
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 24.0),
+          child: NeoCard(
+            borderColor: NeoColors.green,
+            backgroundColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF0FDF4),
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    color: NeoColors.green.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: NeoColors.green, width: 1.5),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: photoUrl != null && photoUrl.isNotEmpty
-                      ? Image.network(
-                          photoUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => const Icon(
-                            Icons.cloud_done_rounded,
-                            color: NeoColors.green,
-                            size: 22,
+                Row(
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: NeoColors.green.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: NeoColors.green, width: 1.5),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: photoUrl != null && photoUrl.isNotEmpty
+                          ? Image.network(
+                              photoUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, _, _) => const Icon(
+                                Icons.cloud_done_rounded,
+                                color: NeoColors.green,
+                                size: 22,
+                              ),
+                            )
+                          : const Icon(
+                              Icons.cloud_done_rounded,
+                              color: NeoColors.green,
+                              size: 22,
+                            ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  nameText ?? 'Connected Pro Account',
+                                  style: GoogleFonts.spaceGrotesk(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              badge,
+                            ],
                           ),
-                        )
-                      : const Icon(
-                          Icons.cloud_done_rounded,
-                          color: NeoColors.green,
-                          size: 22,
-                        ),
+                          const SizedBox(height: 2),
+                          Text(
+                            email,
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: NeoColors.purple,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 12),
-                Expanded(
+                const SizedBox(height: 14),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF0F172A) : Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: isDark ? Colors.white12 : NeoColors.borderLight.withValues(alpha: 0.4),
+                      width: 1.5,
+                    ),
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Flexible(
-                            child: Text(
-                              nameText ?? 'Connected Pro Account',
-                              style: GoogleFonts.spaceGrotesk(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w900,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                          Icon(
+                            Icons.cloud_outlined,
+                            size: 16,
+                            color: isDark ? Colors.white70 : NeoColors.textPrimaryLight,
                           ),
                           const SizedBox(width: 6),
-                          const NeoBadge(
-                            label: 'SYNCED',
-                            backgroundColor: NeoColors.green,
-                            textColor: NeoColors.textPrimaryLight,
+                          Expanded(
+                            child: Text(
+                              '${status.localCount} on device • ${status.syncedCount} backed up',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: isDark ? Colors.white : NeoColors.textPrimaryLight,
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 4),
                       Text(
-                        email,
+                        status.lastSyncedAt != null
+                            ? 'Last synced: ${_formatTime(status.lastSyncedAt!)}'
+                            : 'No cloud backups yet',
                         style: GoogleFonts.inter(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: NeoColors.purple,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                          color: isDark ? Colors.white54 : Colors.black54,
                         ),
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Your export history and Pro subscription are safely synced and backed up in the cloud.',
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                color: isDark ? Colors.white70 : Colors.black87,
-                height: 1.4,
-              ),
-            ),
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () => _confirmSignOut(context),
-                    icon: const Icon(Icons.logout_rounded, size: 16),
-                    label: Text(
-                      'Sign Out',
-                      style: GoogleFonts.spaceGrotesk(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 12,
+                const SizedBox(height: 14),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: NeoButton(
+                        label: status.isSyncing ? 'SYNCING...' : 'SYNC NOW',
+                        icon: const Icon(Icons.cloud_upload_rounded, size: 16),
+                        backgroundColor: NeoColors.green,
+                        textColor: NeoColors.textPrimaryLight,
+                        borderColor: NeoColors.borderLight,
+                        isLoading: status.isSyncing,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        onPressed: status.isSyncing
+                            ? null
+                            : () async {
+                                final result = await cloudSyncService.syncNow();
+                                if (context.mounted) {
+                                  if (result.success) {
+                                    NeoToast.show(
+                                      context,
+                                      result.uploadedCount > 0
+                                          ? 'Synced ${result.uploadedCount} item(s) to cloud!'
+                                          : (result.restoredCount > 0
+                                              ? 'Restored ${result.restoredCount} item(s) from cloud!'
+                                              : 'All items already up to date!'),
+                                      color: NeoColors.green,
+                                      icon: Icons.cloud_done_rounded,
+                                    );
+                                  } else {
+                                    NeoToast.show(
+                                      context,
+                                      result.errorMessage ?? 'Sync failed',
+                                      color: NeoColors.pink,
+                                      icon: Icons.error_outline_rounded,
+                                    );
+                                  }
+                                }
+                              },
                       ),
                     ),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: isDark ? Colors.white70 : NeoColors.textPrimaryLight,
-                      side: BorderSide(
-                        color: isDark ? Colors.white24 : NeoColors.borderLight,
-                        width: 1.5,
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 2,
+                      child: OutlinedButton.icon(
+                        onPressed: () => _confirmSignOut(context),
+                        icon: const Icon(Icons.logout_rounded, size: 16),
+                        label: Text(
+                          'Sign Out',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: isDark ? Colors.white70 : NeoColors.textPrimaryLight,
+                          side: BorderSide(
+                            color: isDark ? Colors.white24 : NeoColors.borderLight,
+                            width: 1.5,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 11),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 10),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
+  }
+
+  String _formatTime(DateTime time) {
+    final diff = DateTime.now().difference(time);
+    if (diff.inSeconds < 60) {
+      return 'Just now';
+    } else if (diff.inMinutes < 60) {
+      return '${diff.inMinutes}m ago';
+    } else if (diff.inHours < 24) {
+      return '${diff.inHours}h ago';
+    } else {
+      return '${time.month}/${time.day} ${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+    }
   }
 
   Widget _buildProUnlinkedCard(BuildContext context, bool isLoading) {
