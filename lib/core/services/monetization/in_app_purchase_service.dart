@@ -54,6 +54,7 @@ abstract class InAppPurchaseService {
   Future<bool> checkSubscriptionStatus();
   Future<void> openManageSubscriptions();
   Future<ProSubscriptionPricing> getSubscriptionPricing();
+  ProSubscriptionPricing get currentPricing;
 }
 
 class InAppPurchaseServiceImpl
@@ -112,6 +113,11 @@ class InAppPurchaseServiceImpl
     // Initial silent check to verify active subscription status
     try {
       await checkSubscriptionStatus();
+    } catch (_) {}
+
+    // Pre-fetch localized pricing so it is ready instantly when paywall opens
+    try {
+      await getSubscriptionPricing();
     } catch (_) {}
   }
 
@@ -405,6 +411,9 @@ class InAppPurchaseServiceImpl
     return _cachedPricing;
   }
 
+  @override
+  ProSubscriptionPricing get currentPricing => _cachedPricing;
+
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _subscription?.cancel();
@@ -455,4 +464,7 @@ class MockInAppPurchaseServiceImpl implements InAppPurchaseService {
 
   @override
   Future<ProSubscriptionPricing> getSubscriptionPricing() async => _pricing;
+
+  @override
+  ProSubscriptionPricing get currentPricing => _pricing;
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 abstract class AuthService {
   Future<void> initialize();
@@ -18,11 +19,13 @@ abstract class AuthService {
     String? displayName,
     int? age,
   });
+  Future<bool> signInWithGoogle();
   Future<bool> sendPasswordReset(String email);
   Future<void> signOut();
   String? get currentUserId;
   String? get userEmail;
   String? get displayName;
+  String? get photoUrl;
   int? get userAge;
   bool get isAnonymous;
   bool get isSignedIn;
@@ -33,12 +36,25 @@ class FirebaseAuthServiceImpl implements AuthService {
   final FirebaseAuth _auth;
   int? _cachedAge;
   String? _cachedName;
+  bool _googleSignInInitialized = false;
 
   FirebaseAuthServiceImpl({FirebaseAuth? auth})
       : _auth = auth ?? FirebaseAuth.instance;
 
+  Future<void> _ensureGoogleSignInInitialized() async {
+    if (!_googleSignInInitialized) {
+      try {
+        await GoogleSignIn.instance.initialize();
+        _googleSignInInitialized = true;
+      } catch (e) {
+        debugPrint('⚠️ [PicsTools Auth] GoogleSignIn initialize error: $e');
+      }
+    }
+  }
+
   @override
   Future<void> initialize() async {
+    await _ensureGoogleSignInInitialized();
     final user = _auth.currentUser;
     if (user != null) {
       debugPrint(
@@ -182,6 +198,58 @@ class FirebaseAuthServiceImpl implements AuthService {
   }
 
   @override
+  Future<bool> signInWithGoogle() async {
+    try {
+      await _ensureGoogleSignInInitialized();
+      debugPrint('🔑 [PicsTools Auth] Initiating Google Sign-In...');
+      final account = await GoogleSignIn.instance.authenticate();
+      final auth = account.authentication;
+      final credential = GoogleAuthProvider.credential(
+        idToken: auth.idToken,
+      );
+
+      final current = _auth.currentUser;
+      User? user;
+      if (current != null && current.isAnonymous) {
+        try {
+          debugPrint('🔑 [PicsTools Auth] Linking anonymous user with Google credential...');
+          final result = await current.linkWithCredential(credential);
+          user = result.user;
+          debugPrint('🎉 [PicsTools Auth] Successfully linked anonymous session to Google: ${user?.email}');
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'credential-already-in-use') {
+            debugPrint('ℹ️ [PicsTools Auth] Credential already in use; signing in directly with Google...');
+            final result = await _auth.signInWithCredential(credential);
+            user = result.user;
+          } else {
+            rethrow;
+          }
+        }
+      } else {
+        final result = await _auth.signInWithCredential(credential);
+        user = result.user;
+      }
+
+      if (user != null) {
+        _cachedName = user.displayName;
+        debugPrint('🎉 [PicsTools Auth] Google Sign-In SUCCESS! | UID: ${user.uid} | Email: ${user.email}');
+        return true;
+      }
+      return false;
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        debugPrint('ℹ️ [PicsTools Auth] Google Sign-In canceled by user.');
+        return false;
+      }
+      debugPrint('❌ [PicsTools Auth] Google Sign-In failed: ${e.code} - ${e.description}');
+      rethrow;
+    } catch (e) {
+      debugPrint('❌ [PicsTools Auth] Google Sign-In unexpected error: $e');
+      rethrow;
+    }
+  }
+
+  @override
   Future<bool> sendPasswordReset(String email) async {
     try {
       await _auth.sendPasswordResetEmail(email: email.trim());
@@ -196,6 +264,11 @@ class FirebaseAuthServiceImpl implements AuthService {
   Future<void> signOut() async {
     try {
       await _auth.signOut();
+      try {
+        await GoogleSignIn.instance.signOut();
+      } catch (e) {
+        debugPrint('⚠️ [PicsTools Auth] Google sign out error: $e');
+      }
       _cachedName = null;
       _cachedAge = null;
       await signInAnonymously();
@@ -212,6 +285,9 @@ class FirebaseAuthServiceImpl implements AuthService {
 
   @override
   String? get displayName => _auth.currentUser?.displayName ?? _cachedName;
+
+  @override
+  String? get photoUrl => _auth.currentUser?.photoURL;
 
   @override
   int? get userAge => _cachedAge;
@@ -231,6 +307,7 @@ class MockAuthServiceImpl implements AuthService {
   String? _mockUserId;
   String? _mockEmail;
   String? _mockDisplayName;
+  String? _mockPhotoUrl;
   int? _mockAge;
   bool _mockIsAnonymous;
 
@@ -238,11 +315,13 @@ class MockAuthServiceImpl implements AuthService {
     String? initialUserId,
     String? initialEmail,
     String? initialDisplayName,
+    String? initialPhotoUrl,
     int? initialAge,
     bool isAnonymous = true,
   })  : _mockUserId = initialUserId,
         _mockEmail = initialEmail,
         _mockDisplayName = initialDisplayName,
+        _mockPhotoUrl = initialPhotoUrl,
         _mockAge = initialAge,
         _mockIsAnonymous = isAnonymous;
 
@@ -255,6 +334,7 @@ class MockAuthServiceImpl implements AuthService {
     _mockIsAnonymous = true;
     _mockEmail = null;
     _mockDisplayName = null;
+    _mockPhotoUrl = null;
     _mockAge = null;
     return true;
   }
@@ -298,6 +378,16 @@ class MockAuthServiceImpl implements AuthService {
   }
 
   @override
+  Future<bool> signInWithGoogle() async {
+    _mockUserId = 'mock_google_user_999';
+    _mockEmail = 'user@gmail.com';
+    _mockDisplayName = 'Google User';
+    _mockPhotoUrl = 'https://lh3.googleusercontent.com/a/mock';
+    _mockIsAnonymous = false;
+    return true;
+  }
+
+  @override
   Future<bool> sendPasswordReset(String email) async {
     return true;
   }
@@ -307,6 +397,7 @@ class MockAuthServiceImpl implements AuthService {
     _mockUserId = 'mock_anon_new_12345';
     _mockEmail = null;
     _mockDisplayName = null;
+    _mockPhotoUrl = null;
     _mockAge = null;
     _mockIsAnonymous = true;
   }
@@ -319,6 +410,9 @@ class MockAuthServiceImpl implements AuthService {
 
   @override
   String? get displayName => _mockDisplayName;
+
+  @override
+  String? get photoUrl => _mockPhotoUrl;
 
   @override
   int? get userAge => _mockAge;

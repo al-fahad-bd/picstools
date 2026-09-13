@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/widgets/neo_button.dart';
 import '../../../../core/widgets/neo_toast.dart';
+import '../../../../core/widgets/google_logo.dart';
 import '../bloc/auth_bloc.dart';
 
 class AuthDialog extends StatefulWidget {
@@ -90,7 +91,7 @@ class _AuthDialogState extends State<AuthDialog> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final screenHeight = MediaQuery.of(context).size.height;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    final sheetHeight = (screenHeight * 0.76).clamp(540.0, screenHeight * 0.92);
+    final sheetHeight = (screenHeight * 0.82).clamp(580.0, screenHeight * 0.95);
 
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
@@ -219,6 +220,52 @@ class _AuthDialogState extends State<AuthDialog> {
               const SizedBox(height: 18),
 
               if (!_isForgotPassword) ...[
+                // Google Sign In CTA
+                NeoButton(
+                  label: 'CONTINUE WITH GOOGLE',
+                  backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+                  textColor: isDark ? Colors.white : NeoColors.textPrimaryLight,
+                  borderColor: isDark ? Colors.white24 : NeoColors.borderLight,
+                  icon: const GoogleLogo(size: 20),
+                  isLoading: isLoading,
+                  fullWidth: true,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          context.read<AuthBloc>().add(SignInWithGoogleEvent());
+                        },
+                ),
+                const SizedBox(height: 14),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Divider(
+                        color: isDark ? Colors.white24 : Colors.black12,
+                        thickness: 1.5,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text(
+                        'OR',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          color: isDark ? Colors.white54 : Colors.black45,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Divider(
+                        color: isDark ? Colors.white24 : Colors.black12,
+                        thickness: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+
                 // Toggle Mode Tabs
                 Container(
                   padding: const EdgeInsets.all(4),

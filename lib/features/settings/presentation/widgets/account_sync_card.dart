@@ -5,6 +5,8 @@ import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/widgets/neo_card.dart';
 import '../../../../core/widgets/neo_button.dart';
 import '../../../../core/widgets/neo_badge.dart';
+import '../../../../core/widgets/google_logo.dart';
+import '../../../../core/widgets/neo_toast.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/monetization/in_app_purchase_service.dart';
 import '../bloc/auth_bloc.dart';
@@ -23,8 +25,27 @@ class AccountSyncCard extends StatelessWidget {
     final iapService = getIt<InAppPurchaseService>();
     final isPro = iapService.isProUser();
 
-    return BlocBuilder<AuthBloc, AuthState>(
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, authState) {
+        if (authState is AuthSuccessMessageState) {
+          NeoToast.show(
+            context,
+            authState.message,
+            color: NeoColors.green,
+            icon: Icons.check_circle_rounded,
+          );
+        } else if (authState is AuthErrorState) {
+          NeoToast.show(
+            context,
+            authState.errorMessage,
+            color: NeoColors.pink,
+            icon: Icons.error_outline_rounded,
+          );
+        }
+      },
       builder: (context, authState) {
+        final isLoading = authState is AuthLoadingState;
+
         final isSignedIn = authState is AuthStateChangedState
             ? (authState.isSignedIn && !authState.isAnonymous)
             : (authState is AuthSuccessMessageState
@@ -48,6 +69,12 @@ class AccountSyncCard extends StatelessWidget {
             ? authState.age
             : getIt<AuthBloc>().authService.userAge;
 
+        final photoUrl = authState is AuthStateChangedState
+            ? authState.photoUrl
+            : (authState is AuthSuccessMessageState
+                ? authState.photoUrl
+                : getIt<AuthBloc>().authService.photoUrl);
+
         // Free users do not see ANY sync/account widget
         if (!isPro && !isSignedIn) {
           return const SizedBox.shrink();
@@ -55,11 +82,11 @@ class AccountSyncCard extends StatelessWidget {
 
         // State 1: Pro User & Signed In / Linked Account
         if (isSignedIn && userEmail != null) {
-          return _buildSignedInCard(context, userEmail, displayName, userAge);
+          return _buildSignedInCard(context, userEmail, displayName, userAge, photoUrl);
         }
 
         // State 2: Pro User (Not linked to email account yet)
-        return _buildProUnlinkedCard(context);
+        return _buildProUnlinkedCard(context, isLoading);
       },
     );
   }
@@ -69,6 +96,7 @@ class AccountSyncCard extends StatelessWidget {
     String email,
     String? displayName,
     int? age,
+    String? photoUrl,
   ) {
     final nameText = displayName != null && displayName.isNotEmpty
         ? (age != null ? '$displayName ($age yrs)' : displayName)
@@ -86,17 +114,29 @@ class AccountSyncCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  width: 42,
+                  height: 42,
                   decoration: BoxDecoration(
                     color: NeoColors.green.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: NeoColors.green, width: 1.5),
                   ),
-                  child: const Icon(
-                    Icons.cloud_done_rounded,
-                    color: NeoColors.green,
-                    size: 22,
-                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: photoUrl != null && photoUrl.isNotEmpty
+                      ? Image.network(
+                          photoUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) => const Icon(
+                            Icons.cloud_done_rounded,
+                            color: NeoColors.green,
+                            size: 22,
+                          ),
+                        )
+                      : const Icon(
+                          Icons.cloud_done_rounded,
+                          color: NeoColors.green,
+                          size: 22,
+                        ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -182,7 +222,7 @@ class AccountSyncCard extends StatelessWidget {
     );
   }
 
-  Widget _buildProUnlinkedCard(BuildContext context) {
+  Widget _buildProUnlinkedCard(BuildContext context, bool isLoading) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24.0),
       child: NeoCard(
@@ -247,22 +287,48 @@ class AccountSyncCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Link your email account to back up your history & sync your Pro status across all your devices.',
+              'Sign in with Google to automatically back up your history & sync your Pro status across all your devices.',
               style: GoogleFonts.inter(
                 fontSize: 12,
                 color: isDark ? Colors.white70 : Colors.black87,
                 height: 1.4,
               ),
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
             NeoButton(
-              label: 'LINK ACCOUNT TO SYNC',
-              backgroundColor: NeoColors.purple,
-              textColor: Colors.white,
-              icon: const Icon(Icons.link_rounded, color: Colors.white, size: 18),
+              label: 'CONTINUE WITH GOOGLE',
+              backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+              textColor: isDark ? Colors.white : NeoColors.textPrimaryLight,
+              borderColor: isDark ? Colors.white24 : NeoColors.borderLight,
+              icon: const GoogleLogo(size: 20),
+              isLoading: isLoading,
               fullWidth: true,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-              onPressed: () => AuthDialog.show(context, isSignUp: true),
+              onPressed: isLoading
+                  ? null
+                  : () {
+                      context.read<AuthBloc>().add(SignInWithGoogleEvent());
+                    },
+            ),
+            const SizedBox(height: 8),
+            Center(
+              child: TextButton.icon(
+                onPressed: () => AuthDialog.show(context, isSignUp: false),
+                icon: Icon(
+                  Icons.mail_outline_rounded,
+                  size: 15,
+                  color: isDark ? Colors.white70 : Colors.black54,
+                ),
+                label: Text(
+                  'Or sign in with email & password',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white70 : Colors.black54,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
             ),
           ],
         ),

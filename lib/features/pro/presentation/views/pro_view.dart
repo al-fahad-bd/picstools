@@ -80,13 +80,7 @@ class _ProViewContentState extends State<_ProViewContent> {
             (state is ProLoadedState && state.isPro) ||
             (state is ProPurchaseSuccessState && state.isPro) ||
             (state is ProErrorState && state.isPro);
-        final pricing = (state is ProLoadedState)
-            ? state.pricing
-            : (state is ProPurchaseSuccessState)
-                ? state.pricing
-                : (state is ProErrorState)
-                    ? state.pricing
-                    : const ProSubscriptionPricing();
+        final pricing = state.pricing;
 
         return Scaffold(
           backgroundColor: isDark ? NeoColors.darkBg : NeoColors.lightBg,

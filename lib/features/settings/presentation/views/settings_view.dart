@@ -113,11 +113,14 @@ class _SettingsViewContent extends StatelessWidget {
               ),
               // Native Advanced Ad (Strictly for Free users)
               if (!getIt<InAppPurchaseService>().isProUser()) ...[
+                const SizedBox(height: 16),
                 const AppNativeAd(
                   templateType: TemplateType.medium,
                   margin: EdgeInsets.symmetric(vertical: 8),
                 ),
                 const SizedBox(height: 16),
+              ] else ...[
+                const SizedBox(height: 24),
               ],
 
               // AI Models Section

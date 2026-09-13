@@ -12,7 +12,28 @@
           "package_name": "com.deltrix.picstools"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "77843855143-ak29dspjncpv1pqqmiaegov07l83goj5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.deltrix.picstools",
+            "certificate_hash": "1b3efee5d18c2a04fb53b91d8762d4fc51a611ca"
+          }
+        },
+        {
+          "client_id": "77843855143-ko0sq49empopqtur4rma6cj9kpgmd1t6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.deltrix.picstools",
+            "certificate_hash": "3569145181b889598f4c40896f1d3b21146a8030"
+          }
+        },
+        {
+          "client_id": "77843855143-65dp4gu5t11s0io1l5v11k0p9b2ovf7j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBCiwl2cKU9q3npbTv_GLIaQ3hCP96l4ls"
@@ -20,7 +41,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "77843855143-65dp4gu5t11s0io1l5v11k0p9b2ovf7j.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "77843855143-2jl2qh48sgblbd4nr11s8r5h3u64djhp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.deltrix.picstools"
+              }
+            }
+          ]
         }
       }
     }

@@ -26,22 +26,26 @@ class ManageSubscriptionEvent extends ProEvent {}
 
 // States
 abstract class ProState extends Equatable {
-  const ProState();
+  final ProSubscriptionPricing pricing;
+  const ProState({this.pricing = const ProSubscriptionPricing()});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [pricing];
 }
 
-class ProInitialState extends ProState {}
+class ProInitialState extends ProState {
+  const ProInitialState({super.pricing});
+}
 
-class ProLoadingState extends ProState {}
+class ProLoadingState extends ProState {
+  const ProLoadingState({super.pricing});
+}
 
 class ProLoadedState extends ProState {
   final bool isPro;
-  final ProSubscriptionPricing pricing;
 
   const ProLoadedState({
     required this.isPro,
-    this.pricing = const ProSubscriptionPricing(),
+    super.pricing,
   });
 
   @override
@@ -51,12 +55,11 @@ class ProLoadedState extends ProState {
 class ProPurchaseSuccessState extends ProState {
   final String message;
   final bool isPro;
-  final ProSubscriptionPricing pricing;
 
   const ProPurchaseSuccessState(
     this.message, {
     this.isPro = true,
-    this.pricing = const ProSubscriptionPricing(),
+    super.pricing,
   });
 
   @override
@@ -66,12 +69,11 @@ class ProPurchaseSuccessState extends ProState {
 class ProErrorState extends ProState {
   final String message;
   final bool isPro;
-  final ProSubscriptionPricing pricing;
 
   const ProErrorState(
     this.message, {
     this.isPro = false,
-    this.pricing = const ProSubscriptionPricing(),
+    super.pricing,
   });
 
   @override
@@ -81,9 +83,11 @@ class ProErrorState extends ProState {
 // BLoC Implementation
 class ProBloc extends Bloc<ProEvent, ProState> {
   final InAppPurchaseService purchaseService;
-  ProSubscriptionPricing _pricing = const ProSubscriptionPricing();
+  ProSubscriptionPricing _pricing;
 
-  ProBloc({required this.purchaseService}) : super(ProInitialState()) {
+  ProBloc({required this.purchaseService})
+      : _pricing = purchaseService.currentPricing,
+        super(ProInitialState(pricing: purchaseService.currentPricing)) {
     on<LoadProStatusEvent>(_onLoadProStatus);
     on<RefreshProStatusEvent>(_onRefreshProStatus);
     on<PurchaseProEvent>(_onPurchasePro);
@@ -138,7 +142,7 @@ class ProBloc extends Bloc<ProEvent, ProState> {
     PurchaseProEvent event,
     Emitter<ProState> emit,
   ) async {
-    emit(ProLoadingState());
+    emit(ProLoadingState(pricing: _pricing));
     try {
       final success = await purchaseService.purchaseProSubscription(
         productId: event.productId,
@@ -171,7 +175,7 @@ class ProBloc extends Bloc<ProEvent, ProState> {
     RestorePurchasesEvent event,
     Emitter<ProState> emit,
   ) async {
-    emit(ProLoadingState());
+    emit(ProLoadingState(pricing: _pricing));
     try {
       final success = await purchaseService.restorePurchases();
       final isPro = purchaseService.isProUser();

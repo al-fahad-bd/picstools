@@ -50,6 +50,17 @@ void main() {
       expect(authService.userEmail, isNull);
       expect(authService.displayName, isNull);
       expect(authService.userAge, isNull);
+      expect(authService.photoUrl, isNull);
+    });
+
+    test('Signing in with Google updates session to verified Google user', () async {
+      final success = await authService.signInWithGoogle();
+      expect(success, isTrue);
+      expect(authService.isSignedIn, isTrue);
+      expect(authService.isAnonymous, isFalse);
+      expect(authService.userEmail, 'user@gmail.com');
+      expect(authService.displayName, 'Google User');
+      expect(authService.photoUrl, isNotNull);
     });
   });
 
@@ -133,6 +144,33 @@ void main() {
       expect(authBloc.state, isA<AuthStateChangedState>());
       final state = authBloc.state as AuthStateChangedState;
       expect(state.email, 'user@picstools.com');
+      expect(state.isAnonymous, isFalse);
+    });
+
+    test('SignInWithGoogleEvent authenticates user with Google and updates state', () async {
+      authBloc.add(SignInWithGoogleEvent());
+
+      await expectLater(
+        authBloc.stream,
+        emitsInOrder([
+          isA<AuthLoadingState>(),
+          isA<AuthSuccessMessageState>().having(
+            (s) => s.email,
+            'email',
+            'user@gmail.com',
+          ),
+          isA<AuthStateChangedState>()
+              .having((s) => s.email, 'email', 'user@gmail.com')
+              .having((s) => s.displayName, 'displayName', 'Google User')
+              .having((s) => s.photoUrl, 'photoUrl', isNotNull),
+        ]),
+      );
+
+      expect(authBloc.state, isA<AuthStateChangedState>());
+      final state = authBloc.state as AuthStateChangedState;
+      expect(state.email, 'user@gmail.com');
+      expect(state.displayName, 'Google User');
+      expect(state.photoUrl, isNotNull);
       expect(state.isAnonymous, isFalse);
     });
 

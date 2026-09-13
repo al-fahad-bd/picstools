@@ -45,6 +45,8 @@ class SendPasswordResetEvent extends AuthEvent {
   List<Object?> get props => [email];
 }
 
+class SignInWithGoogleEvent extends AuthEvent {}
+
 class SignOutEvent extends AuthEvent {}
 
 // States
@@ -65,6 +67,7 @@ class AuthStateChangedState extends AuthState {
   final String? displayName;
   final int? age;
   final String? uid;
+  final String? photoUrl;
 
   const AuthStateChangedState({
     required this.isSignedIn,
@@ -73,10 +76,11 @@ class AuthStateChangedState extends AuthState {
     this.displayName,
     this.age,
     this.uid,
+    this.photoUrl,
   });
 
   @override
-  List<Object?> get props => [isSignedIn, isAnonymous, email, displayName, age, uid];
+  List<Object?> get props => [isSignedIn, isAnonymous, email, displayName, age, uid, photoUrl];
 }
 
 class AuthSuccessMessageState extends AuthState {
@@ -84,16 +88,18 @@ class AuthSuccessMessageState extends AuthState {
   final bool isAnonymous;
   final String? email;
   final String? displayName;
+  final String? photoUrl;
 
   const AuthSuccessMessageState(
     this.message, {
     this.isAnonymous = false,
     this.email,
     this.displayName,
+    this.photoUrl,
   });
 
   @override
-  List<Object?> get props => [message, isAnonymous, email, displayName];
+  List<Object?> get props => [message, isAnonymous, email, displayName, photoUrl];
 }
 
 class AuthErrorState extends AuthState {
@@ -111,6 +117,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<CheckAuthStatusEvent>(_onCheckAuthStatus);
     on<SignInWithEmailEvent>(_onSignInWithEmail);
     on<SignUpWithEmailEvent>(_onSignUpWithEmail);
+    on<SignInWithGoogleEvent>(_onSignInWithGoogle);
     on<SendPasswordResetEvent>(_onSendPasswordReset);
     on<SignOutEvent>(_onSignOut);
 
@@ -127,6 +134,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       displayName: authService.displayName,
       age: authService.userAge,
       uid: authService.currentUserId,
+      photoUrl: authService.photoUrl,
     ));
   }
 
@@ -146,6 +154,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           isAnonymous: false,
           email: authService.userEmail,
           displayName: authService.displayName,
+          photoUrl: authService.photoUrl,
         ));
         emit(AuthStateChangedState(
           isSignedIn: true,
@@ -154,6 +163,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           displayName: authService.displayName,
           age: authService.userAge,
           uid: authService.currentUserId,
+          photoUrl: authService.photoUrl,
         ));
       } else {
         emit(const AuthErrorState('Could not sign in with provided credentials.'));
@@ -183,6 +193,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           isAnonymous: false,
           email: authService.userEmail,
           displayName: authService.displayName,
+          photoUrl: authService.photoUrl,
         ));
         emit(AuthStateChangedState(
           isSignedIn: true,
@@ -191,6 +202,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           displayName: authService.displayName,
           age: authService.userAge,
           uid: authService.currentUserId,
+          photoUrl: authService.photoUrl,
         ));
       } else {
         emit(const AuthErrorState('Could not create account.'));
@@ -199,6 +211,52 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthErrorState(_mapFirebaseError(e)));
     } catch (e) {
       emit(AuthErrorState('Registration failed: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onSignInWithGoogle(
+    SignInWithGoogleEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoadingState());
+    try {
+      final success = await authService.signInWithGoogle();
+      if (success) {
+        final email = authService.userEmail;
+        final name = authService.displayName;
+        final photo = authService.photoUrl;
+        emit(AuthSuccessMessageState(
+          '🎉 Connected! Signed in as ${name ?? email ?? "Google User"}',
+          isAnonymous: false,
+          email: email,
+          displayName: name,
+          photoUrl: photo,
+        ));
+        emit(AuthStateChangedState(
+          isSignedIn: true,
+          isAnonymous: false,
+          email: email,
+          displayName: name,
+          age: authService.userAge,
+          uid: authService.currentUserId,
+          photoUrl: photo,
+        ));
+      } else {
+        // Sign in cancelled by user or no account selected
+        emit(AuthStateChangedState(
+          isSignedIn: authService.isSignedIn,
+          isAnonymous: authService.isAnonymous,
+          email: authService.userEmail,
+          displayName: authService.displayName,
+          age: authService.userAge,
+          uid: authService.currentUserId,
+          photoUrl: authService.photoUrl,
+        ));
+      }
+    } on FirebaseAuthException catch (e) {
+      emit(AuthErrorState(e.message ?? 'Google Sign-In failed (${e.code}).'));
+    } catch (e) {
+      emit(AuthErrorState('Google Sign-In failed: $e'));
     }
   }
 
@@ -214,6 +272,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         isAnonymous: authService.isAnonymous,
         email: authService.userEmail,
         displayName: authService.displayName,
+        photoUrl: authService.photoUrl,
       ));
       emit(AuthStateChangedState(
         isSignedIn: authService.isSignedIn,
@@ -222,6 +281,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         displayName: authService.displayName,
         age: authService.userAge,
         uid: authService.currentUserId,
+        photoUrl: authService.photoUrl,
       ));
     } on FirebaseAuthException catch (e) {
       emit(AuthErrorState(_mapFirebaseError(e)));
@@ -247,6 +307,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       displayName: null,
       age: null,
       uid: authService.currentUserId,
+      photoUrl: null,
     ));
   }
 

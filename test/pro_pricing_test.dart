@@ -92,4 +92,35 @@ void main() {
     // Verify CTA button now reflects monthly localized price
     expect(find.text('UPGRADE NOW • ৳ 350.00 / MONTH'), findsOneWidget);
   });
+
+  test('ProLoadingState preserves localized pricing during PurchaseProEvent', () async {
+    final mockIap = MockInAppPurchaseServiceImpl();
+    mockIap.setPricingForTesting(
+      const ProSubscriptionPricing(
+        annualPriceFormatted: '৳ 2,150.00',
+        annualPerMonthFormatted: '৳ 179',
+        monthlyPriceFormatted: '৳ 350.00',
+        currencySymbol: '৳',
+        currencyCode: 'BDT',
+      ),
+    );
+
+    final bloc = ProBloc(purchaseService: mockIap);
+    bloc.add(LoadProStatusEvent());
+    await bloc.stream.firstWhere((s) => s is ProLoadedState);
+
+    bloc.add(const PurchaseProEvent(productId: InAppPurchaseServiceImpl.proMonthlySubscriptionId));
+
+    final states = <ProState>[];
+    final sub = bloc.stream.listen(states.add);
+
+    await Future.delayed(const Duration(milliseconds: 100));
+    await sub.cancel();
+    await bloc.close();
+
+    final loadingState = states.whereType<ProLoadingState>().firstOrNull;
+    expect(loadingState, isNotNull);
+    expect(loadingState!.pricing.monthlyPriceFormatted, equals('৳ 350.00'));
+    expect(loadingState.pricing.annualPriceFormatted, equals('৳ 2,150.00'));
+  });
 }
