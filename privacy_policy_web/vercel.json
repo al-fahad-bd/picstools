@@ -1,6 +1,33 @@
 {
   "version": 2,
   "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/privacy",
+      "destination": "/privacy.html"
+    },
+    {
+      "source": "/privacy-policy",
+      "destination": "/privacy.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms.html"
+    },
+    {
+      "source": "/terms-of-service",
+      "destination": "/terms.html"
+    },
+    {
+      "source": "/delete-account",
+      "destination": "/delete-account.html"
+    },
+    {
+      "source": "/account-deletion",
+      "destination": "/delete-account.html"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

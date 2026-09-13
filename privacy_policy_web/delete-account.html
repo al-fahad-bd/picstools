@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delete Account & Data • PicsTools</title>
+  <meta name="description" content="Request deletion of your PicsTools account and cloud data. Compliant with Google Play Store account deletion requirements.">
+  <meta name="author" content="Abdullah Al Fahad">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/png" href="assets/app_icon.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <aside class="announcement-bar" role="complementary">
+    <div class="announcement-content">
+      <span class="pulse-dot"></span>
+      <strong>Your Data, Your Control:</strong> You can delete your account credentials and cloud profile at any time.
+    </div>
+  </aside>
+
+  <!-- Sticky Header Navigation -->
+  <header class="site-header">
+    <div class="container header-container">
+      <a href="/" class="brand-link">
+        <img src="assets/app_icon.png" alt="PicsTools App Icon" class="brand-icon" width="40" height="40">
+        <div class="brand-text">
+          <span class="brand-title">PicsTools</span>
+          <span class="brand-subtitle">Photo & Image Tools</span>
+        </div>
+      </a>
+
+      <nav class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/privacy" class="nav-link">Privacy Policy</a>
+        <a href="/terms" class="nav-link">Terms</a>
+        <a href="/delete-account" class="nav-link active">Delete Account</a>
+      </nav>
+
+      <div class="header-actions">
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark/light theme">
+          <span class="theme-icon">🌙</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="container main-layout">
+    
+    <!-- Hero Header -->
+    <section class="hero-card neo-card">
+      <div class="hero-badge-wrap">
+        <span class="badge badge-yellow">🗑️ DATA CONTROL</span>
+        <span class="badge badge-green">GOOGLE PLAY COMPLIANT</span>
+      </div>
+      <h1 class="hero-title">Account & Data Deletion</h1>
+      <p class="hero-desc">
+        Under Google Play Store policies and international data privacy regulations (GDPR & CCPA), all <strong>PicsTools</strong> users have the right to permanently delete their account credentials, user profiles, and associated cloud synchronization data.
+      </p>
+    </section>
+
+    <!-- Method 1: In-App Instant Deletion -->
+    <article class="policy-section neo-card">
+      <div class="section-header">
+        <span class="section-icon icon-cyan">📱</span>
+        <h2>Method 1: Instant Self-Service Deletion (In-App)</h2>
+      </div>
+      <p>
+        If you currently have the <strong>PicsTools</strong> app installed on your phone, you can delete your account immediately in under 10 seconds:
+      </p>
+      
+      <div class="action-box">
+        <h3>Step-by-Step Instructions:</h3>
+        <ol>
+          <li>Open the <strong>PicsTools</strong> app on your device.</li>
+          <li>Tap the <strong>Settings</strong> tab in the bottom navigation bar.</li>
+          <li>Tap <strong>Privacy Policy</strong>.</li>
+          <li>Scroll to the bottom and tap the red button: <strong>DELETE ACCOUNT & CLOUD DATA</strong>.</li>
+          <li>Choose whether you wish to also delete local photos on this device (optional checkbox).</li>
+          <li>Tap <strong>Delete Account</strong> to confirm.</li>
+        </ol>
+      </div>
+      <p>
+        <strong>What happens immediately:</strong> Your user document in Firebase Firestore is erased, your Google/Email authorization session is revoked, your Firebase account is permanently deleted, and the app resets to a guest session.
+      </p>
+    </article>
+
+    <!-- Method 2: Web Deletion Request Form -->
+    <article class="policy-section neo-card">
+      <div class="section-header">
+        <span class="section-icon icon-orange">✉️</span>
+        <h2>Method 2: Web Request (If App Was Uninstalled)</h2>
+      </div>
+      <p>
+        If you have already uninstalled the application or cannot access your mobile device, submit your account deletion request using the form below:
+      </p>
+
+      <form class="deletion-form" onsubmit="handleDeletionSubmit(event)">
+        <div class="form-group">
+          <label for="del-email">Registered Email Address *</label>
+          <input type="email" id="del-email" required placeholder="your.email@gmail.com" class="neo-input">
+        </div>
+
+        <div class="form-group">
+          <label for="del-name">Display Name (Optional)</label>
+          <input type="text" id="del-name" placeholder="John Doe" class="neo-input">
+        </div>
+
+        <div class="form-group">
+          <label for="del-reason">Reason for Deletion (Optional)</label>
+          <select id="del-reason" class="neo-input">
+            <option value="no_longer_needed">No longer using the app</option>
+            <option value="privacy_concern">Privacy preferences</option>
+            <option value="switching_device">Switching device</option>
+            <option value="other">Other reason</option>
+          </select>
+        </div>
+
+        <button type="submit" class="neo-submit-btn">
+          🗑️ Submit Deletion Request via Email
+        </button>
+      </form>
+
+      <div id="deletion-success" class="alert-success" style="display: none;">
+        ✓ Your deletion request email client has opened. Please send the pre-filled email to complete verification. We process manual requests within 48 hours.
+      </div>
+    </article>
+
+    <!-- Data Retention Breakdown Table -->
+    <article class="policy-section neo-card">
+      <div class="section-header">
+        <span class="section-icon icon-purple">📋</span>
+        <h2>What Data Is Deleted vs. Retained</h2>
+      </div>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Data Type</th>
+              <th>Action Upon Deletion</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Account Profile</strong></td>
+              <td>Email, Display Name, User UID</td>
+              <td><span class="badge badge-yellow">Permanently Deleted</span> immediately from Firebase.</td>
+            </tr>
+            <tr>
+              <td><strong>Cloud History</strong></td>
+              <td>Firestore history records</td>
+              <td><span class="badge badge-yellow">Permanently Deleted</span> from database.</td>
+            </tr>
+            <tr>
+              <td><strong>Local Files</strong></td>
+              <td>On-device cached images in phone storage</td>
+              <td><strong>User Choice:</strong> Retained on device by default, or wiped if checkbox is selected.</td>
+            </tr>
+            <tr>
+              <td><strong>In-App Purchases</strong></td>
+              <td>Purchase tokens</td>
+              <td>Managed by Google Play Store. Subscriptions should be cancelled via Google Play subscriptions menu.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div class="footer-brand">
+        <img src="assets/app_icon.png" alt="PicsTools Icon" width="28" height="28">
+        <span>PicsTools • Crafted by Abdullah Al Fahad</span>
+      </div>
+      <div class="footer-meta">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+        <a href="/delete-account">Delete Account</a>
+        <span>© 2026 PicsTools.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    function handleDeletionSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('del-email').value;
+      const name = document.getElementById('del-name').value;
+      const reason = document.getElementById('del-reason').value;
+
+      const subject = encodeURIComponent('PicsTools Account Deletion Request - ' + email);
+      const body = encodeURIComponent(
+        'Hello PicsTools Support,\n\n' +
+        'Please permanently delete my PicsTools account and associated cloud data.\n\n' +
+        'Account Details:\n' +
+        '- Registered Email: ' + email + '\n' +
+        '- Display Name: ' + (name || 'N/A') + '\n' +
+        '- Reason: ' + reason + '\n\n' +
+        'Thank you,\n' + (name || email)
+      );
+
+      window.location.href = 'mailto:fahad.dev.app@gmail.com?subject=' + subject + '&body=' + body;
+      document.getElementById('deletion-success').style.display = 'block';
+    }
+  </script>
+</body>
+</html>

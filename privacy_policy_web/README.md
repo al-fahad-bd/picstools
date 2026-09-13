@@ -1,48 +1,28 @@
-# PicsTools Privacy Policy Web
+# PicsTools Web • Landing Page & Legal Hub
 
-A modern, responsive, Neo-Brutalist Privacy Policy webpage designed specifically for **PicsTools** (`com.deltrix.picstools`), fully compliant with Google Play Console and Apple App Store data disclosure policies.
-
----
-
-## 🚀 How to Deploy to Vercel
-
-### Option 1: Deploy with Vercel CLI (Fastest - 30 seconds)
-
-1. Open your terminal in this directory:
-   ```bash
-   cd privacy_policy_web
-   ```
-2. Run Vercel CLI via npx:
-   ```bash
-   npx vercel
-   ```
-3. Follow the quick prompts:
-   - Set up and deploy? **Y**
-   - Which scope? Select your personal Vercel account.
-   - Link to existing project? **N**
-   - Project name? **picstools-privacy** (or your choice)
-   - In which directory is your code located? `./`
-4. Deploy to production:
-   ```bash
-   npx vercel --prod
-   ```
-5. You will receive an instant public URL:
-   `https://picstools-privacy.vercel.app` (or similar).
+A modern, responsive, animated Neo-Brutalist website designed for **PicsTools** (`com.deltrix.picstools`), serving both as an app landing page and as the official legal compliance portal for Google Play Store and Apple App Store.
 
 ---
 
-### Option 2: Deploy via GitHub (Vercel Dashboard)
+## 🌐 Site Structure & Clean Routes
 
-1. Create a quick public or private GitHub repository (e.g. `picstools-privacy-policy`).
-2. Push the files in this folder (`privacy_policy_web/`) to that repository.
-3. In [vercel.com/dashboard](https://vercel.com/dashboard), click **"Add New..."** $\rightarrow$ **"Project"**.
-4. Import your new repository and click **Deploy**.
-5. Your custom URL (e.g., `https://picstools-privacy.vercel.app`) is now permanently live with free SSL!
+| Route | File | Purpose | Google Play Field |
+| :--- | :--- | :--- | :--- |
+| **`/`** | `index.html` | **Main Animated Landing Page** showcasing the 7 tools, offline AI guarantee, and download CTA. | Website Link |
+| **`/privacy`** | `privacy.html` | **Privacy Policy** (100% on-device AI disclosure, permissions, data safety matrix). | **Privacy Policy URL** *(Mandatory)* |
+| **`/delete-account`** | `delete-account.html` | **Account Deletion Request Page** with in-app guide & manual deletion web form. | **Account Deletion URL** *(Mandatory)* |
+| **`/terms`** | `terms.html` | **Terms of Service** (User ownership, licensing, subscriptions, disclaimers). | Legal / Store listing |
 
 ---
 
-## 📋 Paste the URL in Google Play Console
+## 🚀 Instant Deployment on Vercel
 
-Once deployed, copy your Vercel URL and paste it in:
-- **Google Play Console** $\rightarrow$ **Dashboard** $\rightarrow$ **Set up your app** $\rightarrow$ **Set privacy policy**.
-- Format: `https://your-project.vercel.app/`
+Since this repository is already connected to GitHub (`al-fahad-bd/picstools`), simply:
+1. Go to [vercel.com/dashboard](https://vercel.com/dashboard).
+2. Click **"Add New ▾"** $\rightarrow$ **"Project"**.
+3. Import **`al-fahad-bd/picstools`**.
+4. Set **Root Directory** to `privacy_policy_web`.
+5. Set **Project Name** to: `picstools` (or `picstools-app`).
+6. Click **Deploy**.
+
+Every time you commit changes to GitHub, Vercel automatically deploys updates to `https://picstools.vercel.app` in seconds!
