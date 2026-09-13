@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:picstools/features/pro/presentation/views/pro_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -86,7 +87,16 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: '/pro',
-        builder: (context, state) => const MainNavView(initialIndex: 2),
+        builder: (context, state) => ProView(
+          showCloseButton: true,
+          onNavigateToHome: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              context.go('/home');
+            }
+          },
+        ),
       ),
       GoRoute(
         path: '/settings',

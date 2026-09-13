@@ -16,11 +16,13 @@ import '../widgets/pro_active_dashboard.dart';
 class ProView extends StatelessWidget {
   final VoidCallback? onNavigateToHome;
   final bool isFromOnboarding;
+  final bool showCloseButton;
 
   const ProView({
     super.key,
     this.onNavigateToHome,
     this.isFromOnboarding = false,
+    this.showCloseButton = false,
   });
 
   @override
@@ -30,6 +32,7 @@ class ProView extends StatelessWidget {
       child: _ProViewContent(
         onNavigateToHome: onNavigateToHome,
         isFromOnboarding: isFromOnboarding,
+        showCloseButton: showCloseButton,
       ),
     );
   }
@@ -38,10 +41,12 @@ class ProView extends StatelessWidget {
 class _ProViewContent extends StatefulWidget {
   final VoidCallback? onNavigateToHome;
   final bool isFromOnboarding;
+  final bool showCloseButton;
 
   const _ProViewContent({
     this.onNavigateToHome,
     this.isFromOnboarding = false,
+    this.showCloseButton = false,
   });
 
   @override
@@ -110,7 +115,8 @@ class _ProViewContentState extends State<_ProViewContent> {
                       badgeIcon: Icons.verified_rounded,
                       badgeColor: NeoColors.green,
                       badgeTextColor: Colors.black,
-                      showCloseButton: widget.isFromOnboarding,
+                      showCloseButton:
+                          widget.showCloseButton || widget.isFromOnboarding,
                       onClose: () {
                         if (widget.onNavigateToHome != null) {
                           widget.onNavigateToHome!();
@@ -136,10 +142,13 @@ class _ProViewContentState extends State<_ProViewContent> {
                     // 1. Edge-to-Edge Hero Image (Hero image with unobstructed subject & phone)
                     ProImageHero(
                       isDark: isDark,
-                      showCloseButton: widget.isFromOnboarding,
+                      showCloseButton:
+                          widget.showCloseButton || widget.isFromOnboarding,
                       onClose: () {
                         if (widget.onNavigateToHome != null) {
                           widget.onNavigateToHome!();
+                        } else if (Navigator.of(context).canPop()) {
+                          Navigator.of(context).pop();
                         }
                       },
                     ),
