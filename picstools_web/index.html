@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PicsTools • 100% On-Device Photo & Image Utility Suite for Android</title>
+  <meta name="description" content="PicsTools is a fast, offline, privacy-first photo utility suite. AI background remover, lossless compression, precision resizing, format conversion, signature scanner, and PDF creation with zero cloud uploads.">
+  <meta name="keywords" content="photo editor, image compressor, background remover, offline AI, signature scanner, image to pdf, picstools, android photo tools, u2net, birefnet">
+  <meta name="author" content="Abdullah Al Fahad">
+  <link rel="icon" type="image/png" href="assets/app_icon.png">
+
+  <!-- Open Graph / Social Media Meta -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="PicsTools • 100% On-Device Photo & Image Utility Suite">
+  <meta property="og:description" content="Remove backgrounds, compress losslessly, resize with precision, extract signatures, and compile PDFs completely offline on your smartphone.">
+  <meta property="og:image" content="assets/app_icon.png">
+
+  <!-- Google Fonts: Space Grotesk & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="landing-page">
+
+  <!-- Ambient Dynamic Floating Glows -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <!-- Floating Guarantee Bar -->
+  <aside class="announcement-bar" role="complementary">
+    <div class="announcement-content">
+      <span class="pulse-dot"></span>
+      <strong>100% On-Device Neural Processing:</strong> Your photos NEVER leave your phone. 0 bytes uploaded to AI servers. Works in Airplane Mode! ✈️
+    </div>
+  </aside>
+
+  <!-- Sticky Header Navigation -->
+  <header class="site-header">
+    <div class="container header-container">
+      <a href="/" class="brand-link">
+        <img src="assets/app_icon.png" alt="PicsTools App Icon" class="brand-icon" width="44" height="44">
+        <div class="brand-text">
+          <div class="brand-title">
+            PicsTools <span class="brand-tag">v1.0</span>
+          </div>
+          <span class="brand-subtitle">On-Device Creative Suite</span>
+        </div>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#simulator" class="nav-link">Live Simulator</a>
+        <a href="#features" class="nav-link">7 Power Tools</a>
+        <a href="#comparison" class="nav-link">Why On-Device</a>
+        <a href="#workflows" class="nav-link">Use Cases</a>
+        <a href="#faq" class="nav-link">FAQ</a>
+        <a href="/privacy" class="nav-link">Privacy</a>
+        <a href="/delete-account" class="nav-link">Account</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="#download" class="cta-nav-btn">Get App Free</a>
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark/light theme">
+          <span class="theme-icon">🌙</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+
+    <!-- Hero Section -->
+    <section class="hero-wrapper container">
+      <div class="landing-hero">
+        
+        <!-- Hero Left Column -->
+        <div class="hero-left">
+          <div class="hero-pill-badge">
+            <span class="pill-sparkle">✨</span>
+            <span>NEXT-GEN OFFLINE NEURAL PHOTO SUITE</span>
+          </div>
+
+          <h1 class="hero-headline">
+            Every Image Utility.<br>
+            <span class="gradient-text">100% On-Device.</span><br>
+            Zero Cloud Lag.
+          </h1>
+
+          <p class="hero-subhead">
+            Remove backgrounds with neural AI, compress up to 80% losslessly, resize with pixel precision, digitize paper signatures, batch convert formats, and compile PDFs—<strong>all executing locally on your smartphone processor</strong>.
+          </p>
+
+          <div class="hero-cta-group">
+            <a href="#download" class="btn-primary-play">
+              <svg class="play-svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3.609 1.814L13.792 12 3.61 22.186c-.183-.238-.288-.548-.288-.886V2.7c0-.338.105-.648.287-.886zm11.36 11.36l2.128 2.128-11.45 6.46 9.322-8.588zm2.836-1.636l2.87 1.62c.745.42.745 1.106 0 1.526l-2.87 1.62-2.316-2.316 2.316-2.45zm-2.836-1.636L5.647 1.314l11.45 6.46-2.128 2.128z"/>
+              </svg>
+              <div>
+                <span class="btn-subtext">GET IT FREE ON</span>
+                <span class="btn-maintext">Google Play</span>
+              </div>
+            </a>
+
+            <a href="#simulator" class="btn-secondary-demo">
+              <span>Try Live Simulator</span>
+              <span>↓</span>
+            </a>
+          </div>
+
+          <!-- Hero Trust Grid -->
+          <div class="hero-trust-grid">
+            <div class="trust-card">
+              <span class="trust-card-icon">⚡</span>
+              <span>0ms Server Latency</span>
+            </div>
+            <div class="trust-card">
+              <span class="trust-card-icon">🔒</span>
+              <span>100% Offline & Private</span>
+            </div>
+            <div class="trust-card">
+              <span class="trust-card-icon">👤</span>
+              <span>No Mandatory Sign-in</span>
+            </div>
+            <div class="trust-card">
+              <span class="trust-card-icon">✈️</span>
+              <span>Airplane Mode Ready</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Right Column - Interactive Smartphone Simulator -->
+        <div class="hero-right hero-device-container" id="simulator">
+          
+          <!-- Orbit Badges -->
+          <div class="floating-orbit-badge badge-top-left">
+            <span>🪄</span> <span>Local BiRefNet AI</span>
+          </div>
+          <div class="floating-orbit-badge badge-top-right">
+            <span>⚡</span> <span>0.08s Neural Inference</span>
+          </div>
+          <div class="floating-orbit-badge badge-bottom-left">
+            <span>🔒</span> <span>0 Bytes to Cloud</span>
+          </div>
+
+          <!-- Phone Mockup Device -->
+          <div class="phone-mockup">
+            <!-- Status Notch -->
+            <div class="phone-notch-bar">
+              <span>9:41</span>
+              <div class="notch-pill"></div>
+              <span>📶 100%</span>
+            </div>
+
+            <!-- Tab Switcher Inside Simulator -->
+            <div class="sim-tab-bar" role="tablist">
+              <button class="sim-tab active" data-panel="panel-cutout">
+                <span>🪄</span> Cutout
+              </button>
+              <button class="sim-tab" data-panel="panel-compress">
+                <span>🗜️</span> Compress
+              </button>
+              <button class="sim-tab" data-panel="panel-signature">
+                <span>✍️</span> Signature
+              </button>
+              <button class="sim-tab" data-panel="panel-lofi">
+                <span>🎵</span> Lo-Fi
+              </button>
+            </div>
+
+            <!-- Screen Area -->
+            <div class="sim-screen">
+
+              <!-- PANEL 1: AI Background Cutout (Before / After Slider) -->
+              <div id="panel-cutout" class="sim-panel active">
+                <div class="slider-container" title="Drag left/right to compare Before and After">
+                  <!-- After Cutout (Subject on transparent checkerboard) -->
+                  <img src="assets/demo_portrait.jpg" alt="PicsTools AI Cutout Output" class="slider-img-after" style="filter: contrast(1.05) saturate(1.1);">
+                  <span class="slider-label after-label">✨ Cutout • 480 KB</span>
+
+                  <!-- Before Wrap (Original Photo with background) -->
+                  <div class="slider-img-before-wrap">
+                    <img src="assets/demo_portrait.jpg" alt="Original Photo with Studio Background" class="slider-img-before">
+                    <span class="slider-label before-label">Original • 5.4 MB</span>
+                  </div>
+
+                  <!-- Slider Draggable Handle -->
+                  <div class="slider-handle">◂ ▸</div>
+                </div>
+
+                <div class="sim-meta-box">
+                  <div class="sim-stat-row">
+                    <span class="stat-tag">AI Neural Model:</span>
+                    <span class="stat-value text-green">BiRefNet (On-Device NPU)</span>
+                  </div>
+                  <div class="sim-stat-row">
+                    <span class="stat-tag">Inference Latency:</span>
+                    <span class="stat-value">84ms (0ms Network)</span>
+                  </div>
+                  <div class="sim-stat-row">
+                    <span class="stat-tag">Export Format:</span>
+                    <span class="stat-value">Transparent 32-bit PNG</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PANEL 2: Smart Lossless Compressor Simulator -->
+              <div id="panel-compress" class="sim-panel">
+                <div class="compressor-widget">
+                  <div class="comp-preview-box">
+                    <div class="comp-flow">
+                      <div class="comp-node">
+                        <span class="stat-tag">Original Image</span>
+                        <span class="comp-size-badge">5.4 MB</span>
+                      </div>
+                      <div class="comp-arrow">➔</div>
+                      <div class="comp-node">
+                        <span class="stat-tag">PicsTools Output</span>
+                        <span id="comp-output-size" class="comp-size-badge text-green">640 KB</span>
+                      </div>
+                    </div>
+
+                    <div class="comp-savings-bar">
+                      <div id="comp-savings-fill" class="comp-savings-fill"></div>
+                    </div>
+                    <div style="margin-top: 8px; font-weight: 800; font-size: 0.85rem; color: var(--neo-green);" id="comp-savings-pct">
+                      -88% Storage Saved
+                    </div>
+                  </div>
+
+                  <div class="range-slider-group">
+                    <div class="range-label-row">
+                      <span>Target File Size Clamp:</span>
+                      <span style="color: var(--neo-cyan);">Drag to test</span>
+                    </div>
+                    <input type="range" id="comp-target-slider" class="neo-range" min="300" max="4800" step="50" value="640">
+                  </div>
+
+                  <div class="sim-meta-box">
+                    <div class="sim-stat-row">
+                      <span class="stat-tag">Quality Metric:</span>
+                      <span class="stat-value text-green">SSIM 0.99 (Lossless Clarity)</span>
+                    </div>
+                    <div class="sim-stat-row">
+                      <span class="stat-tag">Metadata:</span>
+                      <span class="stat-value">EXIF preserved or sanitized</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PANEL 3: Paper Signature Scanner -->
+              <div id="panel-signature" class="sim-panel">
+                <div class="sig-canvas-box">
+                  <svg id="signature-svg" class="sig-svg" viewBox="0 0 300 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path id="signature-path" d="M20 75 C 60 20, 80 110, 110 50 C 130 10, 150 90, 180 60 C 210 30, 230 85, 270 55 M150 65 Q 210 110 280 80" stroke="#0F172A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span class="slider-label after-label" style="top: 8px; right: 8px; bottom: auto;">Alpha Transparent</span>
+                </div>
+
+                <div class="sim-meta-box">
+                  <span class="stat-tag" style="display: block; margin-bottom: 6px;">Ink Color Extraction:</span>
+                  <div class="sig-color-swatches">
+                    <button class="sig-color-btn active" data-color="#0F172A">Black Ink</button>
+                    <button class="sig-color-btn" data-color="#1D4ED8">Royal Blue</button>
+                    <button class="sig-color-btn" data-color="#FFFFFF">White Stamp</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PANEL 4: Lo-Fi Ambient Audio & Focus Studio -->
+              <div id="panel-lofi" class="sim-panel">
+                <div class="lofi-player-box">
+                  <span class="badge badge-purple" style="margin-bottom: 8px;">CALMING EDITING VIBES</span>
+                  <p style="font-size: 0.82rem; color: var(--text-secondary);">
+                    PicsTools features 5 built-in ambient Lo-Fi loops to keep you calm and focused while editing.
+                  </p>
+
+                  <!-- 10 Animated Equalizer Bars -->
+                  <div class="equalizer-wrap">
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                  </div>
+
+                  <button id="btn-lofi-toggle" class="btn-lofi-toggle">
+                    <span>▶ Play Ambient Beat</span>
+                  </button>
+                  <span id="lofi-status-text" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px;">
+                    Click to test built-in ambient audio
+                  </span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Live Performance Counter Ribbon -->
+    <section class="container stats-ribbon-section">
+      <div class="stats-grid">
+        <div class="stat-item-card">
+          <div class="stat-big-number">100%</div>
+          <div class="stat-label-title">On-Device AI</div>
+          <div class="stat-label-sub">Zero reliance on remote servers</div>
+        </div>
+        <div class="stat-item-card">
+          <div class="stat-big-number">7-in-1</div>
+          <div class="stat-label-title">Pro Utilities</div>
+          <div class="stat-label-sub">Replaces 7 bloated standalone apps</div>
+        </div>
+        <div class="stat-item-card">
+          <div class="stat-big-number">0 KB</div>
+          <div class="stat-label-title">Photos Uploaded</div>
+          <div class="stat-label-sub">Your personal media stays private</div>
+        </div>
+        <div class="stat-item-card">
+          <div class="stat-big-number">80%+</div>
+          <div class="stat-label-title">Storage Saved</div>
+          <div class="stat-label-sub">High-efficiency lossless compression</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- The 7 Power Tools Section -->
+    <section id="features" class="container tools-section">
+      <div class="section-header-wrap">
+        <span class="badge badge-cyan">POWERFUL OFFLINE ENGINES</span>
+        <h2 class="section-title">7 Essential Tools. One Fast App.</h2>
+        <p class="section-subtext">
+          No ads every two clicks. No subscription paywalls for basic features. PicsTools delivers a unified, high-octane creative toolbox right in your pocket.
+        </p>
+      </div>
+
+      <div class="tools-grid">
+        
+        <!-- Tool 1: AI Background Remover -->
+        <div class="tool-card neo-card">
+          <div class="tool-top-row">
+            <div class="tool-icon-box bg-purple">🪄</div>
+            <span class="tool-badge-pill">NEURAL NPU</span>
+          </div>
+          <h3 class="tool-name">AI Background Remover</h3>
+          <p class="tool-desc">
+            Instantly isolate portrait subjects, products, or cars. Generates crisp transparent PNG cutouts using local BiRefNet and U2Net neural weights on your phone.
+          </p>
+          <div class="tool-feature-list">
+            <span><strong class="check">✓</strong> 100% Offline AI inferencing</span>
+            <span><strong class="check">✓</strong> Sub-pixel hair and boundary refinement</span>
+            <span><strong class="check">✓</strong> One-tap transparent PNG export</span>
+          </div>
+        </div>
+
+        <!-- Tool 2: Lossless Compressor -->
+        <div class="tool-card neo-card">
+          <div class="tool-top-row">
+            <div class="tool-icon-box bg-green">🗜️</div>
+            <span class="tool-badge-pill">UP TO -80%</span>
+          </div>
+          <h3 class="tool-name">Lossless Compressor</h3>
+          <p class="tool-desc">
+            Reclaim gigabytes of device storage. Compress massive JPEG and PNG camera shots to precise target constraints (e.g. under 500 KB) without visible artifacts.
+          </p>
+          <div class="tool-feature-list">
+            <span><strong class="check">✓</strong> Strict KB / MB target clamping</span>
+            <span><strong class="check">✓</strong> High-efficiency MozJPEG & Pngquant</span>
+            <span><strong class="check">✓</strong> Instant before/after file comparison</span>
+          </div>
+        </div>
+
+        <!-- Tool 3: Precision Resizer -->
+        <div class="tool-card neo-card">
+          <div class="tool-top-row">
+            <div class="tool-icon-box bg-yellow">📐</div>
+            <span class="tool-badge-pill">PIXEL ACCURATE</span>
+          </div>
+          <h3 class="tool-name">Precision Resizer</h3>
+          <p class="tool-desc">
+            Scale photos to exact dimensions required by passport applications, government portals, web banners, and app icons with automatic aspect ratio lock.
+          </p>
+          <div class="tool-feature-list">
+            <span><strong class="check">✓</strong> Exact pixel or percentage scaling</span>
+            <span><strong class="check">✓</strong> High-quality Lanczos3 resampling</span>
+            <span><strong class="check">✓</strong> Passport & ID card dimension presets</span>
+          </div>
+        </div>
+
+        <!-- Tool 4: Format Converter -->
+        <div class="tool-card neo-card">
+          <div class="tool-top-row">
+            <div class="tool-icon-box bg-cyan">🔄</div>
+            <span class="tool-badge-pill">ZERO LOSS</span>
+          </div>
+          <h3 class="tool-name">Multi-Format Engine</h3>
+          <p class="tool-desc">
+            Effortlessly switch between modern image formats. Convert heavy Apple HEIC photos or transparent PNGs into ultra-compact WebP or universal JPEG.
+          </p>
+          <div class="tool-feature-list">
+            <span><strong class="check">✓</strong> PNG ↔ JPEG ↔ WEBP ↔ HEIC</span>
+            <span><strong class="check">✓</strong> Complete alpha transparency preservation</span>
+            <span><strong class="check">✓</strong> Fast multi-file batch execution</span>
+          </div>
+        </div>
+
+        <!-- Tool 5: Social Aspect Ratio Cropper -->
+        <div class="tool-card neo-card">
+          <div class="tool-top-row">
+            <div class="tool-icon-box bg-pink">✂️</div>
+            <span class="tool-badge-pill">CREATOR READY</span>
+          </div>
+          <h3 class="tool-name">Aspect Ratio Cropper</h3>
+          <p class="tool-desc">
+            Frame photos for every digital platform with single-tap standard aspect ratios: 9:16 (TikTok/Reels), 1:1 (Instagram Grid), 16:9 (YouTube), and 4:3.
+          </p>
+          <div class="tool-feature-list">
+            <span><strong class="check">✓</strong> Standard social media ratio presets</span>
+            <span><strong class="check">✓</strong> Arbitrary freehand crop boundary</span>
+            <span><strong class="check">✓</strong> 90° rotation and horizontal mirroring</span>
+          </div>
+        </div>
+
+        <!-- Tool 6: Paper Signature Scanner -->
+        <div class="tool-card neo-card">
+          <div class="tool-top-row">
+            <div class="tool-icon-box bg-orange">✍️</div>
+            <span class="tool-badge-pill">OFFICE ESSENTIAL</span>
+          </div>
+          <h3 class="tool-name">Paper Signature Scanner</h3>
+          <p class="tool-desc">
+            Sign a real piece of paper, snap a photo, and watch PicsTools erase shadows and background paper to produce a pristine, transparent digital signature stamp.
+          </p>
+          <div class="tool-feature-list">
+            <span><strong class="check">✓</strong> Adaptive paper shadow removal</span>
+            <span><strong class="check">✓</strong> Vector-crisp transparent alpha export</span>
+            <span><strong class="check">✓</strong> Black, Blue, and White ink color switch</span>
+          </div>
+        </div>
+
+        <!-- Tool 7: Multi-Image to PDF Compiler -->
+        <div class="tool-card neo-card tool-featured">
+          <div class="tool-top-row">
+            <div class="tool-icon-box bg-blue">📄</div>
+            <span class="tool-badge-pill">DOCUMENT STUDIO</span>
+          </div>
+          <h3 class="tool-name">Multi-Image to PDF Studio</h3>
+          <p class="tool-desc">
+            Turn disorganized photo receipts, assignments, medical files, or legal agreements into a single, beautifully bound, shareable PDF document.
+          </p>
+          <div class="tool-feature-list">
+            <span><strong class="check">✓</strong> Intuitive page reordering & rotation</span>
+            <span><strong class="check">✓</strong> Standard A4, Letter, and Legal margins</span>
+            <span><strong class="check">✓</strong> Lightweight compression for email attachments</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Architecture Showdown: On-Device AI vs Cloud Apps -->
+    <section id="comparison" class="container architecture-section">
+      <div class="section-header-wrap">
+        <span class="badge badge-yellow">THE PRIVACY & SPEED REVOLUTION</span>
+        <h2 class="section-title">Why On-Device AI Wins Every Time</h2>
+        <p class="section-subtext">
+          See how PicsTools eliminates the privacy vulnerabilities and latency bottlenecks of traditional cloud photo services.
+        </p>
+      </div>
+
+      <div class="vs-grid">
+        
+        <!-- Cloud Editing Apps -->
+        <div class="neo-card vs-card cloud-card">
+          <div class="vs-card-header">
+            <h3 class="vs-title" style="color: var(--neo-red);">Traditional Cloud Apps</h3>
+            <span class="badge badge-red">THE OLD WAY</span>
+          </div>
+          <div class="vs-list">
+            <div class="vs-item">
+              <div class="vs-item-icon">✕</div>
+              <div class="vs-item-text">
+                <h4>Mandatory Internet Uploads</h4>
+                <p>Every photo travels over cellular networks to third-party server clusters, burning mobile data.</p>
+              </div>
+            </div>
+            <div class="vs-item">
+              <div class="vs-item-icon">✕</div>
+              <div class="vs-item-text">
+                <h4>Severe Privacy & Data Risks</h4>
+                <p>Photos sit on remote databases where they risk data leaks or are scraped for AI model training.</p>
+              </div>
+            </div>
+            <div class="vs-item">
+              <div class="vs-item-icon">✕</div>
+              <div class="vs-item-text">
+                <h4>Upload Queues & Network Lag</h4>
+                <p>Waiting 10–30 seconds per edit depending on internet speed and server load.</p>
+              </div>
+            </div>
+            <div class="vs-item">
+              <div class="vs-item-icon">✕</div>
+              <div class="vs-item-text">
+                <h4>Dead in Airplane Mode</h4>
+                <p>Completely unusable while flying, traveling in remote areas, or with low connectivity.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PicsTools On-Device Engine -->
+        <div class="neo-card vs-card picstools-card">
+          <div class="vs-card-header">
+            <h3 class="vs-title" style="color: var(--neo-green);">PicsTools 100% On-Device</h3>
+            <span class="badge badge-green">THE PRIVATE WAY</span>
+          </div>
+          <div class="vs-list">
+            <div class="vs-item">
+              <div class="vs-item-icon">✓</div>
+              <div class="vs-item-text">
+                <h4>Zero Bytes Sent to AI Clouds</h4>
+                <p>All neural models (BiRefNet/U2Net) execute locally on your phone's processor.</p>
+              </div>
+            </div>
+            <div class="vs-item">
+              <div class="vs-item-icon">✓</div>
+              <div class="vs-item-text">
+                <h4>Absolute Data Confidentiality</h4>
+                <p>Personal IDs, contracts, and private portraits stay exclusively in your hands.</p>
+              </div>
+            </div>
+            <div class="vs-item">
+              <div class="vs-item-icon">✓</div>
+              <div class="vs-item-text">
+                <h4>Near-Instant Local Inference</h4>
+                <p>Zero upload delay. Photos process in fractions of a second with hardware acceleration.</p>
+              </div>
+            </div>
+            <div class="vs-item">
+              <div class="vs-item-icon">✓</div>
+              <div class="vs-item-text">
+                <h4>Full Offline Freedom</h4>
+                <p>Functions flawlessly in Airplane Mode, in the subway, and off the grid.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Real-World Workflows -->
+    <section id="workflows" class="container workflows-section">
+      <div class="section-header-wrap">
+        <span class="badge badge-purple">BUILT FOR EVERYDAY NEEDS</span>
+        <h2 class="section-title">Designed for Real Life Workflows</h2>
+      </div>
+
+      <div class="workflows-grid">
+        <div class="workflow-card">
+          <div class="workflow-icon">🛂</div>
+          <h3 class="workflow-title">Passport & Visa Portals</h3>
+          <p class="workflow-desc">Meet strict government portal limits (e.g. exactly 600x600 px under 240 KB) in 10 seconds.</p>
+        </div>
+
+        <div class="workflow-card">
+          <div class="workflow-icon">✍️</div>
+          <h3 class="workflow-title">E-Sign Any Contract</h3>
+          <p class="workflow-desc">Sign paper with a pen, snap a photo, and paste your clean transparent signature directly onto PDFs.</p>
+        </div>
+
+        <div class="workflow-card">
+          <div class="workflow-icon">📱</div>
+          <h3 class="workflow-title">Social Content Creators</h3>
+          <p class="workflow-desc">Quickly cut out subjects for YouTube thumbnails or crop high-res shots into vertical 9:16 TikTok reels.</p>
+        </div>
+
+        <div class="workflow-card">
+          <div class="workflow-icon">🧾</div>
+          <h3 class="workflow-title">Expenses & Tax Receipts</h3>
+          <p class="workflow-desc">Compile receipts, doctor prescriptions, and utility bills into tidy, lightweight multi-page PDFs.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive FAQ Section -->
+    <section id="faq" class="container faq-section">
+      <div class="section-header-wrap">
+        <span class="badge badge-cyan">FREQUENTLY ASKED QUESTIONS</span>
+        <h2 class="section-title">Got Questions? We Have Answers.</h2>
+      </div>
+
+      <div class="faq-list">
+        
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Are my photos truly 100% private and offline?</span>
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            Yes, unconditionally. When you remove a background, compress, crop, or scan a signature, the entire algorithmic execution occurs directly on your smartphone's CPU and Neural Processing Unit. No images or metadata are transmitted to our servers for processing.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Does PicsTools require me to create an account?</span>
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            No! You can download the app and start using all 7 tools immediately as an anonymous guest. No email, phone number, or social media login is required.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Will compressing my photos make them look blurry?</span>
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            No. PicsTools uses smart perceptual lossless optimization (MozJPEG and Pngquant). It discards invisible redundant color data while preserving fine edges and textures, maintaining a structural similarity score (SSIM) above 0.98.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>How does optional Cloud Sync work?</span>
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            Cloud Sync is 100% optional. If you choose to sign in, your recent processed items can sync across your devices via your private encrypted storage vault. You can clear your sync history or unlink your account with 1 tap at any time in Settings.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>How can I delete my account and synchronized data?</span>
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            You can delete your account immediately inside the app via <strong>Settings → Account → Delete Account</strong>, or submit a request via our dedicated <a href="/delete-account" style="color: var(--neo-cyan); font-weight: bold;">Account Deletion Web Portal</a>. All user records and synced files are permanently purged.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Grand Download CTA Banner -->
+    <section id="download" class="container download-section">
+      <div class="download-banner-card">
+        <span class="badge badge-yellow">FREE ON GOOGLE PLAY</span>
+        <h2 class="download-headline">Take Control of Your Images Today</h2>
+        <p class="download-subhead">
+          Join thousands of creators, professionals, and privacy enthusiasts editing with lightning speed.
+        </p>
+
+        <div class="download-btn-group">
+          <a href="#" class="btn-primary-play large">
+            <svg class="play-svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3.609 1.814L13.792 12 3.61 22.186c-.183-.238-.288-.548-.288-.886V2.7c0-.338.105-.648.287-.886zm11.36 11.36l2.128 2.128-11.45 6.46 9.322-8.588zm2.836-1.636l2.87 1.62c.745.42.745 1.106 0 1.526l-2.87 1.62-2.316-2.316 2.316-2.45zm-2.836-1.636L5.647 1.314l11.45 6.46-2.128 2.128z"/>
+            </svg>
+            <div>
+              <span class="btn-subtext">DOWNLOAD FREE ON</span>
+              <span class="btn-maintext">Google Play Store</span>
+            </div>
+          </a>
+        </div>
+
+        <div class="download-meta-notes">
+          <span>⚡ Version 1.0.0 (Build 8)</span>
+          <span>•</span>
+          <span>📱 Compatible with Android 8.0+</span>
+          <span>•</span>
+          <span>🔒 Google Play Data Safety Certified</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div class="footer-brand">
+        <img src="assets/app_icon.png" alt="PicsTools App Icon" width="36" height="36" style="border-radius: 8px;">
+        <div>
+          <span class="brand-title" style="font-size: 1.15rem;">PicsTools</span>
+          <span class="footer-tagline">Crafted with ❤️ by Abdullah Al Fahad</span>
+        </div>
+      </div>
+
+      <div class="footer-nav">
+        <a href="/">Home</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms of Service</a>
+        <a href="/delete-account">Delete Account</a>
+        <a href="https://abdullahalfahad.vercel.app/" target="_blank" rel="noopener">Developer Website</a>
+      </div>
+
+      <div class="footer-meta">
+        <span>© 2026 PicsTools. All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

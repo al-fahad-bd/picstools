@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Delete Account & Data • PicsTools</title>
-  <meta name="description" content="Request deletion of your PicsTools account and cloud data. Compliant with Google Play Store account deletion requirements.">
+  <meta name="description"
+    content="Request deletion of your PicsTools account and cloud data. Compliant with Google Play Store account deletion requirements.">
   <meta name="author" content="Abdullah Al Fahad">
   <meta name="robots" content="index, follow">
   <link rel="icon" type="image/png" href="assets/app_icon.png">
@@ -12,10 +14,13 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700;800;900&display=swap"
+    rel="stylesheet">
 
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 
   <!-- Top Announcement Bar -->
@@ -54,7 +59,7 @@
 
   <!-- Main Content Layout -->
   <main class="container main-layout">
-    
+
     <!-- Hero Header -->
     <section class="hero-card neo-card">
       <div class="hero-badge-wrap">
@@ -63,7 +68,9 @@
       </div>
       <h1 class="hero-title">Account & Data Deletion</h1>
       <p class="hero-desc">
-        Under Google Play Store policies and international data privacy regulations (GDPR & CCPA), all <strong>PicsTools</strong> users have the right to permanently delete their account credentials, user profiles, and associated cloud synchronization data.
+        Under Google Play Store policies and international data privacy regulations (GDPR & CCPA), all
+        <strong>PicsTools</strong> users have the right to permanently delete their account credentials, user profiles,
+        and associated cloud synchronization data.
       </p>
     </section>
 
@@ -74,9 +81,10 @@
         <h2>Method 1: Instant Self-Service Deletion (In-App)</h2>
       </div>
       <p>
-        If you currently have the <strong>PicsTools</strong> app installed on your phone, you can delete your account immediately in under 10 seconds:
+        If you currently have the <strong>PicsTools</strong> app installed on your phone, you can delete your account
+        immediately in under 10 seconds:
       </p>
-      
+
       <div class="action-box">
         <h3>Step-by-Step Instructions:</h3>
         <ol>
@@ -89,7 +97,9 @@
         </ol>
       </div>
       <p>
-        <strong>What happens immediately:</strong> Your user document in Firebase Firestore is erased, your Google/Email authorization session is revoked, your Firebase account is permanently deleted, and the app resets to a guest session.
+        <strong>What happens immediately:</strong> Your user document in Firebase Firestore is erased, your Google/Email
+        authorization session is revoked, your Firebase account is permanently deleted, and the app resets to a guest
+        session.
       </p>
     </article>
 
@@ -100,7 +110,8 @@
         <h2>Method 2: Web Request (If App Was Uninstalled)</h2>
       </div>
       <p>
-        If you have already uninstalled the application or cannot access your mobile device, submit your account deletion request using the form below:
+        If you have already uninstalled the application or cannot access your mobile device, submit your account
+        deletion request using the form below:
       </p>
 
       <form class="deletion-form" onsubmit="handleDeletionSubmit(event)">
@@ -130,7 +141,8 @@
       </form>
 
       <div id="deletion-success" class="alert-success" style="display: none;">
-        ✓ Your deletion request email client has opened. Please send the pre-filled email to complete verification. We process manual requests within 48 hours.
+        ✓ Your deletion request email client has opened. Please send the pre-filled email to complete verification. We
+        process manual requests within 48 hours.
       </div>
     </article>
 
@@ -168,7 +180,8 @@
             <tr>
               <td><strong>In-App Purchases</strong></td>
               <td>Purchase tokens</td>
-              <td>Managed by Google Play Store. Subscriptions should be cancelled via Google Play subscriptions menu.</td>
+              <td>Managed by Google Play Store. Subscriptions should be cancelled via Google Play subscriptions menu.
+              </td>
             </tr>
           </tbody>
         </table>
@@ -217,4 +230,5 @@
     }
   </script>
 </body>
+
 </html>
