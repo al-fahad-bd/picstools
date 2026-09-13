@@ -532,7 +532,7 @@ class HistoryDetailsView extends StatelessWidget {
                     shadow: 1.5,
                   ),
                   child: Text(
-                    '⚠️ The temporary file for this history item was cleared or moved.',
+                    '⚠️ The temporary file for this older history item was cleared by the system.',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 12,
@@ -542,6 +542,19 @@ class HistoryDetailsView extends StatelessWidget {
                           : NeoColors.textSecondaryLight,
                     ),
                   ),
+                ),
+                const SizedBox(height: 12),
+                NeoButton(
+                  label: 'REMOVE FROM HISTORY',
+                  icon: const Icon(
+                    Icons.delete_outline_rounded,
+                    color: Colors.white,
+                  ),
+                  backgroundColor: NeoColors.red,
+                  textColor: Colors.white,
+                  fullWidth: true,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  onPressed: () => _confirmDelete(context, isDark),
                 ),
               ],
             ],
@@ -665,6 +678,16 @@ class HistoryDetailsView extends StatelessWidget {
             style: GoogleFonts.spaceGrotesk(
               fontSize: 15,
               fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Older temporary cache was cleared by the system',
+            style: GoogleFonts.spaceGrotesk(
+              fontSize: 12,
+              color: isDark
+                  ? NeoColors.textSecondaryDark
+                  : NeoColors.textSecondaryLight,
             ),
           ),
         ],

@@ -37,30 +37,51 @@ class ProLoadingState extends ProState {}
 
 class ProLoadedState extends ProState {
   final bool isPro;
-  const ProLoadedState({required this.isPro});
+  final ProSubscriptionPricing pricing;
+
+  const ProLoadedState({
+    required this.isPro,
+    this.pricing = const ProSubscriptionPricing(),
+  });
+
   @override
-  List<Object?> get props => [isPro];
+  List<Object?> get props => [isPro, pricing];
 }
 
 class ProPurchaseSuccessState extends ProState {
   final String message;
   final bool isPro;
-  const ProPurchaseSuccessState(this.message, {this.isPro = true});
+  final ProSubscriptionPricing pricing;
+
+  const ProPurchaseSuccessState(
+    this.message, {
+    this.isPro = true,
+    this.pricing = const ProSubscriptionPricing(),
+  });
+
   @override
-  List<Object?> get props => [message, isPro];
+  List<Object?> get props => [message, isPro, pricing];
 }
 
 class ProErrorState extends ProState {
   final String message;
   final bool isPro;
-  const ProErrorState(this.message, {this.isPro = false});
+  final ProSubscriptionPricing pricing;
+
+  const ProErrorState(
+    this.message, {
+    this.isPro = false,
+    this.pricing = const ProSubscriptionPricing(),
+  });
+
   @override
-  List<Object?> get props => [message, isPro];
+  List<Object?> get props => [message, isPro, pricing];
 }
 
 // BLoC Implementation
 class ProBloc extends Bloc<ProEvent, ProState> {
   final InAppPurchaseService purchaseService;
+  ProSubscriptionPricing _pricing = const ProSubscriptionPricing();
 
   ProBloc({required this.purchaseService}) : super(ProInitialState()) {
     on<LoadProStatusEvent>(_onLoadProStatus);
@@ -82,8 +103,12 @@ class ProBloc extends Bloc<ProEvent, ProState> {
     return super.close();
   }
 
-  void _onLoadProStatus(LoadProStatusEvent event, Emitter<ProState> emit) {
-    emit(ProLoadedState(isPro: purchaseService.isProUser()));
+  Future<void> _onLoadProStatus(
+    LoadProStatusEvent event,
+    Emitter<ProState> emit,
+  ) async {
+    _pricing = await purchaseService.getSubscriptionPricing();
+    emit(ProLoadedState(isPro: purchaseService.isProUser(), pricing: _pricing));
   }
 
   Future<void> _onRefreshProStatus(
@@ -92,18 +117,20 @@ class ProBloc extends Bloc<ProEvent, ProState> {
   ) async {
     try {
       final isPro = await purchaseService.checkSubscriptionStatus();
+      _pricing = await purchaseService.getSubscriptionPricing();
       if (isPro) {
         emit(
-          const ProPurchaseSuccessState(
+          ProPurchaseSuccessState(
             '✓ Pro subscription is active.',
             isPro: true,
+            pricing: _pricing,
           ),
         );
       } else {
-        emit(const ProLoadedState(isPro: false));
+        emit(ProLoadedState(isPro: false, pricing: _pricing));
       }
     } catch (_) {
-      emit(ProLoadedState(isPro: purchaseService.isProUser()));
+      emit(ProLoadedState(isPro: purchaseService.isProUser(), pricing: _pricing));
     }
   }
 
@@ -119,20 +146,22 @@ class ProBloc extends Bloc<ProEvent, ProState> {
       final isPro = purchaseService.isProUser();
       if (success || isPro) {
         emit(
-          const ProPurchaseSuccessState(
+          ProPurchaseSuccessState(
             '🎉 Pro subscription activated successfully!',
             isPro: true,
+            pricing: _pricing,
           ),
         );
       } else {
         // User cancelled or dismissed the billing sheet; cleanly reset button
-        emit(ProLoadedState(isPro: isPro));
+        emit(ProLoadedState(isPro: isPro, pricing: _pricing));
       }
     } catch (e) {
       emit(
         ProErrorState(
           'Purchase failed: $e',
           isPro: purchaseService.isProUser(),
+          pricing: _pricing,
         ),
       );
     }
@@ -148,9 +177,10 @@ class ProBloc extends Bloc<ProEvent, ProState> {
       final isPro = purchaseService.isProUser();
       if (success || isPro) {
         emit(
-          const ProPurchaseSuccessState(
+          ProPurchaseSuccessState(
             '🎉 Purchases restored successfully!',
             isPro: true,
+            pricing: _pricing,
           ),
         );
       } else {
@@ -158,12 +188,17 @@ class ProBloc extends Bloc<ProEvent, ProState> {
           ProErrorState(
             'No active subscription found to restore.',
             isPro: isPro,
+            pricing: _pricing,
           ),
         );
       }
     } catch (e) {
       emit(
-        ProErrorState('Restore failed: $e', isPro: purchaseService.isProUser()),
+        ProErrorState(
+          'Restore failed: $e',
+          isPro: purchaseService.isProUser(),
+          pricing: _pricing,
+        ),
       );
     }
   }

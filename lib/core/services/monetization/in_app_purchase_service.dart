@@ -6,6 +6,45 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:flutter/widgets.dart';
 
+class ProSubscriptionPricing {
+  final String annualPriceFormatted;
+  final String annualPerMonthFormatted;
+  final String monthlyPriceFormatted;
+  final double? annualRawPrice;
+  final double? monthlyRawPrice;
+  final String currencySymbol;
+  final String currencyCode;
+
+  const ProSubscriptionPricing({
+    this.annualPriceFormatted = r'$17.99',
+    this.annualPerMonthFormatted = r'$1.49',
+    this.monthlyPriceFormatted = r'$2.99',
+    this.annualRawPrice,
+    this.monthlyRawPrice,
+    this.currencySymbol = r'$',
+    this.currencyCode = 'USD',
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ProSubscriptionPricing &&
+          runtimeType == other.runtimeType &&
+          annualPriceFormatted == other.annualPriceFormatted &&
+          annualPerMonthFormatted == other.annualPerMonthFormatted &&
+          monthlyPriceFormatted == other.monthlyPriceFormatted &&
+          currencySymbol == other.currencySymbol &&
+          currencyCode == other.currencyCode;
+
+  @override
+  int get hashCode =>
+      annualPriceFormatted.hashCode ^
+      annualPerMonthFormatted.hashCode ^
+      monthlyPriceFormatted.hashCode ^
+      currencySymbol.hashCode ^
+      currencyCode.hashCode;
+}
+
 abstract class InAppPurchaseService {
   Future<void> initialize();
   bool isProUser();
@@ -14,6 +53,7 @@ abstract class InAppPurchaseService {
   Future<bool> restorePurchases();
   Future<bool> checkSubscriptionStatus();
   Future<void> openManageSubscriptions();
+  Future<ProSubscriptionPricing> getSubscriptionPricing();
 }
 
 class InAppPurchaseServiceImpl
@@ -280,6 +320,91 @@ class InAppPurchaseServiceImpl
     }
   }
 
+  ProSubscriptionPricing _cachedPricing = const ProSubscriptionPricing();
+
+  @override
+  Future<ProSubscriptionPricing> getSubscriptionPricing() async {
+    if (_cachedPricing.annualRawPrice != null &&
+        _cachedPricing.monthlyRawPrice != null) {
+      return _cachedPricing;
+    }
+
+    try {
+      final available = await _iap.isAvailable();
+      if (!available) {
+        return _cachedPricing;
+      }
+
+      final ProductDetailsResponse response = await _iap.queryProductDetails(
+        allProSubscriptionIds,
+      );
+
+      if (response.productDetails.isNotEmpty) {
+        ProductDetails? yearly;
+        ProductDetails? monthly;
+
+        for (final product in response.productDetails) {
+          if (product.id == proYearlySubscriptionId) {
+            yearly = product;
+          } else if (product.id == proMonthlySubscriptionId) {
+            monthly = product;
+          }
+        }
+
+        String annualFormatted = _cachedPricing.annualPriceFormatted;
+        String annualPerMonthFormatted = _cachedPricing.annualPerMonthFormatted;
+        String monthlyFormatted = _cachedPricing.monthlyPriceFormatted;
+        String symbol = _cachedPricing.currencySymbol;
+        String code = _cachedPricing.currencyCode;
+
+        if (yearly != null) {
+          annualFormatted = yearly.price;
+          symbol = yearly.currencySymbol.isNotEmpty
+              ? yearly.currencySymbol
+              : yearly.currencyCode;
+          code = yearly.currencyCode;
+
+          final perMonth = yearly.rawPrice / 12.0;
+          final formattedPerMonthNum = perMonth >= 100
+              ? perMonth.toStringAsFixed(0)
+              : perMonth.toStringAsFixed(2);
+
+          if (yearly.price.trim().startsWith(symbol)) {
+            annualPerMonthFormatted = '$symbol$formattedPerMonthNum';
+          } else if (yearly.price.trim().endsWith(symbol)) {
+            annualPerMonthFormatted = '$formattedPerMonthNum$symbol';
+          } else {
+            annualPerMonthFormatted = '$symbol$formattedPerMonthNum';
+          }
+        }
+
+        if (monthly != null) {
+          monthlyFormatted = monthly.price;
+          if (symbol == r'$') {
+            symbol = monthly.currencySymbol.isNotEmpty
+                ? monthly.currencySymbol
+                : monthly.currencyCode;
+            code = monthly.currencyCode;
+          }
+        }
+
+        _cachedPricing = ProSubscriptionPricing(
+          annualPriceFormatted: annualFormatted,
+          annualPerMonthFormatted: annualPerMonthFormatted,
+          monthlyPriceFormatted: monthlyFormatted,
+          annualRawPrice: yearly?.rawPrice,
+          monthlyRawPrice: monthly?.rawPrice,
+          currencySymbol: symbol,
+          currencyCode: code,
+        );
+      }
+    } catch (e) {
+      debugPrint('[InAppPurchaseService] Error fetching localized pricing: $e');
+    }
+
+    return _cachedPricing;
+  }
+
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _subscription?.cancel();
@@ -290,6 +415,7 @@ class InAppPurchaseServiceImpl
 class MockInAppPurchaseServiceImpl implements InAppPurchaseService {
   bool _isPro = false;
   final ValueNotifier<bool> _isProNotifier = ValueNotifier<bool>(false);
+  ProSubscriptionPricing _pricing = const ProSubscriptionPricing();
 
   @override
   ValueListenable<bool> get isProListenable => _isProNotifier;
@@ -303,6 +429,10 @@ class MockInAppPurchaseServiceImpl implements InAppPurchaseService {
   void setProForTesting(bool val) {
     _isPro = val;
     _isProNotifier.value = val;
+  }
+
+  void setPricingForTesting(ProSubscriptionPricing pricing) {
+    _pricing = pricing;
   }
 
   @override
@@ -322,4 +452,7 @@ class MockInAppPurchaseServiceImpl implements InAppPurchaseService {
 
   @override
   Future<void> openManageSubscriptions() async {}
+
+  @override
+  Future<ProSubscriptionPricing> getSubscriptionPricing() async => _pricing;
 }

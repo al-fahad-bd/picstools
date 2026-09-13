@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/neo_colors.dart';
+import '../../../../core/services/monetization/in_app_purchase_service.dart';
 
 enum ProPlanType { annual, monthly }
 
@@ -8,12 +9,14 @@ class ProPlanSelector extends StatefulWidget {
   final bool isDark;
   final ValueChanged<ProPlanType> onPlanChanged;
   final ProPlanType initialPlan;
+  final ProSubscriptionPricing pricing;
 
   const ProPlanSelector({
     super.key,
     required this.isDark,
     required this.onPlanChanged,
     this.initialPlan = ProPlanType.annual,
+    this.pricing = const ProSubscriptionPricing(),
   });
 
   @override
@@ -151,7 +154,7 @@ class _ProPlanSelectorState extends State<ProPlanSelector>
                           ),
                           const SizedBox(height: 3),
                           Text(
-                            '7 Days Free Trial • Billed \$17.99 / yr',
+                            '7 Days Free Trial • Billed ${widget.pricing.annualPriceFormatted} / yr',
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w500,
@@ -167,7 +170,7 @@ class _ProPlanSelectorState extends State<ProPlanSelector>
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          '\$1.49',
+                          widget.pricing.annualPerMonthFormatted,
                           style: GoogleFonts.spaceGrotesk(
                             fontSize: 21,
                             fontWeight: FontWeight.w900,
@@ -302,7 +305,7 @@ class _ProPlanSelectorState extends State<ProPlanSelector>
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      '\$2.99',
+                      widget.pricing.monthlyPriceFormatted,
                       style: GoogleFonts.spaceGrotesk(
                         fontSize: 21,
                         fontWeight: FontWeight.w900,

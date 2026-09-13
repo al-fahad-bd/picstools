@@ -80,6 +80,13 @@ class _ProViewContentState extends State<_ProViewContent> {
             (state is ProLoadedState && state.isPro) ||
             (state is ProPurchaseSuccessState && state.isPro) ||
             (state is ProErrorState && state.isPro);
+        final pricing = (state is ProLoadedState)
+            ? state.pricing
+            : (state is ProPurchaseSuccessState)
+                ? state.pricing
+                : (state is ProErrorState)
+                    ? state.pricing
+                    : const ProSubscriptionPricing();
 
         return Scaffold(
           backgroundColor: isDark ? NeoColors.darkBg : NeoColors.lightBg,
@@ -203,6 +210,7 @@ class _ProViewContentState extends State<_ProViewContent> {
                         // Interactive Plan Selector (Annual 50% OFF vs Monthly)
                         ProPlanSelector(
                           isDark: isDark,
+                          pricing: pricing,
                           initialPlan: _selectedPlan,
                           onPlanChanged: (plan) {
                             setState(() => _selectedPlan = plan);
@@ -213,8 +221,8 @@ class _ProViewContentState extends State<_ProViewContent> {
                         // High-Converting Purchase Action CTA Button
                         NeoButton(
                           label: _selectedPlan == ProPlanType.annual
-                              ? 'START 7-DAY FREE TRIAL • \$17.99/YR'
-                              : 'UPGRADE NOW • \$2.99 / MONTH',
+                              ? 'START 7-DAY FREE TRIAL • ${pricing.annualPriceFormatted}/YR'
+                              : 'UPGRADE NOW • ${pricing.monthlyPriceFormatted} / MONTH',
                           icon: const Icon(
                             Icons.star_rounded,
                             color: Colors.black,
@@ -246,8 +254,8 @@ class _ProViewContentState extends State<_ProViewContent> {
                         Center(
                           child: Text(
                             _selectedPlan == ProPlanType.annual
-                                ? '✨ 7 days free, then \$17.99/year (\$1.49/mo). Cancel anytime.'
-                                : '⚡ Renews monthly at \$2.99. Cancel anytime in 1 tap.',
+                                ? '✨ 7 days free, then ${pricing.annualPriceFormatted}/year (${pricing.annualPerMonthFormatted}/mo). Cancel anytime.'
+                                : '⚡ Renews monthly at ${pricing.monthlyPriceFormatted}. Cancel anytime in 1 tap.',
                             textAlign: TextAlign.center,
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 11,
