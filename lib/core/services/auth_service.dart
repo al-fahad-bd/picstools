@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -34,12 +35,25 @@ abstract class AuthService {
 
 class FirebaseAuthServiceImpl implements AuthService {
   final FirebaseAuth _auth;
+  final FirebaseFirestore? firestore;
   int? _cachedAge;
   String? _cachedName;
   bool _googleSignInInitialized = false;
 
-  FirebaseAuthServiceImpl({FirebaseAuth? auth})
-      : _auth = auth ?? FirebaseAuth.instance;
+  FirebaseAuthServiceImpl({
+    FirebaseAuth? auth,
+    this.firestore,
+  })  : _auth = auth ?? FirebaseAuth.instance;
+
+  FirebaseFirestore? get _db {
+    if (firestore != null) return firestore;
+    try {
+      return FirebaseFirestore.instance;
+    } catch (e) {
+      debugPrint('⚠️ [PicsTools Auth] FirebaseFirestore not available: $e');
+      return null;
+    }
+  }
 
   Future<void> _ensureGoogleSignInInitialized() async {
     if (!_googleSignInInitialized) {
@@ -52,6 +66,62 @@ class FirebaseAuthServiceImpl implements AuthService {
     }
   }
 
+  Future<void> _saveUserProfileToFirestore(
+    User user, {
+    String? displayName,
+    int? age,
+  }) async {
+    try {
+      final db = _db;
+      if (db == null) return;
+
+      final data = <String, dynamic>{
+        'uid': user.uid,
+        'email': ?user.email,
+        if (displayName != null && displayName.trim().isNotEmpty)
+          'displayName': displayName.trim(),
+        'age': ?age,
+        'updatedAt': FieldValue.serverTimestamp(),
+      };
+
+      await db
+          .collection('users')
+          .doc(user.uid)
+          .set(data, SetOptions(merge: true));
+
+      debugPrint(
+        '💾 [PicsTools Auth] Saved profile to Firestore: /users/${user.uid} (name: $displayName, age: $age)',
+      );
+    } catch (e) {
+      debugPrint('⚠️ [PicsTools Auth] Could not save profile to Firestore: $e');
+    }
+  }
+
+  Future<void> _loadUserProfileFromFirestore(String uid) async {
+    try {
+      final db = _db;
+      if (db == null) return;
+
+      final doc = await db.collection('users').doc(uid).get();
+      if (doc.exists) {
+        final data = doc.data();
+        if (data != null) {
+          if (data['age'] != null) {
+            _cachedAge = (data['age'] as num?)?.toInt();
+          }
+          if (data['displayName'] != null) {
+            _cachedName ??= data['displayName'] as String?;
+          }
+          debugPrint(
+            '📖 [PicsTools Auth] Loaded profile from Firestore: name=$_cachedName, age=$_cachedAge',
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('⚠️ [PicsTools Auth] Could not load profile from Firestore: $e');
+    }
+  }
+
   @override
   Future<void> initialize() async {
     await _ensureGoogleSignInInitialized();
@@ -60,6 +130,9 @@ class FirebaseAuthServiceImpl implements AuthService {
       debugPrint(
         '🔑 [PicsTools Auth] User session active | UID: ${user.uid} (isAnonymous: ${user.isAnonymous}, Email: ${user.email}, Name: ${user.displayName})',
       );
+      if (!user.isAnonymous) {
+        await _loadUserProfileFromFirestore(user.uid);
+      }
     } else {
       debugPrint('🔑 [PicsTools Auth] No active user session on startup.');
     }
@@ -103,7 +176,11 @@ class FirebaseAuthServiceImpl implements AuthService {
         email: email.trim(),
         password: password,
       );
-      return result.user != null;
+      final user = result.user;
+      if (user != null) {
+        await _loadUserProfileFromFirestore(user.uid);
+      }
+      return user != null;
     } on FirebaseAuthException catch (e) {
       debugPrint('❌ [PicsTools Auth] Email sign-in failed: ${e.code} - ${e.message}');
       rethrow;
@@ -141,6 +218,11 @@ class FirebaseAuthServiceImpl implements AuthService {
           }
           _cachedName = displayName;
           _cachedAge = age;
+          await _saveUserProfileToFirestore(
+            user,
+            displayName: displayName,
+            age: age,
+          );
         }
         return user != null;
       }
@@ -148,7 +230,7 @@ class FirebaseAuthServiceImpl implements AuthService {
       debugPrint('❌ [PicsTools Auth] Sign up failed: ${e.code} - ${e.message}');
       rethrow;
     } catch (e) {
-      debugPrint('❌ [PicsTools Auth] Unexpected sign up error: $e');
+      debugPrint('❌ [PicsTools Auth] Unexpected sign-up error: $e');
       rethrow;
     }
   }
@@ -186,6 +268,11 @@ class FirebaseAuthServiceImpl implements AuthService {
         }
         _cachedName = displayName;
         _cachedAge = age;
+        await _saveUserProfileToFirestore(
+          user,
+          displayName: displayName,
+          age: age,
+        );
       }
       return user != null;
     } on FirebaseAuthException catch (e) {
@@ -232,6 +319,12 @@ class FirebaseAuthServiceImpl implements AuthService {
 
       if (user != null) {
         _cachedName = user.displayName;
+        await _loadUserProfileFromFirestore(user.uid);
+        await _saveUserProfileToFirestore(
+          user,
+          displayName: user.displayName,
+          age: _cachedAge,
+        );
         debugPrint('🎉 [PicsTools Auth] Google Sign-In SUCCESS! | UID: ${user.uid} | Email: ${user.email}');
         return true;
       }

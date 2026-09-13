@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/neo_colors.dart';
+import '../../../../core/constants/neo_styles.dart';
 import '../../../../core/widgets/neo_button.dart';
 import '../../../../core/widgets/neo_toast.dart';
 import '../../../../core/widgets/google_logo.dart';
@@ -35,6 +36,7 @@ class _AuthDialogState extends State<AuthDialog> {
   late bool _isSignUp;
   bool _isForgotPassword = false;
   bool _obscurePassword = true;
+  String? _errorMessage;
 
   final _nameController = TextEditingController();
   final _ageController = TextEditingController();
@@ -46,10 +48,26 @@ class _AuthDialogState extends State<AuthDialog> {
   void initState() {
     super.initState();
     _isSignUp = widget.initialIsSignUp;
+    _nameController.addListener(_clearError);
+    _ageController.addListener(_clearError);
+    _emailController.addListener(_clearError);
+    _passwordController.addListener(_clearError);
+  }
+
+  void _clearError() {
+    if (_errorMessage != null) {
+      setState(() {
+        _errorMessage = null;
+      });
+    }
   }
 
   @override
   void dispose() {
+    _nameController.removeListener(_clearError);
+    _ageController.removeListener(_clearError);
+    _emailController.removeListener(_clearError);
+    _passwordController.removeListener(_clearError);
     _nameController.dispose();
     _ageController.dispose();
     _emailController.dispose();
@@ -58,6 +76,10 @@ class _AuthDialogState extends State<AuthDialog> {
   }
 
   void _submit() {
+    setState(() {
+      _errorMessage = null;
+    });
+
     if (!_formKey.currentState!.validate()) return;
 
     final email = _emailController.text.trim();
@@ -96,25 +118,25 @@ class _AuthDialogState extends State<AuthDialog> {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthSuccessMessageState) {
-          NeoToast.show(
+          NeoToast.showSuccess(
             context,
             state.message,
-            color: NeoColors.green,
-            icon: Icons.check_circle_rounded,
           );
           if (!_isForgotPassword || !state.isAnonymous) {
             Navigator.of(context).pop();
           } else {
             setState(() {
               _isForgotPassword = false;
+              _errorMessage = null;
             });
           }
         } else if (state is AuthErrorState) {
-          NeoToast.show(
+          setState(() {
+            _errorMessage = state.errorMessage;
+          });
+          NeoToast.showError(
             context,
             state.errorMessage,
-            color: NeoColors.pink,
-            icon: Icons.error_outline_rounded,
           );
         }
       },
@@ -284,7 +306,10 @@ class _AuthDialogState extends State<AuthDialog> {
                           title: 'Sign In',
                           isSelected: !_isSignUp,
                           isDark: isDark,
-                          onTap: () => setState(() => _isSignUp = false),
+                          onTap: () => setState(() {
+                            _isSignUp = false;
+                            _errorMessage = null;
+                          }),
                         ),
                       ),
                       Expanded(
@@ -292,7 +317,10 @@ class _AuthDialogState extends State<AuthDialog> {
                           title: 'Create Account',
                           isSelected: _isSignUp,
                           isDark: isDark,
-                          onTap: () => setState(() => _isSignUp = true),
+                          onTap: () => setState(() {
+                            _isSignUp = true;
+                            _errorMessage = null;
+                          }),
                         ),
                       ),
                     ],
@@ -310,6 +338,12 @@ class _AuthDialogState extends State<AuthDialog> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Inline Error Banner if any
+                        if (_errorMessage != null) ...[
+                          _buildErrorBanner(isDark),
+                          const SizedBox(height: 14),
+                        ],
+
                         // If Sign Up: Full Name and Age fields
                         if (_isSignUp && !_isForgotPassword) ...[
                           Text(
@@ -447,7 +481,10 @@ class _AuthDialogState extends State<AuthDialog> {
                             Align(
                               alignment: Alignment.centerRight,
                               child: InkWell(
-                                onTap: () => setState(() => _isForgotPassword = true),
+                                onTap: () => setState(() {
+                                  _isForgotPassword = true;
+                                  _errorMessage = null;
+                                }),
                                 child: Text(
                                   'Forgot Password?',
                                   style: GoogleFonts.inter(
@@ -491,7 +528,10 @@ class _AuthDialogState extends State<AuthDialog> {
                           const SizedBox(height: 14),
                           Center(
                             child: TextButton.icon(
-                              onPressed: () => setState(() => _isForgotPassword = false),
+                              onPressed: () => setState(() {
+                                _isForgotPassword = false;
+                                _errorMessage = null;
+                              }),
                               icon: const Icon(Icons.arrow_back_rounded, size: 16),
                               label: Text(
                                 'Back to Sign In',
@@ -618,6 +658,78 @@ class _AuthDialogState extends State<AuthDialog> {
           color: NeoColors.pink,
           width: 2.5,
         ),
+      ),
+    );
+  }
+
+  Widget _buildErrorBanner(bool isDark) {
+    if (_errorMessage == null) return const SizedBox.shrink();
+
+    final isAlreadyRegistered = _errorMessage!.toLowerCase().contains('already exists') ||
+        _errorMessage!.toLowerCase().contains('already in use') ||
+        _errorMessage!.toLowerCase().contains('sign in instead');
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: NeoStyles.neoDecoration(
+        backgroundColor: isDark ? const Color(0xFF3B1219) : const Color(0xFFFEE2E2),
+        borderColor: NeoColors.pink,
+        radius: 12,
+        shadow: 2,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(top: 2),
+                child: Icon(
+                  Icons.error_outline_rounded,
+                  color: NeoColors.pink,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  _errorMessage!,
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? const Color(0xFFFECACA) : const Color(0xFF991B1B),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 6),
+              GestureDetector(
+                onTap: () => setState(() => _errorMessage = null),
+                child: Icon(
+                  Icons.close_rounded,
+                  size: 18,
+                  color: isDark ? Colors.white60 : Colors.black54,
+                ),
+              ),
+            ],
+          ),
+          if (isAlreadyRegistered && _isSignUp) ...[
+            const SizedBox(height: 10),
+            NeoButton(
+              label: 'SWITCH TO SIGN IN',
+              backgroundColor: NeoColors.cyan,
+              textColor: NeoColors.textPrimaryLight,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              onPressed: () {
+                setState(() {
+                  _isSignUp = false;
+                  _errorMessage = null;
+                });
+              },
+            ),
+          ],
+        ],
       ),
     );
   }
