@@ -35,8 +35,8 @@ class ProImageHero extends StatefulWidget {
 class _ProImageHeroState extends State<ProImageHero>
     with SingleTickerProviderStateMixin {
   static const List<String> _images = [
-    'assets/images/pro_hero_male_editing.jpg',
-    'assets/images/pro_hero_female_editing.jpg',
+    'assets/images/pro_hero_male_editing.jpeg',
+    'assets/images/pro_hero_female_editing.jpeg',
   ];
 
   int _currentIndex = 0;
