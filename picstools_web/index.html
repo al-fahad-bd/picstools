@@ -504,169 +504,758 @@
         <button class="web-cat-btn" data-category="UTILITIES">UTILITIES</button>
       </div>
 
-      <!-- 8 Tools Grid -->
-      <div class="tools-grid">
+      <!-- Interactive Neo-Brutalist 8 Tools Studio Workbench -->
+      <div class="tool-studio-hub reveal reveal-fade-up stagger-2">
 
-        <!-- Tool 1: Compress Image -->
-        <div class="tool-card neo-card reveal reveal-scale stagger-1" data-category="POPULAR">
-          <div class="tool-top-row">
-            <div class="tool-icon-box bg-yellow"><img src="assets/icons/tool_compress.svg" class="tool-icon-img"
-                alt="Compress Image" width="26" height="26"></div>
-            <span class="tool-badge-pill" style="background: var(--neo-yellow); color: #0F172A;">POPULAR</span>
+        <!-- Studio Left Column: Tactile Tool Navigator Dock -->
+        <aside class="studio-sidebar neo-card">
+          <div class="studio-sidebar-header">
+            <div class="studio-counter-pill">
+              <span class="pulse-dot"></span>
+              <span id="studio-active-num">1</span> of 8 ENGINES
+            </div>
+            <button id="studio-tour-btn" class="studio-tour-toggle" title="Toggle Auto-Tour through engines">
+              <span class="tour-icon">⚡</span> <span class="tour-label">Auto Tour</span>
+            </button>
           </div>
-          <h3 class="tool-name">Compress Image</h3>
-          <div class="tool-subtitle-bold">Shrink file size up to 90%</div>
-          <p class="tool-desc">
-            Reduce heavy camera photos down to custom target sizes (KB or MB) with perceptual lossless optimization.
-            Perfect for web uploads and saving storage.
-          </p>
-          <div class="tool-feature-list">
-            <span><strong class="check">✓</strong> Target size constraint clamping</span>
-            <span><strong class="check">✓</strong> Visual quality preservation</span>
-            <span><strong class="check">✓</strong> Fast batch compression</span>
+
+          <div class="studio-tool-tabs" id="studio-tool-tabs" role="tablist" aria-label="8 Image Tools Navigation">
+
+            <!-- Tab 1: Compress Image -->
+            <button class="studio-tool-tab active" data-tool="compress" data-category="POPULAR" role="tab" aria-selected="true">
+              <div class="tab-icon-wrap bg-yellow">
+                <img src="assets/icons/tool_compress.svg" alt="Compress Image Icon" width="22" height="22">
+              </div>
+              <div class="tab-meta">
+                <div class="tab-title-row">
+                  <span class="tab-title">Compress Image</span>
+                  <span class="tab-badge" style="background: var(--neo-yellow); color: #0F172A;">POPULAR</span>
+                </div>
+                <span class="tab-tagline">Shrink file size up to 90%</span>
+              </div>
+            </button>
+
+            <!-- Tab 2: Image to PDF -->
+            <button class="studio-tool-tab" data-tool="pdf" data-category="POPULAR" role="tab" aria-selected="false">
+              <div class="tab-icon-wrap bg-purple">
+                <img src="assets/icons/tool_pdf.svg" alt="Image to PDF Icon" width="22" height="22">
+              </div>
+              <div class="tab-meta">
+                <div class="tab-title-row">
+                  <span class="tab-title">Image to PDF</span>
+                  <span class="tab-badge" style="background: var(--neo-purple); color: white;">POPULAR</span>
+                </div>
+                <span class="tab-tagline">Multi-photo document merge</span>
+              </div>
+            </button>
+
+            <!-- Tab 3: Resize Image -->
+            <button class="studio-tool-tab" data-tool="resize" data-category="EDIT" role="tab" aria-selected="false">
+              <div class="tab-icon-wrap bg-cyan">
+                <img src="assets/icons/tool_resize.svg" alt="Resize Image Icon" width="22" height="22">
+              </div>
+              <div class="tab-meta">
+                <div class="tab-title-row">
+                  <span class="tab-title">Resize Image</span>
+                  <span class="tab-badge" style="background: var(--neo-cyan); color: #0F172A;">ESSENTIAL</span>
+                </div>
+                <span class="tab-tagline">Pixel & ratio dimensioning</span>
+              </div>
+            </button>
+
+            <!-- Tab 4: Crop & Rotate -->
+            <button class="studio-tool-tab" data-tool="crop" data-category="EDIT" role="tab" aria-selected="false">
+              <div class="tab-icon-wrap bg-pink">
+                <img src="assets/icons/tool_crop.svg" alt="Crop & Rotate Icon" width="22" height="22">
+              </div>
+              <div class="tab-meta">
+                <div class="tab-title-row">
+                  <span class="tab-title">Crop & Rotate</span>
+                  <span class="tab-badge" style="background: var(--neo-pink); color: white;">FAST</span>
+                </div>
+                <span class="tab-tagline">1:1, 9:16, 16:9 & freehand</span>
+              </div>
+            </button>
+
+            <!-- Tab 5: Format Convert -->
+            <button class="studio-tool-tab" data-tool="convert" data-category="CONVERT" role="tab" aria-selected="false">
+              <div class="tab-icon-wrap bg-green">
+                <img src="assets/icons/tool_convert.svg" alt="Format Convert Icon" width="22" height="22">
+              </div>
+              <div class="tab-meta">
+                <div class="tab-title-row">
+                  <span class="tab-title">Format Convert</span>
+                  <span class="tab-badge" style="background: var(--neo-green); color: white;">BATCH</span>
+                </div>
+                <span class="tab-tagline">HEIC, WebP, PNG & JPG</span>
+              </div>
+            </button>
+
+            <!-- Tab 6: Passport Photo -->
+            <button class="studio-tool-tab" data-tool="passport" data-category="UTILITIES" role="tab" aria-selected="false">
+              <div class="tab-icon-wrap bg-orange">
+                <img src="assets/icons/tool_passport.svg" alt="Passport Photo Icon" width="22" height="22">
+              </div>
+              <div class="tab-meta">
+                <div class="tab-title-row">
+                  <span class="tab-title">Passport Photo</span>
+                  <span class="tab-badge" style="background: var(--neo-orange); color: white;">SMART</span>
+                </div>
+                <span class="tab-tagline">Biometric ID standard sizes</span>
+              </div>
+            </button>
+
+            <!-- Tab 7: Digital Signature -->
+            <button class="studio-tool-tab" data-tool="signature" data-category="UTILITIES" role="tab" aria-selected="false">
+              <div class="tab-icon-wrap bg-blue">
+                <img src="assets/icons/tool_signature.svg" alt="Digital Signature Icon" width="22" height="22">
+              </div>
+              <div class="tab-meta">
+                <div class="tab-title-row">
+                  <span class="tab-title">Digital Signature</span>
+                  <span class="tab-badge" style="background: var(--neo-blue); color: white;">VECTOR</span>
+                </div>
+                <span class="tab-tagline">Draw & export transparent PNG</span>
+              </div>
+            </button>
+
+            <!-- Tab 8: Remove Background -->
+            <button class="studio-tool-tab" data-tool="cutout" data-category="EDIT POPULAR" role="tab" aria-selected="false">
+              <div class="tab-icon-wrap bg-purple">
+                <img src="assets/icons/tool_cutout.svg" alt="Remove Background Icon" width="22" height="22">
+              </div>
+              <div class="tab-meta">
+                <div class="tab-title-row">
+                  <span class="tab-title">Remove Background</span>
+                  <span class="tab-badge" style="background: var(--neo-purple); color: white;">AI OFFLINE</span>
+                </div>
+                <span class="tab-tagline">100% on-device neural cutout</span>
+              </div>
+            </button>
+
+          </div>
+        </aside>
+
+        <!-- Studio Right Column: Active Interactive Tool Workbench Stage -->
+        <main class="studio-stage neo-card" id="studio-stage-container">
+
+          <!-- Stage 1: Compress Image -->
+          <div class="stage-panel active" id="stage-compress" data-tool="compress">
+            <div class="stage-grid">
+              <div class="stage-info">
+                <div class="stage-header-row">
+                  <div class="tool-icon-box bg-yellow">
+                    <img src="assets/icons/tool_compress.svg" alt="Compress" class="tool-icon-img" width="28" height="28">
+                  </div>
+                  <div>
+                    <span class="tool-badge-pill" style="background: var(--neo-yellow); color: #0F172A;">POPULAR</span>
+                    <h3 class="stage-title">Compress Image</h3>
+                  </div>
+                </div>
+                <div class="stage-subtitle">Shrink file size up to 90% without quality loss</div>
+                <p class="stage-desc">
+                  Reduce heavy camera photos down to custom target sizes (KB or MB) with perceptual lossless optimization.
+                  Perfect for web uploads, email limits, and reclaiming phone storage instantly.
+                </p>
+                <div class="stage-feature-list">
+                  <div class="feature-item"><span class="check">✓</span> Target size constraint clamping (e.g. max 500 KB)</div>
+                  <div class="feature-item"><span class="check">✓</span> Perceptual lossless visual quality preservation</div>
+                  <div class="feature-item"><span class="check">✓</span> High-speed multi-photo batch compression</div>
+                </div>
+                <div class="stage-actions">
+                  <a href="#download" class="btn-primary-glow">Get Free App</a>
+                  <a href="#workflows" class="btn-secondary-explore">View Creator Workflow →</a>
+                </div>
+              </div>
+
+              <!-- Interactive Simulator: Compress -->
+              <div class="stage-simulator simulator-compress">
+                <div class="simulator-card">
+                  <div class="sim-header">
+                    <span class="sim-title">⚡ Live Compression Simulator</span>
+                    <span class="sim-pill" id="sim-comp-ratio">-75% SHRUNK</span>
+                  </div>
+                  <div class="sim-preview-box">
+                    <img src="assets/creator_workflow_model.jpg" alt="Compression Sample" class="sim-img-thumb" id="comp-preview-img">
+                    <div class="sim-overlay-badge" id="comp-mode-badge">Lossless Mode</div>
+                  </div>
+                  <div class="sim-control-group">
+                    <div class="sim-label-row">
+                      <span>Compression Target:</span>
+                      <strong id="sim-comp-slider-val">75%</strong>
+                    </div>
+                    <input type="range" id="sim-comp-slider" class="neo-range-slider" min="10" max="95" value="75" step="5">
+                    <div class="slider-scale-labels">
+                      <span>10% (Light)</span>
+                      <span>50% (Standard)</span>
+                      <span>95% (Maximum)</span>
+                    </div>
+                  </div>
+                  <div class="sim-metrics-grid">
+                    <div class="sim-metric-box">
+                      <span class="metric-label">Original RAW</span>
+                      <strong class="metric-val">14.2 MB</strong>
+                    </div>
+                    <div class="sim-metric-box highlight">
+                      <span class="metric-label">Optimized Output</span>
+                      <strong class="metric-val" id="sim-comp-output">3.5 MB</strong>
+                    </div>
+                  </div>
+                  <button class="sim-action-btn" id="sim-comp-action">
+                    <span>⚡ Simulate Instant Save</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 2: Image to PDF -->
+          <div class="stage-panel" id="stage-pdf" data-tool="pdf">
+            <div class="stage-grid">
+              <div class="stage-info">
+                <div class="stage-header-row">
+                  <div class="tool-icon-box bg-purple">
+                    <img src="assets/icons/tool_pdf.svg" alt="PDF" class="tool-icon-img" width="28" height="28">
+                  </div>
+                  <div>
+                    <span class="tool-badge-pill" style="background: var(--neo-purple); color: white;">POPULAR</span>
+                    <h3 class="stage-title">Image to PDF</h3>
+                  </div>
+                </div>
+                <div class="stage-subtitle">Merge multiple photos into one clean PDF document</div>
+                <p class="stage-desc">
+                  Assemble receipts, whiteboard notes, signed forms, and multi-page documents into a single, professional PDF file.
+                  Choose standard page margins, customize orientation, and share anywhere.
+                </p>
+                <div class="stage-feature-list">
+                  <div class="feature-item"><span class="check">✓</span> Drag-and-drop page reordering & rotation</div>
+                  <div class="feature-item"><span class="check">✓</span> Standard A4, US Letter & Fit-to-Image page presets</div>
+                  <div class="feature-item"><span class="check">✓</span> Lightweight email-ready compression embedded</div>
+                </div>
+                <div class="stage-actions">
+                  <a href="#download" class="btn-primary-glow">Get Free App</a>
+                  <a href="#workflows" class="btn-secondary-explore">View PDF Workflow →</a>
+                </div>
+              </div>
+
+              <!-- Interactive Simulator: PDF -->
+              <div class="stage-simulator simulator-pdf">
+                <div class="simulator-card">
+                  <div class="sim-header">
+                    <span class="sim-title">📄 Document Binder Preview</span>
+                    <span class="sim-pill">3 PAGES BUNDLED</span>
+                  </div>
+                  <div class="sim-pdf-stack" id="sim-pdf-stack">
+                    <div class="pdf-page-card" data-page="1">
+                      <span class="pdf-page-num">P.1</span>
+                      <div class="pdf-thumb-wrap">
+                        <img src="assets/receipts_pdf_workflow.jpg" alt="Receipt">
+                      </div>
+                      <span class="pdf-page-name">Receipt_2026.jpg</span>
+                    </div>
+                    <div class="pdf-page-card" data-page="2">
+                      <span class="pdf-page-num">P.2</span>
+                      <div class="pdf-thumb-wrap">
+                        <img src="assets/esign_contract_model.jpg" alt="Contract">
+                      </div>
+                      <span class="pdf-page-name">Agreement.png</span>
+                    </div>
+                    <div class="pdf-page-card" data-page="3">
+                      <span class="pdf-page-num">P.3</span>
+                      <div class="pdf-thumb-wrap">
+                        <img src="assets/creator_workflow_model.jpg" alt="Photo ID">
+                      </div>
+                      <span class="pdf-page-name">Attachment.jpg</span>
+                    </div>
+                  </div>
+                  <div class="sim-control-group">
+                    <div class="sim-label-row">
+                      <span>Page Layout Preset:</span>
+                    </div>
+                    <div class="sim-pill-group">
+                      <button class="sim-pill-btn active" data-format="a4">A4 Standard</button>
+                      <button class="sim-pill-btn" data-format="letter">US Letter</button>
+                      <button class="sim-pill-btn" data-format="fit">Fit to Image</button>
+                    </div>
+                  </div>
+                  <div class="sim-metrics-grid">
+                    <div class="sim-metric-box">
+                      <span class="metric-label">Input Size (3 items)</span>
+                      <strong class="metric-val">9.8 MB</strong>
+                    </div>
+                    <div class="sim-metric-box highlight">
+                      <span class="metric-label">Generated PDF</span>
+                      <strong class="metric-val">412 KB</strong>
+                    </div>
+                  </div>
+                  <button class="sim-action-btn" id="sim-pdf-action">
+                    <span>📄 Export Single PDF Document</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 3: Resize Image -->
+          <div class="stage-panel" id="stage-resize" data-tool="resize">
+            <div class="stage-grid">
+              <div class="stage-info">
+                <div class="stage-header-row">
+                  <div class="tool-icon-box bg-cyan">
+                    <img src="assets/icons/tool_resize.svg" alt="Resize" class="tool-icon-img" width="28" height="28">
+                  </div>
+                  <div>
+                    <span class="tool-badge-pill" style="background: var(--neo-cyan); color: #0F172A;">ESSENTIAL</span>
+                    <h3 class="stage-title">Resize Image</h3>
+                  </div>
+                </div>
+                <div class="stage-subtitle">Pixel-level dimensions & custom percentage scaling</div>
+                <p class="stage-desc">
+                  Scale image width and height with mathematical precision or quick percentage shortcuts.
+                  Lock aspect ratio to eliminate distortion, and resample using high-fidelity bicubic interpolation.
+                </p>
+                <div class="stage-feature-list">
+                  <div class="feature-item"><span class="check">✓</span> Pixel exact mode & percentage scaling (25%, 50%, 75%)</div>
+                  <div class="feature-item"><span class="check">✓</span> Aspect ratio lock safeguard to avoid stretching</div>
+                  <div class="feature-item"><span class="check">✓</span> High-fidelity bicubic resampling engine</div>
+                </div>
+                <div class="stage-actions">
+                  <a href="#download" class="btn-primary-glow">Get Free App</a>
+                  <a href="#workflows" class="btn-secondary-explore">Explore Workflows →</a>
+                </div>
+              </div>
+
+              <!-- Interactive Simulator: Resize -->
+              <div class="stage-simulator simulator-resize">
+                <div class="simulator-card">
+                  <div class="sim-header">
+                    <span class="sim-title">📐 Scale & Dimension Console</span>
+                    <span class="sim-pill" id="sim-resize-ratio-badge">RATIO LOCKED</span>
+                  </div>
+                  <div class="sim-resize-canvas-wrap">
+                    <div class="sim-resize-box" id="sim-resize-box" style="transform: scale(0.65);">
+                      <img src="assets/hero_creator_model.jpg" alt="Resize Preview" class="sim-resize-img">
+                      <div class="sim-dimension-label" id="sim-dimension-label">2016 × 1512 px</div>
+                    </div>
+                  </div>
+                  <div class="sim-control-group">
+                    <div class="sim-label-row">
+                      <span>Scaling Presets:</span>
+                      <strong id="sim-resize-pct">50% Scale</strong>
+                    </div>
+                    <div class="sim-pill-group" id="sim-resize-pills">
+                      <button class="sim-pill-btn" data-scale="0.25" data-w="1008" data-h="756">25%</button>
+                      <button class="sim-pill-btn active" data-scale="0.5" data-w="2016" data-h="1512">50%</button>
+                      <button class="sim-pill-btn" data-scale="0.75" data-w="3024" data-h="2268">75%</button>
+                      <button class="sim-pill-btn" data-scale="1.0" data-w="4032" data-h="3024">100% (4K)</button>
+                    </div>
+                  </div>
+                  <div class="sim-metrics-grid">
+                    <div class="sim-metric-box">
+                      <span class="metric-label">Source Resolution</span>
+                      <strong class="metric-val">4032 × 3024 px</strong>
+                    </div>
+                    <div class="sim-metric-box highlight">
+                      <span class="metric-label">Output Target</span>
+                      <strong class="metric-val" id="sim-resize-target-val">2016 × 1512 px</strong>
+                    </div>
+                  </div>
+                  <button class="sim-action-btn" id="sim-resize-action">
+                    <span>📐 Apply Precise Dimensions</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 4: Crop & Rotate -->
+          <div class="stage-panel" id="stage-crop" data-tool="crop">
+            <div class="stage-grid">
+              <div class="stage-info">
+                <div class="stage-header-row">
+                  <div class="tool-icon-box bg-pink">
+                    <img src="assets/icons/tool_crop.svg" alt="Crop" class="tool-icon-img" width="28" height="28">
+                  </div>
+                  <div>
+                    <span class="tool-badge-pill" style="background: var(--neo-pink); color: white;">FAST</span>
+                    <h3 class="stage-title">Crop & Rotate</h3>
+                  </div>
+                </div>
+                <div class="stage-subtitle">Social aspect ratio presets & 90° rotational alignment</div>
+                <p class="stage-desc">
+                  Frame photos for any digital platform with instant presets: 1:1 Instagram Square, 9:16 TikTok/Reels Stories,
+                  16:9 YouTube, or freehand custom framing. Rotate by 90° increments and mirror horizontally.
+                </p>
+                <div class="stage-feature-list">
+                  <div class="feature-item"><span class="check">✓</span> 1:1, 4:5, 9:16 & 16:9 social crop presets</div>
+                  <div class="feature-item"><span class="check">✓</span> 90° clockwise & counter-clockwise rotation</div>
+                  <div class="feature-item"><span class="check">✓</span> Instant non-destructive live interactive canvas</div>
+                </div>
+                <div class="stage-actions">
+                  <a href="#download" class="btn-primary-glow">Get Free App</a>
+                  <a href="#workflows" class="btn-secondary-explore">Explore Workflows →</a>
+                </div>
+              </div>
+
+              <!-- Interactive Simulator: Crop -->
+              <div class="stage-simulator simulator-crop">
+                <div class="simulator-card">
+                  <div class="sim-header">
+                    <span class="sim-title">✂️ Frame & Rotation Studio</span>
+                    <span class="sim-pill" id="sim-crop-aspect-badge">1:1 SQUARE</span>
+                  </div>
+                  <div class="sim-crop-viewport" id="sim-crop-viewport">
+                    <div class="sim-crop-frame ratio-1-1" id="sim-crop-frame">
+                      <img src="assets/hero_creator_model.jpg" alt="Crop Subject" id="sim-crop-img" class="sim-crop-img">
+                      <div class="sim-crop-grid-lines">
+                        <span></span><span></span><span></span><span></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="sim-control-group">
+                    <div class="sim-label-row">
+                      <span>Aspect Ratio Presets:</span>
+                    </div>
+                    <div class="sim-pill-group" id="sim-crop-pills">
+                      <button class="sim-pill-btn active" data-ratio="1-1">1:1 Square</button>
+                      <button class="sim-pill-btn" data-ratio="9-16">9:16 Story</button>
+                      <button class="sim-pill-btn" data-ratio="16-9">16:9 Cinema</button>
+                    </div>
+                  </div>
+                  <div class="sim-rotate-controls">
+                    <button class="sim-rotate-btn" id="sim-rotate-left">↺ Rotate -90°</button>
+                    <button class="sim-rotate-btn" id="sim-rotate-right">↻ Rotate +90°</button>
+                    <button class="sim-rotate-btn" id="sim-rotate-flip">↔ Flip Mirror</button>
+                  </div>
+                  <button class="sim-action-btn" id="sim-crop-action">
+                    <span>✂️ Export Cropped Visual</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 5: Format Convert -->
+          <div class="stage-panel" id="stage-convert" data-tool="convert">
+            <div class="stage-grid">
+              <div class="stage-info">
+                <div class="stage-header-row">
+                  <div class="tool-icon-box bg-green">
+                    <img src="assets/icons/tool_convert.svg" alt="Convert" class="tool-icon-img" width="28" height="28">
+                  </div>
+                  <div>
+                    <span class="tool-badge-pill" style="background: var(--neo-green); color: white;">BATCH</span>
+                    <h3 class="stage-title">Format Convert</h3>
+                  </div>
+                </div>
+                <div class="stage-subtitle">Zero quality loss transcoding: JPG, PNG, WebP & HEIC</div>
+                <p class="stage-desc">
+                  Quickly convert image formats without losing fidelity. Retain transparent alpha channels when
+                  converting between PNG, WebP, and Apple HEIC. Process multiple photos simultaneously without uploading.
+                </p>
+                <div class="stage-feature-list">
+                  <div class="feature-item"><span class="check">✓</span> PNG ↔ JPG ↔ WebP ↔ HEIC conversions</div>
+                  <div class="feature-item"><span class="check">✓</span> Alpha channel transparency preservation</div>
+                  <div class="feature-item"><span class="check">✓</span> Ultra-fast native device execution (sub-0.2s)</div>
+                </div>
+                <div class="stage-actions">
+                  <a href="#download" class="btn-primary-glow">Get Free App</a>
+                  <a href="#workflows" class="btn-secondary-explore">Explore Workflows →</a>
+                </div>
+              </div>
+
+              <!-- Interactive Simulator: Convert -->
+              <div class="stage-simulator simulator-convert">
+                <div class="simulator-card">
+                  <div class="sim-header">
+                    <span class="sim-title">🔄 Instant Transcoder Station</span>
+                    <span class="sim-pill">NPU ACCELERATED</span>
+                  </div>
+                  <div class="sim-transcode-flow">
+                    <div class="format-card source">
+                      <span class="format-tag">SOURCE</span>
+                      <strong class="format-ext">HEIC</strong>
+                      <span class="format-info">iPhone RAW (4.8 MB)</span>
+                    </div>
+                    <div class="format-arrow">➔</div>
+                    <div class="format-card target">
+                      <span class="format-tag">TARGET</span>
+                      <strong class="format-ext" id="sim-target-ext">WebP</strong>
+                      <span class="format-info" id="sim-target-info">Modern Web (1.1 MB)</span>
+                    </div>
+                  </div>
+                  <div class="sim-control-group">
+                    <div class="sim-label-row">
+                      <span>Choose Target Format:</span>
+                    </div>
+                    <div class="sim-pill-group" id="sim-convert-pills">
+                      <button class="sim-pill-btn active" data-format="WebP" data-info="Modern Web (1.1 MB, -77%)">WebP</button>
+                      <button class="sim-pill-btn" data-format="PNG" data-info="Lossless Transparent (3.2 MB)">PNG</button>
+                      <button class="sim-pill-btn" data-format="JPG" data-info="Universal Standard (1.4 MB)">JPG</button>
+                      <button class="sim-pill-btn" data-format="PDF" data-info="Single Document (1.2 MB)">PDF</button>
+                    </div>
+                  </div>
+                  <div class="sim-metrics-grid">
+                    <div class="sim-metric-box">
+                      <span class="metric-label">Execution Time</span>
+                      <strong class="metric-val">0.14 sec</strong>
+                    </div>
+                    <div class="sim-metric-box highlight">
+                      <span class="metric-label">Transparency Alpha</span>
+                      <strong class="metric-val">Preserved</strong>
+                    </div>
+                  </div>
+                  <button class="sim-action-btn" id="sim-convert-action">
+                    <span>🔄 Convert Instantly On-Device</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 6: Passport Photo -->
+          <div class="stage-panel" id="stage-passport" data-tool="passport">
+            <div class="stage-grid">
+              <div class="stage-info">
+                <div class="stage-header-row">
+                  <div class="tool-icon-box bg-orange">
+                    <img src="assets/icons/tool_passport.svg" alt="Passport" class="tool-icon-img" width="28" height="28">
+                  </div>
+                  <div>
+                    <span class="tool-badge-pill" style="background: var(--neo-orange); color: white;">SMART</span>
+                    <h3 class="stage-title">Passport Photo</h3>
+                  </div>
+                </div>
+                <div class="stage-subtitle">Official biometric standard dimensions for visas & IDs</div>
+                <p class="stage-desc">
+                  Generate compliant biometric photos for passports, visas, and official government IDs.
+                  Features built-in biometric alignment guidelines and print-ready multi-cut sheets.
+                </p>
+                <div class="stage-feature-list">
+                  <div class="feature-item"><span class="check">✓</span> US (2×2 inch), Schengen/EU (35×45 mm) & global standards</div>
+                  <div class="feature-item"><span class="check">✓</span> Biometric face, eye & chin alignment guide lines</div>
+                  <div class="feature-item"><span class="check">✓</span> 1-click printable multi-photo sheet generator</div>
+                </div>
+                <div class="stage-actions">
+                  <a href="#download" class="btn-primary-glow">Get Free App</a>
+                  <a href="#workflows" class="btn-secondary-explore">Explore Workflows →</a>
+                </div>
+              </div>
+
+              <!-- Interactive Simulator: Passport -->
+              <div class="stage-simulator simulator-passport">
+                <div class="simulator-card">
+                  <div class="sim-header">
+                    <span class="sim-title">🛂 Biometric ID Standard Studio</span>
+                    <span class="sim-pill" id="sim-passport-pill">US PASSPORT (2×2 IN)</span>
+                  </div>
+                  <div class="sim-passport-viewport">
+                    <div class="passport-photo-frame" id="sim-passport-frame">
+                      <img src="assets/passport_biometric_model.jpg" alt="Biometric Face" class="sim-passport-img">
+                      <div class="biometric-guides-overlay" id="sim-biometric-guides">
+                        <div class="guide-oval"></div>
+                        <div class="guide-line-eye"></div>
+                        <div class="guide-line-chin"></div>
+                        <div class="guide-label-top">CROWN</div>
+                        <div class="guide-label-bottom">CHIN</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="sim-control-group">
+                    <div class="sim-label-row">
+                      <span>Standard ID Preset:</span>
+                    </div>
+                    <div class="sim-pill-group" id="sim-passport-pills">
+                      <button class="sim-pill-btn active" data-country="US (2×2 in)" data-size="600 × 600 px">US (2×2 in)</button>
+                      <button class="sim-pill-btn" data-country="Schengen (35×45 mm)" data-size="413 × 531 px">Schengen EU</button>
+                      <button class="sim-pill-btn" data-country="UK Passport (35×45)" data-size="413 × 531 px">UK ID</button>
+                      <button class="sim-pill-btn" data-country="India Visa (2×2 in)" data-size="600 × 600 px">India Visa</button>
+                    </div>
+                  </div>
+                  <div class="sim-passport-toggles">
+                    <button class="sim-toggle-pill active" id="sim-toggle-guides">Guides: ON</button>
+                    <button class="sim-toggle-pill" id="sim-toggle-sheet">6-Photo Sheet: OFF</button>
+                  </div>
+                  <button class="sim-action-btn" id="sim-passport-action">
+                    <span>🛂 Export Compliant ID Photo</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 7: Digital Signature -->
+          <div class="stage-panel" id="stage-signature" data-tool="signature">
+            <div class="stage-grid">
+              <div class="stage-info">
+                <div class="stage-header-row">
+                  <div class="tool-icon-box bg-blue">
+                    <img src="assets/icons/tool_signature.svg" alt="Signature" class="tool-icon-img" width="28" height="28">
+                  </div>
+                  <div>
+                    <span class="tool-badge-pill" style="background: var(--neo-blue); color: white;">VECTOR</span>
+                    <h3 class="stage-title">Digital Signature</h3>
+                  </div>
+                </div>
+                <div class="stage-subtitle">Draw smooth signatures & export clean transparent PNGs</div>
+                <p class="stage-desc">
+                  Draw natural handwritten signatures directly with your finger or stylus.
+                  Select Obsidian Black, Deep Blue, or Neon White ink and export high-resolution transparent PNGs for contracts and PDFs.
+                </p>
+                <div class="stage-feature-list">
+                  <div class="feature-item"><span class="check">✓</span> Dynamic bezier stroke smoothing algorithm</div>
+                  <div class="feature-item"><span class="check">✓</span> Black, Royal Blue & White ink color options</div>
+                  <div class="feature-item"><span class="check">✓</span> Crisp transparent PNG export with 0 background artifacts</div>
+                </div>
+                <div class="stage-actions">
+                  <a href="#download" class="btn-primary-glow">Get Free App</a>
+                  <a href="#workflows" class="btn-secondary-explore">Explore Workflows →</a>
+                </div>
+              </div>
+
+              <!-- Interactive Simulator: Signature Canvas -->
+              <div class="stage-simulator simulator-signature">
+                <div class="simulator-card">
+                  <div class="sim-header">
+                    <span class="sim-title">✍️ Live Signature Drawing Pad</span>
+                    <span class="sim-pill">DRAW WITH MOUSE OR TOUCH</span>
+                  </div>
+                  <div class="sim-signature-canvas-wrap">
+                    <canvas id="live-signature-canvas" width="480" height="200"></canvas>
+                    <div class="canvas-watermark" id="canvas-watermark">Sign your signature above...</div>
+                  </div>
+                  <div class="sim-signature-toolbar">
+                    <div class="ink-color-picker">
+                      <span class="ink-label">Ink Color:</span>
+                      <button class="ink-dot active" data-color="#0F172A" style="background: #0F172A;" title="Black Ink"></button>
+                      <button class="ink-dot" data-color="#2563EB" style="background: #2563EB;" title="Blue Ink"></button>
+                      <button class="ink-dot" data-color="#06B6D4" style="background: #06B6D4;" title="Cyan Ink"></button>
+                    </div>
+                    <div class="canvas-btn-row">
+                      <button class="canvas-clear-btn" id="sig-clear-btn">Clear</button>
+                    </div>
+                  </div>
+                  <button class="sim-action-btn" id="sim-sig-action">
+                    <span>✍️ Download Transparent PNG</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 8: Remove Background -->
+          <div class="stage-panel" id="stage-cutout" data-tool="cutout">
+            <div class="stage-grid">
+              <div class="stage-info">
+                <div class="stage-header-row">
+                  <div class="tool-icon-box bg-purple">
+                    <img src="assets/icons/tool_cutout.svg" alt="Cutout" class="tool-icon-img" width="28" height="28">
+                  </div>
+                  <div>
+                    <span class="tool-badge-pill" style="background: var(--neo-purple); color: white;">AI OFFLINE</span>
+                    <h3 class="stage-title">Remove Background</h3>
+                  </div>
+                </div>
+                <div class="stage-subtitle">100% on-device neural AI background cutout</div>
+                <p class="stage-desc">
+                  Isolate people, products, and pets with sub-millimeter edge precision.
+                  Powered entirely by on-device neural networks running on your device GPU/NPU with 0 server uploads.
+                </p>
+                <div class="stage-feature-list">
+                  <div class="feature-item"><span class="check">✓</span> 100% On-device neural inference with zero cloud latency</div>
+                  <div class="feature-item"><span class="check">✓</span> Complete biometric data privacy (0 photos uploaded)</div>
+                  <div class="feature-item"><span class="check">✓</span> High-res transparent PNG export with edge feathering</div>
+                </div>
+                <div class="stage-actions">
+                  <a href="#download" class="btn-primary-glow">Get Free App</a>
+                  <a href="#cutout-studio" class="btn-secondary-explore">Open Full AI Studio →</a>
+                </div>
+              </div>
+
+              <!-- Interactive Simulator: Remove Background Slider -->
+              <div class="stage-simulator simulator-cutout">
+                <div class="simulator-card">
+                  <div class="sim-header">
+                    <span class="sim-title">✨ Before & After Split Slider</span>
+                    <span class="sim-pill">DRAG HANDLE ⇄</span>
+                  </div>
+                  <div class="sim-cutout-compare" id="sim-cutout-compare">
+                    <div class="cutout-img-after-checker">
+                      <img src="assets/ai_cutout_studio.jpg" alt="Transparent Cutout" class="cutout-subject-only">
+                    </div>
+                    <div class="cutout-img-before" id="cutout-before-clip">
+                      <img src="assets/ai_cutout_studio.jpg" alt="Original Photo">
+                    </div>
+                    <div class="cutout-slider-handle" id="cutout-slider-handle">
+                      <div class="handle-bar"></div>
+                      <div class="handle-circle">⇄</div>
+                      <div class="handle-bar"></div>
+                    </div>
+                  </div>
+                  <div class="sim-metrics-grid">
+                    <div class="sim-metric-box">
+                      <span class="metric-label">Cloud Upload Time</span>
+                      <strong class="metric-val" style="color: var(--neo-green);">0.00 Seconds</strong>
+                    </div>
+                    <div class="sim-metric-box highlight">
+                      <span class="metric-label">Neural Execution</span>
+                      <strong class="metric-val">On-Device NPU</strong>
+                    </div>
+                  </div>
+                  <button class="sim-action-btn" id="sim-cutout-action">
+                    <span>✨ Export Transparent Cutout</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Studio Stage Footer Controls (Prev/Next & Jump Dots) -->
+          <div class="stage-nav-bar">
+            <button class="stage-nav-btn" id="stage-prev-btn" aria-label="Previous engine">
+              ‹ Previous Engine
+            </button>
+            <div class="stage-dots" id="stage-dots">
+              <span class="stage-dot active" data-index="0"></span>
+              <span class="stage-dot" data-index="1"></span>
+              <span class="stage-dot" data-index="2"></span>
+              <span class="stage-dot" data-index="3"></span>
+              <span class="stage-dot" data-index="4"></span>
+              <span class="stage-dot" data-index="5"></span>
+              <span class="stage-dot" data-index="6"></span>
+              <span class="stage-dot" data-index="7"></span>
+            </div>
+            <button class="stage-nav-btn" id="stage-next-btn" aria-label="Next engine">
+              Next Engine ›
+            </button>
+          </div>
+
+        </main>
+      </div>
+
+      <!-- Studio Trust Badges Ribbon -->
+      <div class="studio-guarantee-ribbon reveal reveal-fade-up stagger-3">
+        <div class="guarantee-pill">
+          <span class="g-icon">⚡</span>
+          <div>
+            <strong>Sub-Second Local Execution</strong>
+            <span>Hardware accelerated with Apple Silicon & Snapdragon NPU</span>
           </div>
         </div>
-
-        <!-- Tool 2: Image to PDF -->
-        <div class="tool-card neo-card reveal reveal-scale stagger-2" data-category="POPULAR">
-          <div class="tool-top-row">
-            <div class="tool-icon-box bg-purple"><img src="assets/icons/tool_pdf.svg" class="tool-icon-img"
-                alt="Image to PDF" width="26" height="26"></div>
-            <span class="tool-badge-pill" style="background: var(--neo-purple); color: white;">POPULAR</span>
-          </div>
-          <h3 class="tool-name">Image to PDF</h3>
-          <div class="tool-subtitle-bold">Merge images into PDF doc</div>
-          <p class="tool-desc">
-            Assemble receipts, notes, certificates, and multi-page documents into a single, professional PDF file ready
-            to email, print, or archive.
-          </p>
-          <div class="tool-feature-list">
-            <span><strong class="check">✓</strong> Drag-and-drop page reordering</span>
-            <span><strong class="check">✓</strong> Standard margin & page presets</span>
-            <span><strong class="check">✓</strong> Lightweight email-ready PDFs</span>
+        <div class="guarantee-pill">
+          <span class="g-icon">🔒</span>
+          <div>
+            <strong>Zero Cloud Server Uploads</strong>
+            <span>Your personal photos never leave your device memory</span>
           </div>
         </div>
-
-        <!-- Tool 3: Resize Image -->
-        <div class="tool-card neo-card reveal reveal-scale stagger-3" data-category="EDIT">
-          <div class="tool-top-row">
-            <div class="tool-icon-box bg-cyan"><img src="assets/icons/tool_resize.svg" class="tool-icon-img"
-                alt="Resize Image" width="26" height="26"></div>
-            <span class="tool-badge-pill" style="background: var(--neo-cyan); color: #0F172A;">ESSENTIAL</span>
-          </div>
-          <h3 class="tool-name">Resize Image</h3>
-          <div class="tool-subtitle-bold">Exact width, height & ratio</div>
-          <p class="tool-desc">
-            Scale dimensions with pixel-level precision or custom percentages. Lock aspect ratios to prevent image
-            stretching or distortion.
-          </p>
-          <div class="tool-feature-list">
-            <span><strong class="check">✓</strong> Pixel & percentage modes</span>
-            <span><strong class="check">✓</strong> Aspect ratio locking safeguard</span>
-            <span><strong class="check">✓</strong> High-fidelity resampling</span>
+        <div class="guarantee-pill">
+          <span class="g-icon">📶</span>
+          <div>
+            <strong>100% Offline Capability</strong>
+            <span>All 8 tools function seamlessly on airplanes or without data</span>
           </div>
         </div>
-
-        <!-- Tool 4: Crop & Rotate -->
-        <div class="tool-card neo-card reveal reveal-scale stagger-4" data-category="EDIT">
-          <div class="tool-top-row">
-            <div class="tool-icon-box bg-pink"><img src="assets/icons/tool_crop.svg" class="tool-icon-img"
-                alt="Crop & Rotate" width="26" height="26"></div>
-            <span class="tool-badge-pill" style="background: var(--neo-pink); color: white;">FAST</span>
-          </div>
-          <h3 class="tool-name">Crop & Rotate</h3>
-          <div class="tool-subtitle-bold">Freehand, 1:1, 16:9 presets</div>
-          <p class="tool-desc">
-            Frame photos for any platform with one-tap presets: 1:1 Square, 9:16 Stories/Reels, 16:9 YouTube, or
-            freehand custom framing with rotation.
-          </p>
-          <div class="tool-feature-list">
-            <span><strong class="check">✓</strong> Social aspect ratio presets</span>
-            <span><strong class="check">✓</strong> 90° rotation & horizontal flips</span>
-            <span><strong class="check">✓</strong> Non-destructive live preview</span>
-          </div>
-        </div>
-
-        <!-- Tool 5: Format Convert -->
-        <div class="tool-card neo-card reveal reveal-scale stagger-5" data-category="CONVERT">
-          <div class="tool-top-row">
-            <div class="tool-icon-box bg-green"><img src="assets/icons/tool_convert.svg" class="tool-icon-img"
-                alt="Format Convert" width="26" height="26"></div>
-            <span class="tool-badge-pill" style="background: var(--neo-green); color: white;">BATCH</span>
-          </div>
-          <h3 class="tool-name">Format Convert</h3>
-          <div class="tool-subtitle-bold">JPG, PNG, WebP & HEIC</div>
-          <p class="tool-desc">
-            Quickly convert image formats without losing quality. Retain transparent alpha channels when converting
-            between PNG, WebP, JPEG, and Apple HEIC.
-          </p>
-          <div class="tool-feature-list">
-            <span><strong class="check">✓</strong> PNG ↔ JPG ↔ WebP ↔ HEIC</span>
-            <span><strong class="check">✓</strong> Alpha channel transparency retention</span>
-            <span><strong class="check">✓</strong> Fast multi-file batch execution</span>
-          </div>
-        </div>
-
-        <!-- Tool 6: Passport Photo -->
-        <div class="tool-card neo-card reveal reveal-scale stagger-6" data-category="UTILITIES">
-          <div class="tool-top-row">
-            <div class="tool-icon-box bg-orange"><img src="assets/icons/tool_passport.svg" class="tool-icon-img"
-                alt="Passport Photo" width="26" height="26"></div>
-            <span class="tool-badge-pill" style="background: var(--neo-orange); color: white;">SMART</span>
-          </div>
-          <h3 class="tool-name">Passport Photo</h3>
-          <div class="tool-subtitle-bold">Official ID standard sizes</div>
-          <p class="tool-desc">
-            Generate compliant biometric photos for passports, visas, and official government IDs with standard
-            dimensions (2x2 inch, 35x45 mm, etc.).
-          </p>
-          <div class="tool-feature-list">
-            <span><strong class="check">✓</strong> US, EU & global visa standards</span>
-            <span><strong class="check">✓</strong> Built-in alignment guides</span>
-            <span><strong class="check">✓</strong> Print-ready multi-cut sheets</span>
-          </div>
-        </div>
-
-        <!-- Tool 7: Digital Signature -->
-        <div class="tool-card neo-card reveal reveal-scale stagger-7" data-category="UTILITIES">
-          <div class="tool-top-row">
-            <div class="tool-icon-box bg-blue"><img src="assets/icons/tool_signature.svg" class="tool-icon-img"
-                alt="Digital Signature" width="26" height="26"></div>
-            <span class="tool-badge-pill" style="background: var(--neo-blue); color: white;">VECTOR</span>
-          </div>
-          <h3 class="tool-name">Digital Signature</h3>
-          <div class="tool-subtitle-bold">Draw & export PNG sign</div>
-          <p class="tool-desc">
-            Draw smooth handwritten signatures with your finger or stylus, select black, blue, or white ink, and export
-            a clean transparent PNG for PDF signing.
-          </p>
-          <div class="tool-feature-list">
-            <span><strong class="check">✓</strong> Smooth stroke smoothing</span>
-            <span><strong class="check">✓</strong> Black, Blue & White ink options</span>
-            <span><strong class="check">✓</strong> Transparent background export</span>
-          </div>
-        </div>
-
-        <!-- Tool 8: Remove Background -->
-        <div class="tool-card neo-card reveal reveal-scale stagger-8" data-category="EDIT">
-          <div class="tool-top-row">
-            <div class="tool-icon-box bg-purple"><img src="assets/icons/tool_cutout.svg" class="tool-icon-img"
-                alt="Remove Background" width="26" height="26"></div>
-            <span class="tool-badge-pill" style="background: var(--neo-purple); color: white;">AI OFFLINE</span>
-          </div>
-          <h3 class="tool-name">Remove Background</h3>
-          <div class="tool-subtitle-bold">100% on-device AI cutout</div>
-          <p class="tool-desc">
-            Isolate people, products, and objects into transparent PNGs using neural AI models running right on your
-            device hardware with 0 server upload.
-          </p>
-          <div class="tool-feature-list">
-            <span><strong class="check">✓</strong> 100% On-device neural inference</span>
-            <span><strong class="check">✓</strong> Zero cloud server transmission</span>
-            <span><strong class="check">✓</strong> Instant transparent PNG cutout</span>
-          </div>
-        </div>
-
       </div>
     </section>
 

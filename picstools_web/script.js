@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initAmbientAudio();
   initCard3DTilt();
   initClientReviewDeck();
+  initToolsStudio();
 });
 
 // 1. Theme Toggling with LocalStorage Persistence
@@ -46,14 +47,14 @@ function initTheme() {
 // 2. Real App Category Filters (ALL, POPULAR, EDIT, CONVERT, UTILITIES)
 function initCategoryFilters() {
   const filterButtons = document.querySelectorAll('.web-cat-btn');
-  const toolCards = document.querySelectorAll('.tool-card');
+  const toolTabs = document.querySelectorAll('.studio-tool-tab');
   const phoneCatChips = document.querySelectorAll('.app-cat-chip');
   const phoneToolCards = document.querySelectorAll('.app-tool-mini-card');
 
   function applyCategory(category) {
     const targetCat = category.toUpperCase();
 
-    // Update Web Buttons
+    // Update Web Category Buttons
     filterButtons.forEach((btn) => {
       if (btn.getAttribute('data-category').toUpperCase() === targetCat) {
         btn.classList.add('active');
@@ -71,15 +72,27 @@ function initCategoryFilters() {
       }
     });
 
-    // Filter Web Tool Cards
-    toolCards.forEach((card) => {
-      const cardCat = card.getAttribute('data-category').toUpperCase();
-      if (targetCat === 'ALL' || cardCat.includes(targetCat)) {
-        card.classList.remove('hidden');
+    // Filter Studio Tool Tabs
+    let firstVisibleTab = null;
+    toolTabs.forEach((tab) => {
+      const tabCat = (tab.getAttribute('data-category') || '').toUpperCase();
+      if (targetCat === 'ALL' || tabCat.includes(targetCat)) {
+        tab.classList.remove('hidden');
+        if (!firstVisibleTab) firstVisibleTab = tab;
       } else {
-        card.classList.add('hidden');
+        tab.classList.add('hidden');
       }
     });
+
+    // If the currently active tool tab was filtered out, switch to first visible
+    const activeTab = document.querySelector('.studio-tool-tab.active');
+    if (activeTab && activeTab.classList.contains('hidden') && firstVisibleTab) {
+      if (window.switchStudioTool) {
+        window.switchStudioTool(firstVisibleTab.getAttribute('data-tool'));
+      } else {
+        firstVisibleTab.click();
+      }
+    }
 
     // Filter Phone Mini Cards
     phoneToolCards.forEach((miniCard) => {
@@ -549,3 +562,619 @@ function initClientReviewDeck() {
   // Initialize Slots on Load
   updateSlots();
 }
+
+// ==========================================================================
+// 13. Interactive 8 Tools Studio Workbench & Micro-Playgrounds
+// ==========================================================================
+function initToolsStudio() {
+  const toolTabs = Array.from(document.querySelectorAll('.studio-tool-tab'));
+  const stagePanels = Array.from(document.querySelectorAll('.stage-panel'));
+  const stageDots = Array.from(document.querySelectorAll('.stage-dot'));
+  const activeCounter = document.getElementById('studio-active-num');
+  const prevBtn = document.getElementById('stage-prev-btn');
+  const nextBtn = document.getElementById('stage-next-btn');
+  const tourBtn = document.getElementById('studio-tour-btn');
+  const stageContainer = document.getElementById('studio-stage-container');
+
+  if (!toolTabs.length || !stagePanels.length) return;
+
+  let currentIndex = 0;
+  let isTouring = false;
+  let tourTimer = null;
+
+  // Switch to specific tool
+  function switchTool(target, isManual = true) {
+    let targetIndex = -1;
+
+    if (typeof target === 'number') {
+      targetIndex = target;
+    } else if (typeof target === 'string') {
+      targetIndex = toolTabs.findIndex((tab) => tab.getAttribute('data-tool') === target);
+    }
+
+    if (targetIndex < 0 || targetIndex >= toolTabs.length) return;
+
+    currentIndex = targetIndex;
+    const activeTab = toolTabs[currentIndex];
+    const toolName = activeTab.getAttribute('data-tool');
+
+    // 1. Update Tabs
+    toolTabs.forEach((tab, idx) => {
+      if (idx === currentIndex) {
+        tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
+        // Smoothly bring tab into view inside horizontal tabs bar on mobile
+        const tabsContainer = tab.closest('.studio-tool-tabs');
+        if (tabsContainer) {
+          const scrollLeft = tab.offsetLeft - tabsContainer.offsetLeft - 12;
+          tabsContainer.scrollTo({ left: Math.max(0, scrollLeft), behavior: 'smooth' });
+        }
+      } else {
+        tab.classList.remove('active');
+        tab.setAttribute('aria-selected', 'false');
+      }
+    });
+
+    // 2. Update Stage Panels
+    stagePanels.forEach((panel) => {
+      if (panel.getAttribute('data-tool') === toolName) {
+        panel.classList.add('active');
+      } else {
+        panel.classList.remove('active');
+      }
+    });
+
+    // 3. Update Dots & Counter
+    stageDots.forEach((dot, idx) => {
+      if (idx === currentIndex) {
+        dot.classList.add('active');
+      } else {
+        dot.classList.remove('active');
+      }
+    });
+
+    if (activeCounter) {
+      activeCounter.textContent = (currentIndex + 1).toString();
+    }
+
+    // Special setup for signature canvas when selected
+    if (toolName === 'signature') {
+      setupSignatureCanvas();
+    }
+  }
+
+  // Global handle for category filter to call
+  window.switchStudioTool = (toolId) => switchTool(toolId, true);
+
+  // Tab click listeners
+  toolTabs.forEach((tab, index) => {
+    tab.addEventListener('click', () => {
+      switchTool(index, true);
+      if (isTouring) stopTour();
+    });
+  });
+
+  // Dots click listeners
+  stageDots.forEach((dot, index) => {
+    dot.addEventListener('click', () => {
+      switchTool(index, true);
+      if (isTouring) stopTour();
+    });
+  });
+
+  // Next / Previous Engine Controls
+  function nextEngine() {
+    const visibleTabs = toolTabs.filter((t) => !t.classList.contains('hidden'));
+    if (!visibleTabs.length) return;
+    const currentTab = toolTabs[currentIndex];
+    let visibleIdx = visibleTabs.indexOf(currentTab);
+    visibleIdx = (visibleIdx + 1) % visibleTabs.length;
+    const nextTab = visibleTabs[visibleIdx];
+    switchTool(toolTabs.indexOf(nextTab), false);
+  }
+
+  function prevEngine() {
+    const visibleTabs = toolTabs.filter((t) => !t.classList.contains('hidden'));
+    if (!visibleTabs.length) return;
+    const currentTab = toolTabs[currentIndex];
+    let visibleIdx = visibleTabs.indexOf(currentTab);
+    visibleIdx = (visibleIdx - 1 + visibleTabs.length) % visibleTabs.length;
+    const prevTab = visibleTabs[visibleIdx];
+    switchTool(toolTabs.indexOf(prevTab), false);
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      nextEngine();
+      if (isTouring) stopTour();
+    });
+  }
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      prevEngine();
+      if (isTouring) stopTour();
+    });
+  }
+
+  // Auto Tour Controller
+  function startTour() {
+    isTouring = true;
+    if (tourBtn) tourBtn.classList.add('active');
+    clearInterval(tourTimer);
+    tourTimer = setInterval(() => {
+      nextEngine();
+    }, 4500);
+  }
+
+  function stopTour() {
+    isTouring = false;
+    if (tourBtn) tourBtn.classList.remove('active');
+    clearInterval(tourTimer);
+  }
+
+  if (tourBtn) {
+    tourBtn.addEventListener('click', () => {
+      if (isTouring) {
+        stopTour();
+      } else {
+        startTour();
+      }
+    });
+  }
+
+  // Pause tour on stage hover
+  if (stageContainer) {
+    stageContainer.addEventListener('mouseenter', () => {
+      if (isTouring) clearInterval(tourTimer);
+    });
+    stageContainer.addEventListener('mouseleave', () => {
+      if (isTouring) {
+        clearInterval(tourTimer);
+        tourTimer = setInterval(nextEngine, 4500);
+      }
+    });
+  }
+
+  // Keyboard Navigation
+  stageContainer.setAttribute('tabindex', '0');
+  stageContainer.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      nextEngine();
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      prevEngine();
+    }
+  });
+
+  // --------------------------------------------------------------------------
+  // Micro-Simulators Logic
+  // --------------------------------------------------------------------------
+
+  // 1. Simulator: Compress Image
+  const compSlider = document.getElementById('sim-comp-slider');
+  const compSliderVal = document.getElementById('sim-comp-slider-val');
+  const compOutput = document.getElementById('sim-comp-output');
+  const compRatio = document.getElementById('sim-comp-ratio');
+  const compAction = document.getElementById('sim-comp-action');
+
+  if (compSlider) {
+    compSlider.addEventListener('input', () => {
+      const val = parseInt(compSlider.value, 10);
+      if (compSliderVal) compSliderVal.textContent = `${val}%`;
+      if (compRatio) compRatio.textContent = `-${val}% SHRUNK`;
+      if (compOutput) {
+        const origMB = 14.2;
+        const shrunkMB = (origMB * (1 - val / 100)).toFixed(1);
+        compOutput.textContent = `${shrunkMB} MB`;
+      }
+    });
+  }
+
+  if (compAction) {
+    compAction.addEventListener('click', () => {
+      const originalText = compAction.innerHTML;
+      compAction.innerHTML = '<span>✓ Saved to Photos (Lossless)</span>';
+      compAction.style.background = 'var(--neo-green)';
+      setTimeout(() => {
+        compAction.innerHTML = originalText;
+        compAction.style.background = '';
+      }, 2000);
+    });
+  }
+
+  // 2. Simulator: Image to PDF
+  const pdfPills = document.querySelectorAll('.simulator-pdf .sim-pill-btn');
+  const pdfAction = document.getElementById('sim-pdf-action');
+  const pdfCards = document.querySelectorAll('.pdf-page-card');
+
+  pdfPills.forEach((pill) => {
+    pill.addEventListener('click', () => {
+      pdfPills.forEach((p) => p.classList.remove('active'));
+      pill.classList.add('active');
+    });
+  });
+
+  pdfCards.forEach((card) => {
+    card.addEventListener('click', () => {
+      card.style.transform = 'translateY(-8px) scale(1.05)';
+      setTimeout(() => {
+        card.style.transform = '';
+      }, 300);
+    });
+  });
+
+  if (pdfAction) {
+    pdfAction.addEventListener('click', () => {
+      const originalText = pdfAction.innerHTML;
+      pdfAction.innerHTML = '<span>✓ Single PDF Generated (412 KB)</span>';
+      pdfAction.style.background = 'var(--neo-purple)';
+      pdfAction.style.color = '#FFFFFF';
+      setTimeout(() => {
+        pdfAction.innerHTML = originalText;
+        pdfAction.style.background = '';
+        pdfAction.style.color = '';
+      }, 2000);
+    });
+  }
+
+  // 3. Simulator: Resize Image
+  const resizePills = document.querySelectorAll('#sim-resize-pills .sim-pill-btn');
+  const resizePct = document.getElementById('sim-resize-pct');
+  const resizeTarget = document.getElementById('sim-resize-target-val');
+  const resizeBox = document.getElementById('sim-resize-box');
+  const resizeAction = document.getElementById('sim-resize-action');
+
+  resizePills.forEach((pill) => {
+    pill.addEventListener('click', () => {
+      resizePills.forEach((p) => p.classList.remove('active'));
+      pill.classList.add('active');
+      const scale = parseFloat(pill.getAttribute('data-scale') || '0.5');
+      const w = pill.getAttribute('data-w') || '2016';
+      const h = pill.getAttribute('data-h') || '1512';
+
+      if (resizePct) resizePct.textContent = `${Math.round(scale * 100)}% Scale`;
+      if (resizeTarget) resizeTarget.textContent = `${w} × ${h} px`;
+      const dimLabel = document.getElementById('sim-dimension-label');
+      if (dimLabel) dimLabel.textContent = `${w} × ${h} px`;
+
+      if (resizeBox) {
+        // Visual scale inside container
+        const visualScale = 0.35 + scale * 0.45;
+        resizeBox.style.transform = `scale(${visualScale})`;
+      }
+    });
+  });
+
+  if (resizeAction) {
+    resizeAction.addEventListener('click', () => {
+      const orig = resizeAction.innerHTML;
+      resizeAction.innerHTML = '<span>✓ Resized to Exact Dimensions!</span>';
+      resizeAction.style.background = 'var(--neo-cyan)';
+      setTimeout(() => {
+        resizeAction.innerHTML = orig;
+        resizeAction.style.background = '';
+      }, 2000);
+    });
+  }
+
+  // 4. Simulator: Crop & Rotate
+  const cropPills = document.querySelectorAll('#sim-crop-pills .sim-pill-btn');
+  const cropFrame = document.getElementById('sim-crop-frame');
+  const cropImg = document.getElementById('sim-crop-img');
+  const cropBadge = document.getElementById('sim-crop-aspect-badge');
+  const rotateLeftBtn = document.getElementById('sim-rotate-left');
+  const rotateRightBtn = document.getElementById('sim-rotate-right');
+  const rotateFlipBtn = document.getElementById('sim-rotate-flip');
+  const cropAction = document.getElementById('sim-crop-action');
+
+  let currentRotate = 0;
+  let isFlipped = false;
+
+  function applyCropTransform() {
+    if (!cropImg) return;
+    const flipScale = isFlipped ? -1 : 1;
+    cropImg.style.transform = `rotate(${currentRotate}deg) scaleX(${flipScale})`;
+  }
+
+  if (rotateLeftBtn) {
+    rotateLeftBtn.addEventListener('click', () => {
+      currentRotate -= 90;
+      applyCropTransform();
+    });
+  }
+
+  if (rotateRightBtn) {
+    rotateRightBtn.addEventListener('click', () => {
+      currentRotate += 90;
+      applyCropTransform();
+    });
+  }
+
+  if (rotateFlipBtn) {
+    rotateFlipBtn.addEventListener('click', () => {
+      isFlipped = !isFlipped;
+      applyCropTransform();
+    });
+  }
+
+  cropPills.forEach((pill) => {
+    pill.addEventListener('click', () => {
+      cropPills.forEach((p) => p.classList.remove('active'));
+      pill.classList.add('active');
+      const ratio = pill.getAttribute('data-ratio');
+      if (cropFrame) {
+        cropFrame.className = `sim-crop-frame ratio-${ratio}`;
+      }
+      if (cropBadge) {
+        cropBadge.textContent = pill.textContent.toUpperCase();
+      }
+    });
+  });
+
+  if (cropAction) {
+    cropAction.addEventListener('click', () => {
+      const orig = cropAction.innerHTML;
+      cropAction.innerHTML = '<span>✓ Aspect Ratio Cropped!</span>';
+      cropAction.style.background = 'var(--neo-pink)';
+      cropAction.style.color = '#FFF';
+      setTimeout(() => {
+        cropAction.innerHTML = orig;
+        cropAction.style.background = '';
+        cropAction.style.color = '';
+      }, 2000);
+    });
+  }
+
+  // 5. Simulator: Format Convert
+  const convertPills = document.querySelectorAll('#sim-convert-pills .sim-pill-btn');
+  const targetExt = document.getElementById('sim-target-ext');
+  const targetInfo = document.getElementById('sim-target-info');
+  const convertAction = document.getElementById('sim-convert-action');
+
+  convertPills.forEach((pill) => {
+    pill.addEventListener('click', () => {
+      convertPills.forEach((p) => p.classList.remove('active'));
+      pill.classList.add('active');
+      const fmt = pill.getAttribute('data-format');
+      const info = pill.getAttribute('data-info');
+      if (targetExt) targetExt.textContent = fmt;
+      if (targetInfo) targetInfo.textContent = info;
+    });
+  });
+
+  if (convertAction) {
+    convertAction.addEventListener('click', () => {
+      const orig = convertAction.innerHTML;
+      convertAction.innerHTML = '<span>⚡ Transcoding on ARM64 NPU...</span>';
+      setTimeout(() => {
+        convertAction.innerHTML = '<span>✓ Converted in 0.14s (Lossless)</span>';
+        convertAction.style.background = 'var(--neo-green)';
+        convertAction.style.color = '#FFF';
+        setTimeout(() => {
+          convertAction.innerHTML = orig;
+          convertAction.style.background = '';
+          convertAction.style.color = '';
+        }, 2200);
+      }, 400);
+    });
+  }
+
+  // 6. Simulator: Passport ID
+  const passportPills = document.querySelectorAll('#sim-passport-pills .sim-pill-btn');
+  const passportPillBadge = document.getElementById('sim-passport-pill');
+  const toggleGuides = document.getElementById('sim-toggle-guides');
+  const toggleSheet = document.getElementById('sim-toggle-sheet');
+  const biometricGuides = document.getElementById('sim-biometric-guides');
+  const passportAction = document.getElementById('sim-passport-action');
+
+  passportPills.forEach((pill) => {
+    pill.addEventListener('click', () => {
+      passportPills.forEach((p) => p.classList.remove('active'));
+      pill.classList.add('active');
+      const country = pill.getAttribute('data-country');
+      if (passportPillBadge) passportPillBadge.textContent = country.toUpperCase();
+    });
+  });
+
+  if (toggleGuides && biometricGuides) {
+    toggleGuides.addEventListener('click', () => {
+      biometricGuides.classList.toggle('hidden');
+      const isHidden = biometricGuides.classList.contains('hidden');
+      toggleGuides.textContent = isHidden ? 'Guides: OFF' : 'Guides: ON';
+      toggleGuides.classList.toggle('active', !isHidden);
+    });
+  }
+
+  if (toggleSheet) {
+    toggleSheet.addEventListener('click', () => {
+      toggleSheet.classList.toggle('active');
+      const isActive = toggleSheet.classList.contains('active');
+      toggleSheet.textContent = isActive ? '6-Photo Sheet: ON' : '6-Photo Sheet: OFF';
+    });
+  }
+
+  if (passportAction) {
+    passportAction.addEventListener('click', () => {
+      const orig = passportAction.innerHTML;
+      passportAction.innerHTML = '<span>✓ Compliant Biometric ID Exported!</span>';
+      passportAction.style.background = 'var(--neo-orange)';
+      passportAction.style.color = '#FFF';
+      setTimeout(() => {
+        passportAction.innerHTML = orig;
+        passportAction.style.background = '';
+        passportAction.style.color = '';
+      }, 2000);
+    });
+  }
+
+  // 7. Simulator: Digital Signature Canvas
+  let canvasInitialized = false;
+  let canvas = null;
+  let ctx = null;
+  let isDrawing = false;
+  let strokeColor = '#0F172A';
+
+  function setupSignatureCanvas() {
+    canvas = document.getElementById('live-signature-canvas');
+    if (!canvas) return;
+
+    ctx = canvas.getContext('2d');
+    const watermark = document.getElementById('canvas-watermark');
+    const clearBtn = document.getElementById('sig-clear-btn');
+    const inkDots = document.querySelectorAll('.ink-dot');
+    const sigAction = document.getElementById('sim-sig-action');
+
+    if (!canvasInitialized) {
+      canvasInitialized = true;
+
+      // Ensure proper canvas pixel ratio
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        if (rect.width === 0) return;
+        canvas.width = rect.width * 2;
+        canvas.height = rect.height * 2;
+        ctx.scale(2, 2);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = strokeColor;
+      }
+
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+          x: clientX - rect.left,
+          y: clientY - rect.top,
+        };
+      }
+
+      function startDraw(e) {
+        isDrawing = true;
+        const pos = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+        if (watermark) watermark.style.opacity = '0';
+      }
+
+      function draw(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+        const pos = getPos(e);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+      }
+
+      function stopDraw() {
+        isDrawing = false;
+      }
+
+      canvas.addEventListener('mousedown', startDraw);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseup', stopDraw);
+      canvas.addEventListener('mouseleave', stopDraw);
+
+      canvas.addEventListener('touchstart', startDraw, { passive: false });
+      canvas.addEventListener('touchmove', draw, { passive: false });
+      canvas.addEventListener('touchend', stopDraw);
+
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          if (watermark) watermark.style.opacity = '1';
+        });
+      }
+
+      inkDots.forEach((dot) => {
+        dot.addEventListener('click', () => {
+          inkDots.forEach((d) => d.classList.remove('active'));
+          dot.classList.add('active');
+          strokeColor = dot.getAttribute('data-color') || '#0F172A';
+          ctx.strokeStyle = strokeColor;
+        });
+      });
+
+      if (sigAction) {
+        sigAction.addEventListener('click', () => {
+          const orig = sigAction.innerHTML;
+          sigAction.innerHTML = '<span>✓ Exported Transparent PNG!</span>';
+          sigAction.style.background = 'var(--neo-blue)';
+          sigAction.style.color = '#FFF';
+          setTimeout(() => {
+            sigAction.innerHTML = orig;
+            sigAction.style.background = '';
+            sigAction.style.color = '';
+          }, 2000);
+        });
+      }
+    }
+  }
+
+  // 8. Simulator: Remove Background Split Slider
+  const cutoutContainer = document.getElementById('sim-cutout-compare');
+  const cutoutBefore = document.getElementById('cutout-before-clip');
+  const cutoutHandle = document.getElementById('cutout-slider-handle');
+  const cutoutAction = document.getElementById('sim-cutout-action');
+
+  if (cutoutContainer && cutoutBefore && cutoutHandle) {
+    let isDraggingSlider = false;
+
+    function updateCutoutSplit(clientX) {
+      const rect = cutoutContainer.getBoundingClientRect();
+      let pos = (clientX - rect.left) / rect.width;
+      pos = Math.max(0.05, Math.min(0.95, pos));
+      const pct = (pos * 100).toFixed(2);
+      cutoutBefore.style.width = `${pct}%`;
+      cutoutHandle.style.left = `${pct}%`;
+    }
+
+    cutoutContainer.addEventListener('mousedown', (e) => {
+      isDraggingSlider = true;
+      updateCutoutSplit(e.clientX);
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDraggingSlider) return;
+      updateCutoutSplit(e.clientX);
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDraggingSlider = false;
+    });
+
+    cutoutContainer.addEventListener('touchstart', (e) => {
+      isDraggingSlider = true;
+      if (e.touches && e.touches[0]) updateCutoutSplit(e.touches[0].clientX);
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!isDraggingSlider) return;
+      if (e.touches && e.touches[0]) updateCutoutSplit(e.touches[0].clientX);
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
+      isDraggingSlider = false;
+    });
+  }
+
+  if (cutoutAction) {
+    cutoutAction.addEventListener('click', () => {
+      const orig = cutoutAction.innerHTML;
+      cutoutAction.innerHTML = '<span>✓ Saved Transparent PNG!</span>';
+      cutoutAction.style.background = 'var(--neo-purple)';
+      cutoutAction.style.color = '#FFF';
+      setTimeout(() => {
+        cutoutAction.innerHTML = orig;
+        cutoutAction.style.background = '';
+        cutoutAction.style.color = '';
+      }, 2000);
+    });
+  }
+}
+
