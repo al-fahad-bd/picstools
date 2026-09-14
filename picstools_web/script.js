@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCursorGlow();
   initAmbientAudio();
   initCard3DTilt();
+  initClientReviewDeck();
 });
 
 // 1. Theme Toggling with LocalStorage Persistence
@@ -395,4 +396,156 @@ function initCard3DTilt() {
   });
 }
 
+// 12. Interactive 3D Stacked Review Deck & Marquee Jump Engine
+function initClientReviewDeck() {
+  const deckContainer = document.getElementById('review-cards-deck');
+  if (!deckContainer) return;
 
+  const cards = Array.from(deckContainer.querySelectorAll('.review-stack-card'));
+  if (cards.length === 0) return;
+
+  const counter = document.getElementById('deck-counter');
+  const prevBtn = document.getElementById('deck-prev-btn');
+  const nextBtn = document.getElementById('deck-next-btn');
+  const tickerPills = document.querySelectorAll('.client-pill');
+
+  let isAnimating = false;
+  let activeCards = [...cards];
+  let discardDirectionAlternator = 'right';
+
+  function updateSlots() {
+    activeCards.forEach((card, idx) => {
+      card.setAttribute('data-slot', idx);
+      card.classList.remove('discard-right', 'discard-left');
+    });
+
+    if (counter && activeCards[0]) {
+      const realIndex = parseInt(activeCards[0].getAttribute('data-index'), 10) + 1;
+      counter.textContent = `${realIndex} / ${cards.length}`;
+    }
+  }
+
+  function cycleNext(direction = null) {
+    if (isAnimating || activeCards.length <= 1) return;
+    isAnimating = true;
+
+    // Use passed direction (e.g. from swipe), or alternate between right and left
+    const chosenDir = direction || discardDirectionAlternator;
+    discardDirectionAlternator = chosenDir === 'right' ? 'left' : 'right';
+
+    const topCard = activeCards[0];
+    const discardClass = chosenDir === 'left' ? 'discard-left' : 'discard-right';
+    topCard.classList.add(discardClass);
+
+    setTimeout(() => {
+      topCard.classList.remove(discardClass);
+      activeCards.push(activeCards.shift()); // Loop to back of stack infinitely
+      updateSlots();
+      isAnimating = false;
+    }, 320);
+  }
+
+  function cyclePrev() {
+    if (isAnimating || activeCards.length <= 1) return;
+    isAnimating = true;
+
+    const lastCard = activeCards.pop();
+    activeCards.unshift(lastCard);
+    updateSlots();
+
+    setTimeout(() => {
+      isAnimating = false;
+    }, 280);
+  }
+
+  // Advance on clicking anywhere on the top card (alternates right and left)
+  deckContainer.addEventListener('click', (e) => {
+    const clickedCard = e.target.closest('.review-stack-card');
+    if (clickedCard && clickedCard.getAttribute('data-slot') === '0') {
+      cycleNext();
+    }
+  });
+
+  // Mobile Touch Swipe Gestures
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let isSwiping = false;
+
+  deckContainer.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      isSwiping = true;
+    }
+  }, { passive: true });
+
+  deckContainer.addEventListener('touchend', (e) => {
+    if (!isSwiping || e.changedTouches.length === 0) return;
+    isSwiping = false;
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    const diffX = touchEndX - touchStartX;
+    const diffY = touchEndY - touchStartY;
+
+    if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+      if (diffX < 0) {
+        cycleNext('left');
+      } else {
+        cycleNext('right');
+      }
+    }
+  }, { passive: true });
+
+  // Navigation Buttons
+  if (nextBtn) {
+    nextBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      cycleNext(); // Alternates direction (one right, next left)
+    });
+  }
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      cyclePrev();
+    });
+  }
+
+  // Keyboard accessibility: Left / Right arrow navigation when deck is focused
+  deckContainer.setAttribute('tabindex', '0');
+  deckContainer.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+      e.preventDefault();
+      cycleNext();
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      cyclePrev();
+    }
+  });
+
+  // Marquee Pill Clicks to Jump Directly to Specified Card
+  tickerPills.forEach((pill) => {
+    pill.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetIndex = pill.getAttribute('data-card-target');
+      if (targetIndex === null || isAnimating) return;
+
+      const targetIdxNum = parseInt(targetIndex, 10);
+      let attempts = 0;
+      while (parseInt(activeCards[0].getAttribute('data-index'), 10) !== targetIdxNum && attempts < cards.length) {
+        activeCards.push(activeCards.shift());
+        attempts++;
+      }
+      updateSlots();
+
+      // Smooth scroll deck into view if needed
+      const deckRect = deckContainer.getBoundingClientRect();
+      if (deckRect.top < 80 || deckRect.bottom > window.innerHeight) {
+        deckContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+  });
+
+  // Initialize Slots on Load
+  updateSlots();
+}

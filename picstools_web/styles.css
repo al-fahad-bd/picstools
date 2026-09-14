@@ -1254,6 +1254,700 @@ body {
 }
 
 /* ==========================================================================
+   Interactive Clients / Reviews Section & Stacked Cards Deck
+   ========================================================================== */
+.reviews-section {
+  padding-top: 60px;
+  padding-bottom: 70px;
+  position: relative;
+}
+
+.clients-header-wrap {
+  margin-bottom: 36px;
+}
+
+.clients-title-line {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.clients-title {
+  font-family: var(--font-heading);
+  font-size: clamp(2.4rem, 4.5vw, 3.8rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.1;
+}
+
+.heartbeat-badge-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.heartbeat-pulse-icon {
+  width: 44px;
+  height: 22px;
+  color: var(--text-primary);
+  filter: drop-shadow(1px 1px 0px var(--border-color));
+  animation: heartbeatPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes heartbeatPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  14% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
+  28% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  42% {
+    transform: scale(1.14);
+    opacity: 1;
+  }
+  56% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+}
+
+.clients-highlight-pill {
+  background: #FFE500;
+  color: #0F172A;
+  font-family: var(--font-heading);
+  font-size: 0.98rem;
+  font-weight: 800;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 2px solid #0F172A;
+  box-shadow: 3px 3px 0px #0F172A;
+  display: inline-block;
+  transform: rotate(-1.5deg);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  letter-spacing: -0.01em;
+}
+
+.clients-highlight-pill:hover {
+  transform: rotate(0deg) scale(1.04);
+}
+
+.clients-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  max-width: 680px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Review Deck Container */
+.review-deck-container {
+  max-width: 540px;
+  margin: 40px auto 36px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.deck-hint-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 510px;
+  margin-bottom: 16px;
+}
+
+.deck-hint-pill {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border-color);
+  padding: 5px 12px;
+  border-radius: 9999px;
+}
+
+.deck-hint-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+  animation: deckHintPulse 1.8s infinite;
+}
+
+@keyframes deckHintPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 1;
+    box-shadow: 0 0 8px var(--accent-cyan);
+  }
+}
+
+.deck-counter-badge {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 0.85rem;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  padding: 4px 14px;
+  border-radius: 9999px;
+  box-shadow: 2px 2px 0px var(--border-color);
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 52px;
+  text-align: center;
+}
+
+/* 3D Stacked Cards Deck Area */
+.review-cards-deck {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  height: 380px;
+  perspective: 1200px;
+  user-select: none;
+  touch-action: pan-y;
+  margin-bottom: 30px;
+}
+
+.review-stack-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-card);
+  border: 3px solid var(--border-color);
+  border-radius: 20px;
+  box-shadow: 6px 6px 0px var(--border-color);
+  padding: 26px 24px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transform-origin: center bottom;
+  transition: transform 0.42s cubic-bezier(0.2, 0.9, 0.3, 1), opacity 0.32s ease, box-shadow 0.25s ease;
+  will-change: transform, opacity;
+  cursor: grab;
+  overflow: visible;
+}
+
+.review-stack-card:active {
+  cursor: grabbing;
+}
+
+/* Card Slot Positions in the Stack */
+.review-stack-card[data-slot="0"] {
+  transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  z-index: 10;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.review-stack-card[data-slot="0"]:hover {
+  transform: translate3d(0, -6px, 0) rotate(-1deg) scale(1.015);
+  box-shadow: 8px 10px 0px var(--border-color);
+}
+
+.review-stack-card[data-slot="1"] {
+  transform: translate3d(14px, 12px, 0) rotate(3.6deg) scale(0.96);
+  z-index: 9;
+  opacity: 0.92;
+  pointer-events: none;
+}
+
+.review-stack-card[data-slot="2"] {
+  transform: translate3d(-14px, 22px, 0) rotate(-3.6deg) scale(0.92);
+  z-index: 8;
+  opacity: 0.78;
+  pointer-events: none;
+}
+
+.review-stack-card[data-slot="3"] {
+  transform: translate3d(8px, 32px, 0) rotate(2deg) scale(0.88);
+  z-index: 7;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.review-stack-card[data-slot="4"],
+.review-stack-card[data-slot="5"],
+.review-stack-card[data-slot="6"] {
+  transform: translate3d(0, 40px, 0) scale(0.84);
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Card Swipe / Discard Transitions */
+.review-stack-card.discard-right {
+  transform: translate3d(130%, -40px, 0) rotate(28deg) scale(0.92) !important;
+  opacity: 0 !important;
+  transition: transform 0.34s cubic-bezier(0.2, 0.8, 0.4, 1), opacity 0.3s ease !important;
+}
+
+.review-stack-card.discard-left {
+  transform: translate3d(-130%, -40px, 0) rotate(-28deg) scale(0.92) !important;
+  opacity: 0 !important;
+  transition: transform 0.34s cubic-bezier(0.2, 0.8, 0.4, 1), opacity 0.3s ease !important;
+}
+
+/* Card Internal Typography & Elements */
+.card-accent-tag {
+  position: absolute;
+  top: -14px;
+  right: 24px;
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 2px solid var(--border-color);
+  box-shadow: 2px 2px 0px var(--border-color);
+  text-transform: uppercase;
+}
+
+.bg-tag-purple { background: #DDD6FE; color: #1E1B4B; }
+.bg-tag-orange { background: #FED7AA; color: #7C2D12; }
+.bg-tag-blue   { background: #BAE6FD; color: #0C4A6E; }
+.bg-tag-green  { background: #BBF7D0; color: #064E3B; }
+.bg-tag-pink   { background: #FBCFE8; color: #831843; }
+.bg-tag-yellow { background: #FEF08A; color: #713F12; }
+
+.review-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.client-profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.client-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2.5px solid var(--border-color);
+  box-shadow: 2px 2px 0px var(--border-color);
+  flex-shrink: 0;
+}
+
+.client-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.client-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.client-name {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+}
+
+.verified-badge .check-icon {
+  width: 100%;
+  height: 100%;
+}
+
+.client-role {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.review-stars-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.stars-gold {
+  color: #F59E0B;
+  font-size: 1.05rem;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+
+.rating-num {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+}
+
+.review-card-body {
+  position: relative;
+  margin: 10px 0 14px;
+}
+
+.quote-mark {
+  position: absolute;
+  top: -18px;
+  left: -6px;
+  font-family: Georgia, serif;
+  font-size: 3.6rem;
+  line-height: 1;
+  opacity: 0.12;
+  pointer-events: none;
+  color: var(--text-primary);
+}
+
+.review-quote-text {
+  font-size: 0.94rem;
+  line-height: 1.55;
+  color: var(--text-primary);
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
+  margin: 0;
+}
+
+.review-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1.5px dashed var(--border-color);
+  padding-top: 12px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.tool-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.tool-tag-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.bg-cyan   { background: var(--accent-cyan); }
+.bg-orange { background: var(--accent-orange); }
+.bg-green  { background: var(--accent-green); }
+.bg-purple { background: var(--accent-purple); }
+.bg-yellow { background: #FFE500; }
+
+.review-timestamp {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+/* Deck Action Controls */
+.deck-controls {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 25;
+  margin-top: 32px;
+  margin-bottom: 12px;
+  width: 100%;
+}
+
+.deck-nav-btn {
+  padding: 11px 24px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.deck-nav-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Double Moving Client Ticker Ribbons */
+.clients-ticker-wrapper {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  overflow: hidden;
+  padding: 34px 0 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+}
+
+/* Subtle edge gradients for smooth marquee fade */
+.clients-ticker-wrapper::before,
+.clients-ticker-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 80px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.clients-ticker-wrapper::before {
+  left: 0;
+  background: linear-gradient(to right, var(--bg-primary), transparent);
+}
+
+.clients-ticker-wrapper::after {
+  right: 0;
+  background: linear-gradient(to left, var(--bg-primary), transparent);
+}
+
+.ticker-row {
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  padding: 8px 0 16px; /* Essential: allows neo-brutalist bottom borders and box-shadows to show cleanly without clipping */
+}
+
+.ticker-track {
+  display: flex;
+  gap: 16px;
+  width: max-content;
+  will-change: transform;
+  padding: 2px 0 6px;
+}
+
+.ticker-row-rtl .ticker-track {
+  animation: tickerScrollRTL 38s linear infinite;
+}
+
+.ticker-row-ltr .ticker-track {
+  animation: tickerScrollLTR 42s linear infinite;
+}
+
+.ticker-row:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+@keyframes tickerScrollRTL {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes tickerScrollLTR {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Client Pill Neo-brutalist Chips */
+.client-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 16px 6px 8px;
+  border-radius: 9999px;
+  border: 2px solid #0F172A;
+  box-shadow: 3px 3px 0px #0F172A;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  text-decoration: none;
+  color: #0F172A;
+  background: #E2E8F0;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.client-pill:hover {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 4px 5px 0px #0F172A;
+}
+
+.client-pill:active {
+  transform: translateY(0px) scale(0.98);
+  box-shadow: 1px 1px 0px #0F172A;
+}
+
+.pill-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid #0F172A;
+  flex-shrink: 0;
+}
+
+.pill-name {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #0F172A;
+}
+
+.pill-stars {
+  font-weight: 800;
+  font-size: 0.78rem;
+  background: rgba(15, 23, 42, 0.12);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  color: #0F172A;
+}
+
+/* Pill Palette Variations */
+.pill-purple { background: #E9D5FF; }
+.pill-orange { background: #FED7AA; }
+.pill-blue   { background: #BAE6FD; }
+.pill-green  { background: #BBF7D0; }
+.pill-pink   { background: #FBCFE8; }
+.pill-yellow { background: #FEF08A; }
+.pill-teal   { background: #99F6E4; }
+.pill-cyan   { background: #A5F3FC; }
+.pill-indigo { background: #DDD6FE; }
+
+/* Mobile Responsiveness for Reviews Deck */
+@media (max-width: 640px) {
+  .review-cards-deck {
+    height: 400px;
+    max-width: calc(100% - 24px);
+  }
+
+  .review-stack-card {
+    padding: 22px 18px 18px;
+    border-radius: 16px;
+  }
+
+  .review-stack-card[data-slot="1"] {
+    transform: translate3d(8px, 10px, 0) rotate(2.2deg) scale(0.96);
+  }
+
+  .review-stack-card[data-slot="2"] {
+    transform: translate3d(-8px, 18px, 0) rotate(-2.2deg) scale(0.92);
+  }
+
+  .review-stack-card[data-slot="3"] {
+    transform: translate3d(5px, 26px, 0) rotate(1.4deg) scale(0.88);
+  }
+
+  .client-name {
+    font-size: 1.05rem;
+  }
+
+  .review-quote-text {
+    font-size: 0.88rem;
+    line-height: 1.48;
+  }
+
+  .clients-title-line {
+    gap: 12px;
+  }
+
+  .heartbeat-pulse-icon {
+    width: 36px;
+    height: 18px;
+  }
+
+  .clients-highlight-pill {
+    font-size: 0.85rem;
+    padding: 5px 10px;
+  }
+
+  .deck-hint-bar {
+    max-width: calc(100% - 24px);
+    gap: 10px;
+  }
+
+  .deck-hint-pill {
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (max-width: 480px) {
+  .review-cards-deck {
+    height: 420px;
+    max-width: calc(100% - 16px);
+  }
+
+  .client-avatar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .client-role {
+    font-size: 0.75rem;
+  }
+
+  .card-accent-tag {
+    right: 14px;
+    font-size: 0.62rem;
+    padding: 3px 8px;
+  }
+
+  .review-card-footer {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+/* ==========================================================================
    Interactive FAQ Accordion
    ========================================================================== */
 .faq-section {
