@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Space+Grotesk:wght@700;800;900&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      /* Soft pastel periwinkle-blue gradient harmonizing with Screens 1, 3 & 4 */
+      background: linear-gradient(175deg, #EEF2FF 0%, #E0E7FF 45%, #C7D2FE 100%);
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 95px 60px 0 60px;
+      color: #1E1B4B;
+    }
+
+    /* Organic neo-brutalist decorative stars (reduced & randomized like Screens 3 & 4) */
+    .sparkle {
+      position: absolute;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      user-select: none;
+      z-index: 15;
+    }
+    .s-1 { top: 90px; right: 85px; font-size: 52px; color: #4338CA; opacity: 0.65; }
+    .s-2 { top: 180px; left: 70px; font-size: 44px; color: #F59E0B; opacity: 0.85; }
+    .s-3 { top: 540px; right: 40px; font-size: 42px; color: #0284C7; opacity: 0.75; }
+    .s-4 { top: 780px; left: 45px; font-size: 46px; color: #7C3AED; opacity: 0.7; }
+
+    /* Top Text Section */
+    .top-section {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      z-index: 10;
+      margin-bottom: 36px;
+    }
+
+    .headline {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 94px;
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -3.5px;
+      color: #1E1B4B;
+      margin-bottom: 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .headline .line-1 {
+      color: #1E1B4B;
+    }
+
+    .headline .line-2 {
+      color: #4338CA;
+    }
+
+    .pill-subtitle {
+      background: #FFFFFF;
+      padding: 14px 34px;
+      border-radius: 40px;
+      font-size: 25px;
+      font-weight: 800;
+      color: #3730A3;
+      border: 3.5px solid #1E1B4B;
+      box-shadow: 4px 5px 0px #1E1B4B;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    /* Device Showcase Wrapper */
+    .device-wrapper {
+      position: relative;
+      width: 100%;
+      height: 1450px;
+      display: flex;
+      justify-content: center;
+      z-index: 5;
+    }
+
+    /* EXACT 0 DEGREE STRAIGHT VERTICAL PHONE (No Rotation) */
+    .phone-mockup-straight {
+      width: 820px;
+      height: 1650px;
+      background: #09090B;
+      border: 8px solid #18181B;
+      border-radius: 74px;
+      box-shadow:
+        0 45px 95px -15px rgba(30, 27, 75, 0.45),
+        12px 18px 0px #1E1B4B;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transform: translateY(90px) rotate(0deg);
+      /* Exact 0 degree vertical */
+    }
+
+    /* Phone Screen Container */
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 56px;
+      overflow: hidden;
+      background: #FFFDF6;
+      position: relative;
+    }
+
+    .screen-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+    }
+
+    /* High-Impact Neo-Brutalist Badge: Floating dramatically over the left phone bezel */
+    .floating-sticker {
+      position: absolute;
+      bottom: 75px;
+      left: -15px;
+      background: #FACC15;
+      border: 4.5px solid #1E1B4B;
+      border-radius: 28px;
+      padding: 22px 34px;
+      box-shadow: 8px 9px 0px #1E1B4B;
+      z-index: 35;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      transform: rotate(-3deg);
+    }
+
+    .sticker-icon {
+      width: 66px;
+      height: 66px;
+      background: #1E1B4B;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      color: #FFFFFF;
+      flex-shrink: 0;
+    }
+
+    .sticker-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sticker-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 32px;
+      font-weight: 900;
+      color: #1E1B4B;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+
+    .sticker-sub {
+      font-size: 20px;
+      font-weight: 800;
+      color: #4338CA;
+      margin-top: 4px;
+    }
+
+    /* Clean Bottom Ambient Base */
+    .bottom-accent-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: linear-gradient(to top, rgba(255, 255, 255, 0.8) 0%, transparent 100%);
+      z-index: 20;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Organic sparkle stars (reduced & natural like Screens 3 & 4) -->
+  <div class="sparkle s-1">✦</div>
+  <div class="sparkle s-2">★</div>
+  <div class="sparkle s-3">✦</div>
+  <div class="sparkle s-4">★</div>
+
+  <!-- Top Marketing Content -->
+  <div class="top-section">
+    <div class="headline">
+      <span class="line-1">Shrink Size.</span>
+      <span class="line-2">Keep Quality.</span>
+    </div>
+    <div class="pill-subtitle">
+      ⚡ Smart Compression • Target Exact KB Limits
+    </div>
+  </div>
+
+  <!-- Device Showcase Wrapper with EXACT 0 DEGREE STRAIGHT PHONE -->
+  <div class="device-wrapper">
+    <div class="phone-mockup-straight">
+      <div class="phone-screen">
+        <img src="user_compress_screen_clean.png" class="screen-img" alt="PicsTools Compress Screen">
+      </div>
+    </div>
+
+    <!-- Floating Neo-Brutalist Sticker -->
+    <div class="floating-sticker">
+      <div class="sticker-icon">⚡</div>
+      <div class="sticker-text">
+        <span class="sticker-title">Target Exact KB</span>
+        <span class="sticker-sub">Up to 90% Smaller • Lossless</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Accent Base -->
+  <div class="bottom-accent-bar"></div>
+
+</body>
+
+</html>

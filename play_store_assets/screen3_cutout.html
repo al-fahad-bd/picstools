@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800;900&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: #0B1120;
+      font-family: 'Inter', sans-serif;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 100px 70px;
+      color: #F8FAFC;
+    }
+    .grid-pattern {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+      background-size: 48px 48px;
+      z-index: 1;
+    }
+    .ambient-glow {
+      position: absolute;
+      width: 650px;
+      height: 650px;
+      border-radius: 50%;
+      filter: blur(90px);
+      z-index: 2;
+    }
+    .glow-top {
+      top: -150px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.22) 0%, transparent 70%);
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      margin-bottom: 70px;
+      width: 100%;
+    }
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 24px;
+      background: #10B981;
+      color: #0F172A;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      border-radius: 12px;
+      border: 3px solid #0F172A;
+      box-shadow: 4px 4px 0px #0F172A;
+      margin-bottom: 28px;
+    }
+    .main-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 64px;
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -2px;
+      color: #FFFFFF;
+      margin-bottom: 20px;
+    }
+    .main-title span { color: #34D399; }
+    .subtitle {
+      font-size: 28px;
+      color: #94A3B8;
+      font-weight: 600;
+      max-width: 850px;
+      margin: 0 auto;
+      line-height: 1.4;
+    }
+
+    .phone-container {
+      position: relative;
+      z-index: 10;
+      width: 820px;
+      height: 1200px;
+      background: #131E33;
+      border: 6px solid #334155;
+      border-bottom: none;
+      border-radius: 54px 54px 0 0;
+      box-shadow: 0 -20px 60px rgba(0,0,0,0.8), 12px 12px 0px #059669;
+      padding: 30px 30px 0 30px;
+      display: flex;
+      flex-direction: column;
+    }
+    .phone-notch {
+      width: 220px;
+      height: 28px;
+      background: #0B1120;
+      border-radius: 14px;
+      margin: 0 auto 30px auto;
+    }
+    .phone-screen {
+      background: #0F172A;
+      border: 3px solid #1E293B;
+      border-bottom: none;
+      border-radius: 36px 36px 0 0;
+      flex: 1;
+      padding: 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .screen-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 2.5px solid #1E293B;
+    }
+    .screen-app-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      color: #F8FAFC;
+    }
+    .tag-cutout {
+      background: rgba(16, 185, 129, 0.15);
+      border: 2px solid #10B981;
+      color: #34D399;
+      font-size: 18px;
+      font-weight: 800;
+      padding: 6px 16px;
+      border-radius: 20px;
+    }
+
+    .cutout-preview-box {
+      width: 100%;
+      height: 480px;
+      border: 3.5px solid #10B981;
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+      background-image: 
+        linear-gradient(45deg, #1E293B 25%, transparent 25%), 
+        linear-gradient(-45deg, #1E293B 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #1E293B 75%), 
+        linear-gradient(-45deg, transparent 75%, #1E293B 75%);
+      background-size: 32px 32px;
+      background-position: 0 0, 0 16px, 16px -16px, -16px 0px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cutout-image {
+      max-height: 90%;
+      max-width: 90%;
+      object-fit: contain;
+    }
+
+    .split-badge {
+      position: absolute;
+      bottom: 20px;
+      background: #0F172A;
+      border: 2px solid #38BDF8;
+      padding: 8px 18px;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 800;
+      color: #38BDF8;
+      box-shadow: 3px 3px 0px #0284C7;
+    }
+
+    .action-btn-large {
+      background: #10B981;
+      color: #0F172A;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 32px;
+      font-weight: 900;
+      text-align: center;
+      padding: 24px;
+      border-radius: 20px;
+      border: 4px solid #0F172A;
+      box-shadow: 6px 6px 0px #0F172A;
+      margin-top: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-pattern"></div>
+  <div class="ambient-glow glow-top"></div>
+
+  <div class="header-content">
+    <div class="pill-badge">✂️ ON-DEVICE AI</div>
+    <div class="main-title">Background <span>Remover</span></div>
+    <div class="subtitle">Isolate subjects with high precision and export transparent PNGs without cloud servers.</div>
+  </div>
+
+  <div class="phone-container">
+    <div class="phone-notch"></div>
+    <div class="phone-screen">
+      <div class="screen-header">
+        <div class="screen-app-name">AI Cutout Studio</div>
+        <div class="tag-cutout">TRANSPARENT PNG</div>
+      </div>
+
+      <div class="cutout-preview-box">
+        <img src="../assets/images/pro_ai_cutout.jpg" class="cutout-image" alt="AI Cutout">
+        <div class="split-badge">✓ EDGE DETECTION ACTIVE</div>
+      </div>
+
+      <div class="action-btn-large">
+        💾 EXPORT TRANSPARENT PNG
+      </div>
+    </div>
+  </div>
+</body>
+</html>

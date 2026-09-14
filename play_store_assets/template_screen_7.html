@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Space+Grotesk:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      /* Soft pastel lavender-orchid gradient */
+      background: linear-gradient(175deg, #FAF5FF 0%, #F3E8FF 45%, #E9D5FF 100%);
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 95px 60px 0 60px;
+      color: #3B0764;
+    }
+
+    /* Organic neo-brutalist decorative stars (matching series rhythm) */
+    .sparkle {
+      position: absolute;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      user-select: none;
+      z-index: 15;
+    }
+    .s-1 { top: 90px; left: 80px; font-size: 52px; color: #7E22CE; opacity: 0.8; }
+    .s-2 { top: 160px; right: 85px; font-size: 46px; color: #EAB308; opacity: 0.9; }
+    .s-3 { top: 520px; right: 45px; font-size: 42px; color: #9333EA; opacity: 0.75; }
+    .s-4 { top: 760px; left: 50px; font-size: 48px; color: #F59E0B; opacity: 0.85; }
+
+    /* Top Text Section */
+    .top-section {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      z-index: 10;
+      margin-bottom: 36px;
+    }
+
+    .headline {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 94px;
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -3.5px;
+      color: #3B0764;
+      margin-bottom: 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .headline .line-1 {
+      color: #3B0764;
+    }
+    .headline .line-2 {
+      color: #7E22CE;
+    }
+
+    .pill-subtitle {
+      background: #FFFFFF;
+      padding: 14px 34px;
+      border-radius: 40px;
+      font-size: 25px;
+      font-weight: 800;
+      color: #581C87;
+      border: 3.5px solid #3B0764;
+      box-shadow: 4px 5px 0px #3B0764;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    /* Device Showcase Wrapper */
+    .device-wrapper {
+      position: relative;
+      width: 900px;
+      height: 1450px;
+      display: flex;
+      justify-content: center;
+      z-index: 5;
+    }
+
+    /* Dynamic Rotated Phone Frame: Showing ~70% of phone with -3.5deg tilt */
+    .phone-mockup-rotated {
+      width: 820px;
+      height: 1650px;
+      background: #09090B;
+      border: 8px solid #18181B;
+      border-radius: 74px;
+      box-shadow: 
+        0 45px 95px -15px rgba(88, 28, 135, 0.45),
+        14px 18px 0px #3B0764;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transform: translateY(110px) rotate(-3.5deg);
+    }
+
+    /* Phone Screen Container */
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 56px;
+      overflow: hidden;
+      background: #FFFDF6;
+      position: relative;
+    }
+
+    .screen-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+    }
+
+    /* High-Impact Neo-Brutalist Badge (Bottom Left, Golden Yellow against Lavender) */
+    .floating-sticker-left {
+      position: absolute;
+      bottom: 45px;
+      left: -35px;
+      background: #FACC15;
+      border: 4.5px solid #3B0764;
+      border-radius: 28px;
+      padding: 22px 34px;
+      box-shadow: 8px 9px 0px #3B0764;
+      z-index: 35;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      transform: rotate(-3deg);
+    }
+
+    .sticker-icon {
+      width: 66px;
+      height: 66px;
+      background: #3B0764;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      color: #FACC15;
+      flex-shrink: 0;
+    }
+
+    .sticker-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sticker-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 30px;
+      font-weight: 900;
+      color: #1E1B4B;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+
+    .sticker-sub {
+      font-size: 19px;
+      font-weight: 800;
+      color: #581C87;
+      margin-top: 4px;
+    }
+
+    /* Clean Bottom Ambient Base */
+    .bottom-accent-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: linear-gradient(to top, rgba(255, 255, 255, 0.8) 0%, transparent 100%);
+      z-index: 20;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Organic sparkle accents (4 stars matching series style) -->
+  <div class="sparkle s-1">✦</div>
+  <div class="sparkle s-2">★</div>
+  <div class="sparkle s-3">✦</div>
+  <div class="sparkle s-4">★</div>
+
+  <!-- Top Marketing Content -->
+  <div class="top-section">
+    <div class="headline">
+      <span class="line-1">PicsTools Pro.</span>
+      <span class="line-2">Unlock VIP Suite.</span>
+    </div>
+    <div class="pill-subtitle">
+      👑 100% Ad-Free • Batch Processing • All VIP Tools
+    </div>
+  </div>
+
+  <!-- Device Showcase Wrapper with Dynamic -3.5deg Tilt -->
+  <div class="device-wrapper">
+    <div class="phone-mockup-rotated">
+      <div class="phone-screen">
+        <img src="user_pro_screen_clean.png" class="screen-img" alt="PicsTools Pro VIP Screen">
+      </div>
+    </div>
+
+    <!-- Floating Neo-Brutalist Sticker (Bottom Left) -->
+    <div class="floating-sticker-left">
+      <div class="sticker-icon">👑</div>
+      <div class="sticker-text">
+        <span class="sticker-title">Full VIP Access</span>
+        <span class="sticker-sub">7-Day Free Trial • Cancel Anytime</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Accent Base -->
+  <div class="bottom-accent-bar"></div>
+
+</body>
+</html>

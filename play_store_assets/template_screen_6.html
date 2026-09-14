@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Space+Grotesk:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      /* Soft pastel glacier teal-aqua gradient harmonizing with series */
+      background: linear-gradient(175deg, #F0FDFA 0%, #CCFBF1 45%, #99F6E4 100%);
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 95px 60px 0 60px;
+      color: #134E4A;
+    }
+
+    /* Organic neo-brutalist decorative stars (matching series count & rhythm) */
+    .sparkle {
+      position: absolute;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      user-select: none;
+      z-index: 15;
+    }
+    .s-1 { top: 90px; left: 80px; font-size: 52px; color: #0D9488; opacity: 0.75; }
+    .s-2 { top: 170px; right: 80px; font-size: 44px; color: #D97706; opacity: 0.85; }
+    .s-3 { top: 520px; right: 40px; font-size: 42px; color: #0284C7; opacity: 0.75; }
+    .s-4 { top: 760px; left: 50px; font-size: 46px; color: #7C3AED; opacity: 0.7; }
+
+    /* Top Text Section */
+    .top-section {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      z-index: 10;
+      margin-bottom: 36px;
+    }
+
+    .headline {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 94px;
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -3.5px;
+      color: #134E4A;
+      margin-bottom: 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .headline .line-1 {
+      color: #134E4A;
+    }
+    .headline .line-2 {
+      color: #0F766E;
+    }
+
+    .pill-subtitle {
+      background: #FFFFFF;
+      padding: 14px 34px;
+      border-radius: 40px;
+      font-size: 25px;
+      font-weight: 800;
+      color: #0F766E;
+      border: 3.5px solid #134E4A;
+      box-shadow: 4px 5px 0px #134E4A;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    /* Device Showcase Wrapper */
+    .device-wrapper {
+      position: relative;
+      width: 900px;
+      height: 1450px;
+      display: flex;
+      justify-content: center;
+      z-index: 5;
+    }
+
+    /* Dynamic Rotated Phone Frame: Showing ~70% of phone with +3.5deg tilt */
+    .phone-mockup-rotated {
+      width: 820px;
+      height: 1650px;
+      background: #09090B;
+      border: 8px solid #18181B;
+      border-radius: 74px;
+      box-shadow: 
+        0 45px 95px -15px rgba(19, 78, 74, 0.45),
+        14px 18px 0px #134E4A;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transform: translateY(110px) rotate(3.5deg);
+    }
+
+    /* Phone Screen Container */
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 56px;
+      overflow: hidden;
+      background: #FFFDF6;
+      position: relative;
+    }
+
+    .screen-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+    }
+
+    /* High-Impact Neo-Brutalist Badge (Bottom Right, Royal Violet against glacier teal) */
+    .floating-sticker-right {
+      position: absolute;
+      bottom: 230px;
+      right: -15px;
+      background: #7C3AED;
+      border: 4.5px solid #134E4A;
+      border-radius: 28px;
+      padding: 22px 34px;
+      box-shadow: 8px 9px 0px #134E4A;
+      z-index: 35;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      transform: rotate(3deg);
+    }
+
+    .sticker-icon {
+      width: 66px;
+      height: 66px;
+      background: #4C1D95;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      color: #FFFFFF;
+      flex-shrink: 0;
+    }
+
+    .sticker-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sticker-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 32px;
+      font-weight: 900;
+      color: #FFFFFF;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+
+    .sticker-sub {
+      font-size: 20px;
+      font-weight: 800;
+      color: #EDE9FE;
+      margin-top: 4px;
+    }
+
+    /* Clean Bottom Ambient Base */
+    .bottom-accent-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: linear-gradient(to top, rgba(255, 255, 255, 0.8) 0%, transparent 100%);
+      z-index: 20;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Organic sparkle accents (4 stars matching series style) -->
+  <div class="sparkle s-1">✦</div>
+  <div class="sparkle s-2">★</div>
+  <div class="sparkle s-3">✦</div>
+  <div class="sparkle s-4">★</div>
+
+  <!-- Top Marketing Content -->
+  <div class="top-section">
+    <div class="headline">
+      <span class="line-1">Passport & ID.</span>
+      <span class="line-2">Photo Maker.</span>
+    </div>
+    <div class="pill-subtitle">
+      🪪 Standard Global Sizes • 1-Tap 300 DPI Print Sheets
+    </div>
+  </div>
+
+  <!-- Device Showcase Wrapper with Dynamic +3.5deg Tilt -->
+  <div class="device-wrapper">
+    <div class="phone-mockup-rotated">
+      <div class="phone-screen">
+        <img src="user_passport_screen_clean.png" class="screen-img" alt="PicsTools Passport & ID Photo Maker Screen">
+      </div>
+    </div>
+
+    <!-- Floating Neo-Brutalist Sticker (Bottom Right) -->
+    <div class="floating-sticker-right">
+      <div class="sticker-icon">🖨️</div>
+      <div class="sticker-text">
+        <span class="sticker-title">Print-Ready 300 DPI</span>
+        <span class="sticker-sub">Single & Multi-Grid Photo Sheets</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Accent Base -->
+  <div class="bottom-accent-bar"></div>
+
+</body>
+</html>

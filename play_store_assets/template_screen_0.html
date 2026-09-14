@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Space+Grotesk:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      /* Warm sunny neo-brutalist canvas */
+      background: linear-gradient(180deg, #FFFDF7 0%, #FEF9C3 45%, #FDE047 100%);
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 95px 60px 0 60px;
+      color: #18181B;
+    }
+
+    /* Subtle background grid pattern for neo-brutalist texture */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        radial-gradient(#D97706 1.5px, transparent 1.5px);
+      background-size: 32px 32px;
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Organic neo-brutalist decorative sparkle stars */
+    .sparkle {
+      position: absolute;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      user-select: none;
+      z-index: 20;
+    }
+    .s-1 { top: 90px; left: 75px; font-size: 54px; color: #7C3AED; opacity: 0.85; }
+    .s-2 { top: 160px; right: 80px; font-size: 48px; color: #EA580C; opacity: 0.9; }
+    .s-3 { top: 580px; right: 40px; font-size: 44px; color: #0284C7; opacity: 0.8; }
+    .s-4 { top: 860px; left: 45px; font-size: 50px; color: #DB2777; opacity: 0.85; }
+
+    /* Top Marketing Content */
+    .top-section {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      z-index: 15;
+      margin-bottom: 36px;
+    }
+
+    .headline {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 94px;
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -3.5px;
+      color: #18181B;
+      margin-bottom: 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .headline .line-1 {
+      color: #18181B;
+    }
+    .headline .line-2 {
+      color: #7C3AED;
+    }
+
+    .pill-subtitle {
+      background: #FFFFFF;
+      padding: 14px 34px;
+      border-radius: 40px;
+      font-size: 25px;
+      font-weight: 800;
+      color: #047857;
+      border: 3.5px solid #18181B;
+      box-shadow: 4px 5px 0px #18181B;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .pill-icon {
+      width: 26px;
+      height: 26px;
+      color: #047857;
+      flex-shrink: 0;
+    }
+
+    /* Central Showcase Stage */
+    .hero-stage {
+      position: relative;
+      width: 960px;
+      height: 1000px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      margin-bottom: 85px;
+    }
+
+    /* Backdrop Card with Neo-Brutalist Frame */
+    .hero-card-frame {
+      position: absolute;
+      width: 880px;
+      height: 960px;
+      background: #FFFFFF;
+      border: 6px solid #18181B;
+      border-radius: 56px;
+      box-shadow: 14px 18px 0px #18181B;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding-bottom: 35px;
+      background-image: 
+        linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 60%, #F1F5F9 100%);
+    }
+
+    /* Soft geometric circular aura for depth */
+    .card-aura {
+      position: absolute;
+      top: 60px;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #E0F2FE 0%, #DDD6FE 60%, transparent 80%);
+      opacity: 0.85;
+      z-index: 1;
+    }
+
+    /* 3D Mascot Character */
+    .hero-mascot {
+      position: relative;
+      height: 855px;
+      width: auto;
+      object-fit: contain;
+      z-index: 5;
+      filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.2));
+    }
+
+    /* Floating Interactive Feature Stickers Overlapping the Hero Stage */
+    .sticker-badge {
+      position: absolute;
+      border: 4.5px solid #18181B;
+      border-radius: 26px;
+      padding: 16px 24px;
+      box-shadow: 7px 8px 0px #18181B;
+      z-index: 25;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .st-icon-box {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      border: 3px solid #18181B;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .st-icon-box svg {
+      width: 28px;
+      height: 28px;
+      stroke: #18181B;
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .st-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .st-title {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+
+    .st-desc {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      margin-top: 2px;
+    }
+
+    /* Sticker 1: Compress (Top-Left) */
+    .st-compress {
+      top: 50px;
+      left: 10px;
+      background: #FFE600;
+      color: #18181B;
+      transform: rotate(-6deg);
+    }
+    .st-compress .st-icon-box {
+      background: #FFFFFF;
+    }
+    .st-compress .st-desc { color: #451A03; }
+
+    /* Sticker 2: PDF (Top-Right) */
+    .st-pdf {
+      top: 65px;
+      right: 15px;
+      background: #A7F3D0;
+      color: #064E3B;
+      transform: rotate(5deg);
+    }
+    .st-pdf .st-icon-box {
+      background: #FFFFFF;
+    }
+    .st-pdf .st-desc { color: #047857; }
+
+    /* Sticker 3: AI Cutout (Middle-Left) */
+    .st-cutout {
+      bottom: 250px;
+      left: -15px;
+      background: #FECDD3;
+      color: #881337;
+      transform: rotate(4deg);
+    }
+    .st-cutout .st-icon-box {
+      background: #FFFFFF;
+    }
+    .st-cutout .st-desc { color: #9F1239; }
+
+    /* Sticker 4: Passport & ID (Middle-Right) */
+    .st-passport {
+      bottom: 260px;
+      right: -10px;
+      background: #E9D5FF;
+      color: #3B0764;
+      transform: rotate(-4deg);
+    }
+    .st-passport .st-icon-box {
+      background: #FFFFFF;
+    }
+    .st-passport .st-desc { color: #6B21A8; }
+
+    /* Sticker 5: Signature Scanner (Bottom-Center) */
+    .st-sign {
+      bottom: -22px;
+      left: 50%;
+      transform: translateX(-50%) rotate(1.5deg);
+      background: #38BDF8;
+      color: #0C4A6E;
+      padding: 16px 32px;
+    }
+    .st-sign .st-icon-box {
+      background: #FFFFFF;
+    }
+    .st-sign .st-desc { color: #0369A1; }
+
+    /* Bottom Trust & Feature Ribbon (Bento 3-Column) */
+    .bottom-ribbon {
+      width: 960px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      z-index: 15;
+    }
+
+    .ribbon-card {
+      background: #FFFFFF;
+      border: 4.5px solid #18181B;
+      border-radius: 28px;
+      padding: 22px 20px;
+      box-shadow: 7px 8px 0px #18181B;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .rc-icon-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 3.5px solid #18181B;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .rc-icon-circle svg {
+      width: 30px;
+      height: 30px;
+      stroke: #18181B;
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .rc-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 23px;
+      font-weight: 900;
+      color: #18181B;
+      letter-spacing: -0.5px;
+    }
+
+    .rc-sub {
+      font-size: 16px;
+      font-weight: 800;
+      color: #52525B;
+      margin-top: 4px;
+    }
+
+    /* Ambient Base */
+    .bottom-accent-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: linear-gradient(to top, rgba(253, 224, 71, 0.4) 0%, transparent 100%);
+      z-index: 5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background grid texture -->
+  <div class="bg-grid"></div>
+
+  <!-- Organic Neo-Brutalist Sparkles -->
+  <div class="sparkle s-1">✦</div>
+  <div class="sparkle s-2">★</div>
+  <div class="sparkle s-3">✦</div>
+  <div class="sparkle s-4">★</div>
+
+  <!-- Top Marketing Content -->
+  <div class="top-section">
+    <div class="headline">
+      <span class="line-1">The All-in-One.</span>
+      <span class="line-2">Photo Toolkit.</span>
+    </div>
+    <div class="pill-subtitle">
+      <svg class="pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+      </svg>
+      100% Offline • Zero Server Uploads • 8 Essential Tools
+    </div>
+  </div>
+
+  <!-- Central Hero Stage with 3D Avatar Mascot -->
+  <div class="hero-stage">
+    
+    <!-- Hero Card Frame Backdrop -->
+    <div class="hero-card-frame">
+      <div class="card-aura"></div>
+      <img src="mascot_hero_tight.png" class="hero-mascot" alt="PicsTools Creative Mascot">
+    </div>
+
+    <!-- Floating Interactive Feature Stickers with Real Vector SVGs -->
+    <div class="sticker-badge st-compress">
+      <div class="st-icon-box">
+        <svg viewBox="0 0 24 24">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="#FFE600"></polygon>
+        </svg>
+      </div>
+      <div class="st-text">
+        <span class="st-title">Compress KB</span>
+        <span class="st-desc">Shrink up to 90%</span>
+      </div>
+    </div>
+
+    <div class="sticker-badge st-pdf">
+      <div class="st-icon-box">
+        <svg viewBox="0 0 24 24">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+      </div>
+      <div class="st-text">
+        <span class="st-title">Photo to PDF</span>
+        <span class="st-desc">Multi-Page Docs</span>
+      </div>
+    </div>
+
+    <div class="sticker-badge st-cutout">
+      <div class="st-icon-box">
+        <svg viewBox="0 0 24 24">
+          <circle cx="6" cy="6" r="3"></circle>
+          <circle cx="6" cy="18" r="3"></circle>
+          <line x1="20" y1="4" x2="8.12" y2="15.88"></line>
+          <line x1="14.47" y1="14.48" x2="20" y2="20"></line>
+          <line x1="8.12" y1="8.12" x2="12" y2="12"></line>
+        </svg>
+      </div>
+      <div class="st-text">
+        <span class="st-title">AI Cutout</span>
+        <span class="st-desc">Transparent PNG</span>
+      </div>
+    </div>
+
+    <div class="sticker-badge st-passport">
+      <div class="st-icon-box">
+        <svg viewBox="0 0 24 24">
+          <rect x="3" y="4" width="18" height="16" rx="3"></rect>
+          <circle cx="9" cy="10" r="2"></circle>
+          <line x1="15" y1="8" x2="17" y2="8"></line>
+          <line x1="15" y1="12" x2="17" y2="12"></line>
+          <path d="M7 16a2 2 0 0 1 4 0"></path>
+        </svg>
+      </div>
+      <div class="st-text">
+        <span class="st-title">Passport ID</span>
+        <span class="st-desc">300 DPI Print</span>
+      </div>
+    </div>
+
+    <div class="sticker-badge st-sign">
+      <div class="st-icon-box">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+          <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+          <path d="M2 2l7.586 7.586"></path>
+          <circle cx="11" cy="11" r="2"></circle>
+        </svg>
+      </div>
+      <div class="st-text">
+        <span class="st-title">Digital Signature</span>
+        <span class="st-desc">1-Tap Paper Extract</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Bento Trust Ribbon with Real SVGs -->
+  <div class="bottom-ribbon">
+    <div class="ribbon-card">
+      <div class="rc-icon-circle" style="background: #FEF08A;">
+        <svg viewBox="0 0 24 24">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="#FFE600"></polygon>
+        </svg>
+      </div>
+      <div class="rc-title">Instant Engine</div>
+      <div class="rc-sub">0.12s On-Device</div>
+    </div>
+    
+    <div class="ribbon-card">
+      <div class="rc-icon-circle" style="background: #BBF7D0;">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="#DCFCE7"></path>
+          <polyline points="9 12 11 14 15 10"></polyline>
+        </svg>
+      </div>
+      <div class="rc-title">100% Private</div>
+      <div class="rc-sub">Zero Server Uploads</div>
+    </div>
+    
+    <div class="ribbon-card">
+      <div class="rc-icon-circle" style="background: #FED7AA;">
+        <svg viewBox="0 0 24 24">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#FDBA74"></polygon>
+        </svg>
+      </div>
+      <div class="rc-title">Top Rated</div>
+      <div class="rc-sub">No Ads Experience</div>
+    </div>
+  </div>
+
+  <div class="bottom-accent-bar"></div>
+
+</body>
+</html>

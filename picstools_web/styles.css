@@ -448,6 +448,7 @@ a:hover {
 .gradient-text {
   background: var(--grad-primary);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
 }
@@ -936,6 +937,7 @@ a:hover {
   margin-bottom: 6px;
   background: var(--grad-primary);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
