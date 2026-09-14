@@ -76,6 +76,8 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 body {
@@ -87,6 +89,8 @@ body {
   -webkit-font-smoothing: antialiased;
   position: relative;
   overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
 }
 
 /* Ambient Floating Glow Orbs */
@@ -289,7 +293,16 @@ body {
   border: 2px solid var(--border-color);
   box-shadow: 2.5px 2.5px 0px var(--border-color);
   text-decoration: none;
+  white-space: nowrap;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cta-text-full {
+  display: inline;
+}
+
+.cta-text-short {
+  display: none;
 }
 
 .cta-nav-btn:hover {
@@ -790,8 +803,41 @@ body {
   border: 1px solid var(--border-color);
 }
 
-.mini-tool-icon {
-  font-size: 1.15rem;
+.mini-tool-icon-box {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-color);
+  box-shadow: 1.5px 1.5px 0px var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.app-tool-mini-card:hover .mini-tool-icon-box {
+  transform: scale(1.1) rotate(3deg);
+}
+
+.mini-tool-img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  display: block;
+}
+
+.mini-tool-icon-box.bg-yellow .mini-tool-img,
+.mini-tool-icon-box.bg-cyan .mini-tool-img {
+  filter: brightness(0);
+}
+
+.mini-tool-icon-box.bg-purple .mini-tool-img,
+.mini-tool-icon-box.bg-pink .mini-tool-img,
+.mini-tool-icon-box.bg-green .mini-tool-img,
+.mini-tool-icon-box.bg-orange .mini-tool-img,
+.mini-tool-icon-box.bg-blue .mini-tool-img {
+  filter: brightness(0) invert(1);
 }
 
 .mini-tool-title {
@@ -811,7 +857,8 @@ body {
    Live Performance Counter Ribbon
    ========================================================================== */
 .stats-ribbon-section {
-  padding: 30px 0 50px;
+  padding-top: 30px;
+  padding-bottom: 50px;
 }
 
 .stats-grid {
@@ -1590,7 +1637,7 @@ body {
 }
 
 /* ==========================================================================
-   Responsive Breakpoints
+   Comprehensive Mobile & Tablet Responsiveness Suite
    ========================================================================== */
 @media (max-width: 1100px) {
   .tools-grid {
@@ -1626,6 +1673,7 @@ body {
 
   .vs-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
 
   .floating-orbit-badge {
@@ -1633,38 +1681,417 @@ body {
   }
 }
 
-@media (max-width: 640px) {
-  .hero-headline {
-    font-size: 2.1rem;
+@media (max-width: 768px) {
+  /* Enforce consistent gutters on every section across the entire site */
+  .container {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
   }
 
+  /* Compact sticky header navigation bar */
+  .header-container {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    gap: 8px;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .brand-link {
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .brand-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .brand-title {
+    font-size: 1.1rem;
+    line-height: 1.1;
+  }
+
+  .brand-subtitle {
+    display: none;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  /* Ambient Focus Lo-Fi Sound: icon-only on mobile (no 2-line break) */
+  .ambient-audio-btn {
+    padding: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 2px 2px 0px var(--border-color);
+  }
+
+  .ambient-audio-btn .audio-label {
+    display: none;
+  }
+
+  .ambient-audio-btn .audio-equalizer {
+    height: 14px;
+    gap: 2.5px;
+  }
+
+  /* Get App CTA: single-line pill, never wraps into 3 lines */
+  .cta-nav-btn {
+    padding: 8px 14px;
+    font-size: 0.82rem;
+    white-space: nowrap;
+    border-radius: 9px;
+    flex-shrink: 0;
+    box-shadow: 2px 2px 0px var(--border-color);
+  }
+
+  /* Theme Toggle Button: always visible & aligned */
+  .theme-toggle-btn {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    display: flex !important;
+    font-size: 1rem;
+    box-shadow: 2px 2px 0px var(--border-color);
+  }
+
+  /* Section Spacing Adjustments */
+  .hero-wrapper {
+    padding-top: 35px;
+    padding-bottom: 40px;
+  }
+
+  .tools-section,
+  .architecture-section,
+  .workflows-section,
+  .faq-section {
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+
+  .cutout-studio-section {
+    padding-top: 55px;
+    padding-bottom: 45px;
+  }
+
+  .compressor-playground-section {
+    padding-top: 35px;
+    padding-bottom: 50px;
+  }
+
+  /* Marquee container mobile clipping */
+  .marquee-showcase-container {
+    padding: 30px 0 40px;
+    gap: 10px;
+    width: 100%;
+    max-width: 100vw;
+    overflow: hidden;
+  }
+
+  .marquee-tape {
+    width: 112vw;
+    margin-left: -6vw;
+    padding: 9px 0;
+  }
+
+  .marquee-item {
+    font-size: 0.82rem;
+    gap: 8px;
+  }
+
+  .pop-tag, .pop-pill {
+    font-size: 0.6rem;
+    padding: 2px 6px;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Typography Scaling */
+  .hero-headline {
+    font-size: 2.15rem;
+    letter-spacing: -0.8px;
+    line-height: 1.15;
+  }
+
+  .hero-subhead {
+    font-size: 1rem;
+    line-height: 1.55;
+    margin-bottom: 24px;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    letter-spacing: -0.6px;
+  }
+
+  .section-subtext {
+    font-size: 0.98rem;
+    line-height: 1.5;
+  }
+
+  /* Single Column Layouts */
   .hero-trust-grid {
     grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .tools-grid {
     grid-template-columns: 1fr;
+    gap: 18px;
   }
 
   .stats-grid {
     grid-template-columns: 1fr;
+    gap: 14px;
   }
 
   .workflows-grid {
     grid-template-columns: 1fr;
-  }
-
-  .download-headline {
-    font-size: 2.2rem;
+    gap: 18px;
   }
 
   .neo-card {
     padding: 18px;
+    border-radius: 14px;
   }
 
+  /* Phone Mockup Mobile */
+  .phone-mockup {
+    max-width: 100%;
+    border-radius: 32px;
+    border-width: 3px;
+    box-shadow: 6px 6px 0px var(--border-color);
+  }
+
+  /* Cutout Studio Card Mobile */
+  .cutout-showcase-card {
+    padding: 16px;
+    border-radius: 18px;
+    border-width: 2.5px;
+    box-shadow: 5px 5px 0px var(--border-color);
+  }
+
+  .cutout-interactive-frame {
+    border-radius: 14px;
+    border-width: 2.5px;
+    box-shadow: 4px 4px 0px var(--border-color);
+  }
+
+  .split-badge-before,
+  .split-badge-after {
+    padding: 4px 8px;
+    font-size: 0.65rem;
+    border-radius: 6px;
+    top: 10px;
+  }
+
+  .split-badge-before { left: 10px; }
+  .split-badge-after { right: 10px; }
+
+  .cutout-hud-status {
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    padding: 6px 10px;
+    font-size: 0.65rem;
+    border-radius: 8px;
+  }
+
+  .cutout-metric-badges {
+    gap: 6px;
+  }
+
+  .metric-pill {
+    padding: 4px 10px;
+    font-size: 0.72rem;
+    border-radius: 8px;
+  }
+
+  /* Compressor Playground Mobile */
+  .compressor-card {
+    padding: 18px 16px;
+    border-radius: 18px;
+    border-width: 2.5px;
+    box-shadow: 5px 5px 0px var(--border-color);
+  }
+
+  .compressor-slider-wrap {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .compressor-meters-grid {
+    gap: 10px;
+  }
+
+  .meter-box {
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .meter-size {
+    font-size: 1.35rem;
+  }
+
+  /* Download Banner Card Mobile */
+  .download-banner-card {
+    padding: 32px 18px;
+    border-radius: 20px;
+    border-width: 2.5px;
+    box-shadow: 5px 5px 0px var(--border-color);
+  }
+
+  .download-headline {
+    font-size: 1.9rem;
+    letter-spacing: -0.6px;
+  }
+
+  .download-subhead {
+    font-size: 1rem;
+    margin-bottom: 24px;
+  }
+
+  .btn-primary-play.large {
+    padding: 12px 20px;
+    width: 100%;
+    max-width: 320px;
+    justify-content: center;
+  }
+
+  .download-meta-notes {
+    gap: 8px 14px;
+    font-size: 0.78rem;
+  }
+
+  /* Footer Mobile */
   .footer-content {
     flex-direction: column;
     align-items: flex-start;
+    gap: 20px;
+  }
+
+  .footer-nav {
+    flex-wrap: wrap;
+    gap: 12px 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Small mobile / Pixel 7 / iPhone SE optimizations */
+  .container {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  .announcement-bar {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+  }
+
+  .header-container {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    gap: 6px;
+  }
+
+  .brand-link {
+    gap: 7px;
+  }
+
+  .brand-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .brand-title {
+    font-size: 1.02rem;
+  }
+
+  .brand-tag {
+    display: none;
+  }
+
+  .header-actions {
+    gap: 6px;
+  }
+
+  .ambient-audio-btn {
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+  }
+
+  /* Switch CTA to short label 'Get App' */
+  .cta-text-full {
+    display: none;
+  }
+
+  .cta-text-short {
+    display: inline;
+  }
+
+  .cta-nav-btn {
+    padding: 7px 10px;
+    font-size: 0.76rem;
+    border-radius: 8px;
+  }
+
+  .theme-toggle-btn {
+    width: 35px;
+    height: 35px;
+    min-width: 35px;
+    border-radius: 8px;
+    font-size: 0.92rem;
+  }
+
+  .hero-headline {
+    font-size: 1.85rem;
+    letter-spacing: -0.5px;
+  }
+
+  .section-title {
+    font-size: 1.7rem;
+    letter-spacing: -0.5px;
+  }
+
+  .download-headline {
+    font-size: 1.75rem;
+    letter-spacing: -0.5px;
+  }
+
+  .creator-proof-pill {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 16px;
+  }
+
+  .web-category-filter-bar {
+    gap: 6px;
+  }
+
+  .web-cat-btn {
+    padding: 6px 12px;
+    font-size: 0.76rem;
+  }
+
+  .hero-cta-group {
+    width: 100%;
+  }
+
+  .btn-primary-play {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 18px;
   }
 }
 
@@ -1968,7 +2395,8 @@ body {
    Interactive AI Cutout Studio Section
    ========================================================================== */
 .cutout-studio-section {
-  padding: 90px 0 60px;
+  padding-top: 80px;
+  padding-bottom: 60px;
   position: relative;
 }
 
@@ -2054,7 +2482,8 @@ body {
    Interactive Lossless Compressor Playground
    ========================================================================== */
 .compressor-playground-section {
-  padding: 40px 0 70px;
+  padding-top: 40px;
+  padding-bottom: 70px;
 }
 
 .compressor-card {
@@ -2266,19 +2695,6 @@ body {
   }
 }
 
-@media (max-width: 640px) {
-  .cutout-showcase-card {
-    padding: 20px;
-  }
-
-  .compressor-card {
-    padding: 20px;
-  }
-
-  .creator-proof-pill {
-    width: 100%;
-  }
-}
 
 /* ==========================================================================
    Award-Winning $10,000+ Experiential Motion System
@@ -2452,36 +2868,6 @@ body {
   box-shadow: 1.5px 1.5px 0px rgba(0, 0, 0, 0.3);
 }
 
-@media (max-width: 768px) {
-  .marquee-showcase-container {
-    padding: 35px 0 45px;
-    gap: 10px;
-  }
-
-  .marquee-tape {
-    width: 125vw;
-    margin-left: -12.5vw;
-    padding: 10px 0;
-  }
-
-  .tape-parallel {
-    transform: rotate(-2.2deg);
-  }
-
-  .tape-parallel:hover {
-    transform: rotate(-2.2deg) scale(1.008);
-  }
-
-  .marquee-item {
-    font-size: 0.82rem;
-    gap: 8px;
-  }
-
-  .pop-tag, .pop-pill {
-    font-size: 0.58rem;
-    padding: 2px 6px;
-  }
-}
 
 /* 3. Ambient Lo-Fi Audio Equalizer Controller */
 .ambient-audio-btn {
@@ -2497,6 +2883,7 @@ body {
   font-weight: 800;
   color: var(--text-primary);
   cursor: pointer;
+  white-space: nowrap;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   box-shadow: 3px 3px 0px var(--border-color);
 }
