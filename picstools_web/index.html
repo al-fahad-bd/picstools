@@ -31,6 +31,9 @@
 
 <body class="landing-page">
 
+  <!-- Fluid Mouse Ambient Glow Spotlight -->
+  <div class="cursor-glow"></div>
+
   <!-- Ambient Dynamic Floating Glows -->
   <div class="ambient-glow glow-1"></div>
   <div class="ambient-glow glow-2"></div>
@@ -60,14 +63,24 @@
 
       <nav class="nav-links">
         <a href="#features" class="nav-link">8 Tools</a>
+        <a href="#cutout-studio" class="nav-link">AI Cutout</a>
         <a href="#comparison" class="nav-link">Why On-Device</a>
-        <a href="#workflows" class="nav-link">Use Cases</a>
+        <a href="#workflows" class="nav-link">Workflows</a>
         <a href="#faq" class="nav-link">FAQ</a>
-        <a href="/privacy" class="nav-link">Privacy Policy</a>
-        <a href="/delete-account" class="nav-link">Account</a>
+        <a href="/privacy" class="nav-link">Privacy</a>
       </nav>
 
       <div class="header-actions">
+        <!-- Ambient Lo-Fi Sound Studio Toggle -->
+        <button id="ambient-audio-toggle" class="ambient-audio-btn" aria-label="Toggle focus ambient sound">
+          <div class="audio-equalizer">
+            <span class="equalizer-bar"></span>
+            <span class="equalizer-bar"></span>
+            <span class="equalizer-bar"></span>
+          </div>
+          <span class="audio-label">Ambient Focus</span>
+        </button>
+
         <a href="#download" class="cta-nav-btn">Get App Free</a>
         <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark/light theme">
           <span class="theme-icon">🌙</span>
@@ -84,10 +97,10 @@
       <div class="landing-hero">
 
         <!-- Hero Left Column -->
-        <div class="hero-left">
-          <div class="hero-pill-badge">
+        <div class="hero-left reveal reveal-slide-left">
+          <div class="hero-pill-badge float-slow">
             <span class="pill-sparkle">✨</span>
-            <span>8 ESSENTIAL TOOLS • 100% OFFLINE</span>
+            <span>AWARD-WINNING SUITE • 100% OFFLINE</span>
           </div>
 
           <h1 class="hero-headline">
@@ -102,6 +115,19 @@
               offline on your phone’s processor</strong>.
           </p>
 
+          <!-- Creator Social Proof with Bespoke Generated Models -->
+          <div class="creator-proof-pill">
+            <div class="creator-avatar-group">
+              <img src="assets/hero_creator_model.jpg" alt="Creator" class="creator-avatar">
+              <img src="assets/passport_biometric_model.jpg" alt="Creator" class="creator-avatar">
+              <img src="assets/creator_workflow_model.jpg" alt="Creator" class="creator-avatar">
+            </div>
+            <div class="creator-proof-text">
+              <div class="creator-proof-stars">★★★★★ <span class="rating-num">4.9/5</span></div>
+              <span class="creator-proof-desc">Loved by <strong>15,000+</strong> mobile creators & photographers</span>
+            </div>
+          </div>
+
           <div class="hero-cta-group">
             <a href="#download" class="btn-primary-play">
               <img src="assets/google-play.png" alt="Google Play" class="play-icon" width="26" height="26">
@@ -111,48 +137,48 @@
               </div>
             </a>
 
-            <a href="#features" class="btn-secondary-explore">
-              <span>Explore 8 Tools</span>
+            <a href="#cutout-studio" class="btn-secondary-explore">
+              <span>Try AI Cutout</span>
               <span>↓</span>
             </a>
           </div>
 
           <!-- Hero Trust Grid -->
           <div class="hero-trust-grid">
-            <div class="trust-card">
+            <div class="trust-card reveal reveal-scale stagger-1">
               <span class="trust-card-icon">⚡</span>
               <span>0ms Server Latency</span>
             </div>
-            <div class="trust-card">
+            <div class="trust-card reveal reveal-scale stagger-2">
               <span class="trust-card-icon">🔒</span>
               <span>100% Offline & Private</span>
             </div>
-            <div class="trust-card">
+            <div class="trust-card reveal reveal-scale stagger-3">
               <span class="trust-card-icon">👤</span>
               <span>No Mandatory Sign-in</span>
             </div>
-            <div class="trust-card">
+            <div class="trust-card reveal reveal-scale stagger-4">
               <span class="trust-card-icon">✈️</span>
               <span>Airplane Mode Ready</span>
             </div>
           </div>
         </div>
 
-        <!-- Hero Right Column - Authentic PicsTools App UI Showcase -->
-        <div class="hero-right hero-device-container">
+        <!-- Hero Right Column - Flagship Dual-Stage Showcase -->
+        <div class="hero-right hero-device-container reveal reveal-slide-right">
 
           <!-- Orbit Badges -->
-          <div class="floating-orbit-badge badge-top-left">
+          <div class="floating-orbit-badge badge-top-left float-slow">
             <span>🤖</span> <span>100% On-Device AI</span>
           </div>
-          <div class="floating-orbit-badge badge-top-right">
+          <div class="floating-orbit-badge badge-top-right float-reverse">
             <span>🔒</span> <span>Zero Cloud Uploads</span>
           </div>
-          <div class="floating-orbit-badge badge-bottom-left">
+          <div class="floating-orbit-badge badge-bottom-left float-slow">
             <span>⚡</span> <span>8 Essential Tools</span>
           </div>
 
-          <!-- Phone Mockup Device -->
+          <!-- Smartphone App Screen Mockup -->
           <div class="phone-mockup">
             <!-- Status Notch -->
             <div class="phone-notch-bar">
@@ -270,25 +296,48 @@
       </div>
     </section>
 
+    <!-- High-Velocity Infinite Marquee Ticker -->
+    <div class="marquee-wrapper">
+      <div class="marquee-content">
+        <div class="marquee-item"><span class="marquee-dot"></span> 100% On-Device AI</div>
+        <div class="marquee-item"><span class="marquee-dot"></span> Zero Cloud Latency</div>
+        <div class="marquee-item"><span class="marquee-dot"></span> Perceptual Lossless Compression</div>
+        <div class="marquee-item"><span class="marquee-dot"></span> 0 Bytes Uploaded to Servers</div>
+        <div class="marquee-item"><span class="marquee-dot"></span> BiRefNet Neural Isolation</div>
+        <div class="marquee-item"><span class="marquee-dot"></span> ICAO Biometric Passport ID</div>
+        <div class="marquee-item"><span class="marquee-dot"></span> Airplane Mode Ready</div>
+        <div class="marquee-item"><span class="marquee-dot"></span> 8 Professional Tools in 1</div>
+        <!-- Continuous loop duplicates -->
+        <div class="marquee-item"><span class="marquee-dot"></span> 100% On-Device AI</div>
+        <div class="marquee-item"><span class="marquee-dot"></span> Zero Cloud Latency</div>
+        <div class="marquee-item"><span class="marquee-dot"></span> Perceptual Lossless Compression</div>
+        <div class="marquee-item"><span class="marquee-dot"></span> 0 Bytes Uploaded to Servers</div>
+        <div class="marquee-item"><span class="marquee-dot"></span> BiRefNet Neural Isolation</div>
+        <div class="marquee-item"><span class="marquee-dot"></span> ICAO Biometric Passport ID</div>
+        <div class="marquee-item"><span class="marquee-dot"></span> Airplane Mode Ready</div>
+        <div class="marquee-item"><span class="marquee-dot"></span> 8 Professional Tools in 1</div>
+      </div>
+    </div>
+
     <!-- Live Performance Counter Ribbon -->
     <section class="container stats-ribbon-section">
       <div class="stats-grid">
-        <div class="stat-item-card">
+        <div class="stat-item-card reveal reveal-scale stagger-1">
           <div class="stat-big-number">100%</div>
           <div class="stat-label-title">On-Device AI</div>
           <div class="stat-label-sub">Zero reliance on remote servers</div>
         </div>
-        <div class="stat-item-card">
+        <div class="stat-item-card reveal reveal-scale stagger-2">
           <div class="stat-big-number">8 Tools</div>
           <div class="stat-label-title">Unified Workspace</div>
           <div class="stat-label-sub">All essential tools in one single app</div>
         </div>
-        <div class="stat-item-card">
+        <div class="stat-item-card reveal reveal-scale stagger-3">
           <div class="stat-big-number">0 KB</div>
           <div class="stat-label-title">Photos Uploaded</div>
           <div class="stat-label-sub">Personal media stays on your phone</div>
         </div>
-        <div class="stat-item-card">
+        <div class="stat-item-card reveal reveal-scale stagger-4">
           <div class="stat-big-number">90%</div>
           <div class="stat-label-title">Storage Shrinkage</div>
           <div class="stat-label-sub">Lossless perceptual compression</div>
@@ -296,9 +345,74 @@
       </div>
     </section>
 
+    <!-- Interactive AI Cutout Studio Showcase -->
+    <section id="cutout-studio" class="container cutout-studio-section reveal reveal-fade-up">
+      <div class="cutout-showcase-card">
+        <div class="cutout-showcase-grid">
+
+          <!-- Left: Full-Fidelity Interactive Cutout Showcase (100% Visible, No Clipping) -->
+          <div class="cutout-interactive-frame">
+            <span class="split-badge-before">📸 BEFORE: STREET RAW SCENE</span>
+            <span class="split-badge-after">⚡ AFTER: ON-DEVICE AI CUTOUT</span>
+            <img src="assets/ai_cutout_studio.jpg" alt="PicsTools AI Background Remover Before and After Model Cutout"
+              class="cutout-img-responsive">
+
+            <!-- Sleek Holographic Cyan Laser Scanner Line -->
+            <div class="cutout-laser-beam">
+              <span class="laser-beam-indicator">⟷ NEURAL SCAN</span>
+            </div>
+
+            <!-- Bottom Floating HUD Badge -->
+            <div class="cutout-hud-status">
+              <span class="live-indicator-dot"></span>
+              <span>BiRefNet Boundary Active • 0.38s NPU Inference</span>
+            </div>
+          </div>
+
+          <!-- Right: Cutout Specifications & NPU Engine Details -->
+          <div class="cutout-info-panel">
+            <div class="section-badge-wrap" style="text-align: left;">
+              <span class="badge badge-yellow">⚡ NEURAL ENGINE BENCHMARK</span>
+            </div>
+            <h2 class="section-title" style="text-align: left; margin: 0;">Instant AI Subject Isolation</h2>
+            <p class="section-subtext" style="text-align: left; margin: 0;">
+              Inspect the neural boundary in real time. PicsTools executes fine-grained edge segmentation directly on
+              your phone's processor—delivering crisp portrait cutouts with hair strand fidelity in under 0.4 seconds.
+            </p>
+
+            <div class="cutout-metric-badges">
+              <span class="metric-pill">🤖 BiRefNet Neural Model</span>
+              <span class="metric-pill">⚡ 380ms NPU Speed</span>
+              <span class="metric-pill">🔒 0 KB Cloud Upload</span>
+              <span class="metric-pill">✂️ Alpha Matte Preserved</span>
+            </div>
+
+            <div class="cutout-feature-list">
+              <div class="cutout-feature-item">
+                <span class="feature-check-icon">✓</span>
+                <div><strong>Flawless Portrait Edges:</strong> Segment curly hair, fine fabric textures, and complex
+                  urban street backgrounds without fringing.</div>
+              </div>
+              <div class="cutout-feature-item">
+                <span class="feature-check-icon">✓</span>
+                <div><strong>Airplane Mode Capable:</strong> 100% offline ONNX runtime ensures private photos never
+                  touch third-party servers.</div>
+              </div>
+              <div class="cutout-feature-item">
+                <span class="feature-check-icon">✓</span>
+                <div><strong>Transparent PNG Export:</strong> Instant one-tap export ready for social media stickers,
+                  product catalogs, and YouTube thumbnails.</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
     <!-- The 8 Essential Image Tools Section -->
     <section id="features" class="container tools-section">
-      <div class="section-header-wrap">
+      <div class="section-header-wrap reveal reveal-fade-up">
         <span class="badge badge-cyan">POWERFUL OFFLINE ENGINES</span>
         <h2 class="section-title">8 Essential Image Tools</h2>
         <p class="section-subtext">
@@ -308,7 +422,7 @@
       </div>
 
       <!-- Category Filter Buttons -->
-      <div class="web-category-filter-bar">
+      <div class="web-category-filter-bar reveal reveal-fade-up stagger-1">
         <button class="web-cat-btn active" data-category="ALL">ALL</button>
         <button class="web-cat-btn" data-category="POPULAR">POPULAR</button>
         <button class="web-cat-btn" data-category="EDIT">EDIT</button>
@@ -320,7 +434,7 @@
       <div class="tools-grid">
 
         <!-- Tool 1: Compress Image -->
-        <div class="tool-card neo-card" data-category="POPULAR">
+        <div class="tool-card neo-card reveal reveal-scale stagger-1" data-category="POPULAR">
           <div class="tool-top-row">
             <div class="tool-icon-box bg-yellow">🗜️</div>
             <span class="tool-badge-pill" style="background: var(--neo-yellow); color: #0F172A;">🔥 POPULAR</span>
@@ -339,7 +453,7 @@
         </div>
 
         <!-- Tool 2: Image to PDF -->
-        <div class="tool-card neo-card" data-category="POPULAR">
+        <div class="tool-card neo-card reveal reveal-scale stagger-2" data-category="POPULAR">
           <div class="tool-top-row">
             <div class="tool-icon-box bg-purple">📄</div>
             <span class="tool-badge-pill" style="background: var(--neo-purple); color: white;">🔥 POPULAR</span>
@@ -358,7 +472,7 @@
         </div>
 
         <!-- Tool 3: Resize Image -->
-        <div class="tool-card neo-card" data-category="EDIT">
+        <div class="tool-card neo-card reveal reveal-scale stagger-3" data-category="EDIT">
           <div class="tool-top-row">
             <div class="tool-icon-box bg-cyan">📐</div>
             <span class="tool-badge-pill" style="background: var(--neo-cyan); color: #0F172A;">ESSENTIAL</span>
@@ -377,7 +491,7 @@
         </div>
 
         <!-- Tool 4: Crop & Rotate -->
-        <div class="tool-card neo-card" data-category="EDIT">
+        <div class="tool-card neo-card reveal reveal-scale stagger-4" data-category="EDIT">
           <div class="tool-top-row">
             <div class="tool-icon-box bg-pink">✂️</div>
             <span class="tool-badge-pill" style="background: var(--neo-pink); color: white;">FAST</span>
@@ -396,7 +510,7 @@
         </div>
 
         <!-- Tool 5: Format Convert -->
-        <div class="tool-card neo-card" data-category="CONVERT">
+        <div class="tool-card neo-card reveal reveal-scale stagger-5" data-category="CONVERT">
           <div class="tool-top-row">
             <div class="tool-icon-box bg-green">🔄</div>
             <span class="tool-badge-pill" style="background: var(--neo-green); color: white;">BATCH</span>
@@ -415,7 +529,7 @@
         </div>
 
         <!-- Tool 6: Passport Photo -->
-        <div class="tool-card neo-card" data-category="UTILITIES">
+        <div class="tool-card neo-card reveal reveal-scale stagger-6" data-category="UTILITIES">
           <div class="tool-top-row">
             <div class="tool-icon-box bg-orange">🛂</div>
             <span class="tool-badge-pill" style="background: var(--neo-orange); color: white;">SMART</span>
@@ -434,7 +548,7 @@
         </div>
 
         <!-- Tool 7: Digital Signature -->
-        <div class="tool-card neo-card" data-category="UTILITIES">
+        <div class="tool-card neo-card reveal reveal-scale stagger-7" data-category="UTILITIES">
           <div class="tool-top-row">
             <div class="tool-icon-box bg-blue">✍️</div>
             <span class="tool-badge-pill" style="background: var(--neo-blue); color: white;">VECTOR</span>
@@ -453,7 +567,7 @@
         </div>
 
         <!-- Tool 8: Remove Background -->
-        <div class="tool-card neo-card" data-category="EDIT">
+        <div class="tool-card neo-card reveal reveal-scale stagger-8" data-category="EDIT">
           <div class="tool-top-row">
             <div class="tool-icon-box bg-purple">🤖</div>
             <span class="tool-badge-pill" style="background: var(--neo-purple); color: white;">AI OFFLINE</span>
@@ -474,9 +588,54 @@
       </div>
     </section>
 
+    <!-- Interactive Lossless Compressor Playground -->
+    <section class="container compressor-playground-section reveal reveal-fade-up">
+      <div class="compressor-card">
+        <div class="section-badge-wrap" style="text-align: left;">
+          <span class="badge badge-cyan">🗜️ LIVE PLAYGROUND</span>
+        </div>
+        <h2 class="section-title" style="text-align: left; margin: 0;">Lossless Perceptual Compressor</h2>
+        <p class="section-subtext" style="text-align: left; margin: 0;">
+          Drag the compression target slider below to see how PicsTools clamps heavy high-resolution camera RAW & JPEG
+          files down to ultra-compact web formats without perceptual quality loss.
+        </p>
+
+        <div class="compressor-playground-grid">
+          <div class="compressor-slider-wrap">
+            <div class="slider-label-row">
+              <span>Target Compression Level:</span>
+              <span id="compressor-target-val" class="slider-target-val">90%</span>
+            </div>
+            <input type="range" id="compressor-slider" class="neo-range-slider" min="10" max="95" value="90" step="5">
+            <div
+              style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">
+              <span>10% (Light)</span>
+              <span>50% (Standard Web)</span>
+              <span>95% (Maximum Shrink)</span>
+            </div>
+          </div>
+
+          <div class="compressor-meters-grid">
+            <div class="meter-box">
+              <div class="meter-label">Original Photo Size</div>
+              <div class="meter-size">8.4 MB</div>
+              <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 4px;">48 MP Camera JPEG</div>
+            </div>
+            <div class="meter-box">
+              <div class="meter-label">Compressed Output</div>
+              <div id="compressed-size-val" class="meter-size saved">860 KB</div>
+              <div style="font-size: 0.72rem; color: var(--neo-green); font-weight: 800; margin-top: 4px;">Saved <span
+                  id="saved-percent-val">90%</span> Space</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
     <!-- Architecture Showdown: On-Device AI vs Cloud Apps -->
     <section id="comparison" class="container architecture-section">
-      <div class="section-header-wrap">
+      <div class="section-header-wrap reveal reveal-fade-up">
         <span class="badge badge-yellow">THE PRIVACY & SPEED REVOLUTION</span>
         <h2 class="section-title">Why On-Device AI Wins Every Time</h2>
         <p class="section-subtext">
@@ -488,7 +647,7 @@
       <div class="vs-grid">
 
         <!-- Cloud Editing Apps -->
-        <div class="neo-card vs-card cloud-card">
+        <div class="neo-card vs-card cloud-card reveal reveal-slide-left">
           <div class="vs-card-header">
             <h3 class="vs-title" style="color: var(--neo-red);">Traditional Cloud Apps</h3>
             <span class="badge badge-red">THE OLD WAY</span>
@@ -526,7 +685,7 @@
         </div>
 
         <!-- PicsTools On-Device Engine -->
-        <div class="neo-card vs-card picstools-card">
+        <div class="neo-card vs-card picstools-card reveal reveal-slide-right">
           <div class="vs-card-header">
             <h3 class="vs-title" style="color: var(--neo-green);">PicsTools 100% On-Device</h3>
             <span class="badge badge-green">THE PRIVATE WAY</span>
@@ -564,56 +723,94 @@
         </div>
 
       </div>
+
+      <!-- Pro Architecture Showcase Banner with Model -->
+      <div class="pro-architecture-banner reveal reveal-scale">
+        <img src="assets/pro_hero_showcase.jpg" alt="PicsTools Pro Ultra-Sharp 8K Architecture and Offline Suite"
+          class="pro-banner-img">
+      </div>
     </section>
 
-    <!-- Real-World Workflows -->
+    <!-- Real-World Workflows with Creator Stories -->
     <section id="workflows" class="container workflows-section">
-      <div class="section-header-wrap">
+      <div class="section-header-wrap reveal reveal-fade-up">
         <span class="badge badge-purple">BUILT FOR EVERYDAY NEEDS</span>
         <h2 class="section-title">Designed for Real Life Workflows</h2>
+        <p class="section-subtext">
+          Explore how creators, entrepreneurs, and busy professionals solve image bottlenecks on the go.
+        </p>
       </div>
 
       <div class="workflows-grid">
-        <div class="workflow-card">
-          <div class="workflow-icon">🛂</div>
-          <h3 class="workflow-title">Passport & Visa Portals</h3>
-          <p class="workflow-desc">Meet strict government portal limits (e.g. 2x2 inch ID photos under 240 KB) in
-            seconds.</p>
+        <!-- Workflow 1: Passport & Visa with Bespoke Biometric Model -->
+        <div class="workflow-img-card neo-card reveal reveal-scale stagger-1">
+          <div class="workflow-img-header">
+            <img src="assets/passport_biometric_model.jpg" alt="Biometric Passport ID photo with facial landmark grid"
+              class="workflow-model-img">
+            <span class="workflow-img-badge">🛂 OFFICIAL ICAO BIOMETRIC</span>
+          </div>
+          <div class="workflow-card-body">
+            <h3 class="workflow-title">Passport & Visa Portals</h3>
+            <p class="workflow-desc">Meet strict international embassy limits (2x2 in, 35x45 mm under 240 KB) with
+              precision biometric facial alignment.</p>
+          </div>
         </div>
 
-        <div class="workflow-card">
-          <div class="workflow-icon">✍️</div>
-          <h3 class="workflow-title">E-Sign Any Document</h3>
-          <p class="workflow-desc">Draw clean digital signatures with smoothing and paste transparent PNGs onto
-            contracts.</p>
+        <!-- Workflow 2: Social Creators with Creative Director Model -->
+        <div class="workflow-img-card neo-card reveal reveal-scale stagger-2">
+          <div class="workflow-img-header">
+            <img src="assets/creator_workflow_model.jpg" alt="Creative director editing photos for social media"
+              class="workflow-model-img">
+            <span class="workflow-img-badge">📱 CREATIVE WORKSPACE</span>
+          </div>
+          <div class="workflow-card-body">
+            <h3 class="workflow-title">Color Grading & Reels</h3>
+            <p class="workflow-desc">Isolate subjects for YouTube thumbnails or crop high-res shots into 9:16 vertical
+              TikTok reels with one tap.</p>
+          </div>
         </div>
 
-        <div class="workflow-card">
-          <div class="workflow-icon">📱</div>
-          <h3 class="workflow-title">Social Content Creators</h3>
-          <p class="workflow-desc">Isolate subjects for YouTube thumbnails or crop high-res shots into 9:16 vertical
-            TikTok reels.</p>
+        <!-- Workflow 3: Document E-Sign with Business Executive Model -->
+        <div class="workflow-img-card neo-card reveal reveal-scale stagger-3">
+          <div class="workflow-img-header">
+            <img src="assets/esign_contract_model.jpg"
+              alt="Professional businesswoman signing an electronic contract digitally on a tablet"
+              class="workflow-model-img">
+            <span class="workflow-img-badge">✍️ BUSINESS & E-SIGN</span>
+          </div>
+          <div class="workflow-card-body">
+            <h3 class="workflow-title">Sign Contracts Digitally</h3>
+            <p class="workflow-desc">Draw clean digital signatures with vector stroke smoothing and stamp transparent
+              PNGs directly onto PDF leases.</p>
+          </div>
         </div>
 
-        <div class="workflow-card">
-          <div class="workflow-icon">🧾</div>
-          <h3 class="workflow-title">Expenses & Tax Receipts</h3>
-          <p class="workflow-desc">Compile receipts, doctor prescriptions, and utility bills into tidy, lightweight
-            multi-page PDFs.</p>
+        <!-- Workflow 4: Expenses & Multi-Page Receipts with Scanning Workflow -->
+        <div class="workflow-img-card neo-card reveal reveal-scale stagger-4">
+          <div class="workflow-img-header">
+            <img src="assets/receipts_pdf_workflow.jpg"
+              alt="Scanning paper receipts and tax invoices into multi-page PDF document" class="workflow-model-img">
+            <span class="workflow-img-badge">🧾 TAXES & RECEIPTS</span>
+          </div>
+          <div class="workflow-card-body">
+            <h3 class="workflow-title">Image to Multi-Page PDF</h3>
+            <p class="workflow-desc">Assemble receipts, doctor prescriptions, and utility bills into tidy, lightweight
+              multi-page PDFs ready for accounting.</p>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Interactive FAQ Section -->
     <section id="faq" class="container faq-section">
-      <div class="section-header-wrap">
+      <div class="section-header-wrap reveal reveal-fade-up">
         <span class="badge badge-cyan">FREQUENTLY ASKED QUESTIONS</span>
         <h2 class="section-title">Got Questions? We Have Answers.</h2>
       </div>
 
       <div class="faq-list">
 
-        <div class="faq-item">
+        <div class="faq-item reveal reveal-fade-up stagger-1">
           <button class="faq-question">
             <span>Are my photos truly 100% private and offline?</span>
             <span class="faq-chevron">▼</span>
@@ -625,7 +822,7 @@
           </div>
         </div>
 
-        <div class="faq-item">
+        <div class="faq-item reveal reveal-fade-up stagger-2">
           <button class="faq-question">
             <span>Does PicsTools require me to create an account?</span>
             <span class="faq-chevron">▼</span>
@@ -636,7 +833,7 @@
           </div>
         </div>
 
-        <div class="faq-item">
+        <div class="faq-item reveal reveal-fade-up stagger-3">
           <button class="faq-question">
             <span>Will compressing my photos make them look blurry?</span>
             <span class="faq-chevron">▼</span>
@@ -647,7 +844,7 @@
           </div>
         </div>
 
-        <div class="faq-item">
+        <div class="faq-item reveal reveal-fade-up stagger-4">
           <button class="faq-question">
             <span>How does optional Cloud Sync work?</span>
             <span class="faq-chevron">▼</span>
@@ -659,7 +856,7 @@
           </div>
         </div>
 
-        <div class="faq-item">
+        <div class="faq-item reveal reveal-fade-up stagger-5">
           <button class="faq-question">
             <span>How can I delete my account and synchronized data?</span>
             <span class="faq-chevron">▼</span>
@@ -676,8 +873,8 @@
     </section>
 
     <!-- Grand Download CTA Banner -->
-    <section id="download" class="container download-section">
-      <div class="download-banner-card">
+    <section id="download" class="container download-section reveal reveal-fade-up">
+      <div class="download-banner-card float-slow">
         <span class="badge badge-yellow">FREE ON GOOGLE PLAY</span>
         <h2 class="download-headline">Take Control of Your Images Today</h2>
         <p class="download-subhead">
@@ -707,7 +904,7 @@
   </main>
 
   <!-- Site Footer -->
-  <footer class="site-footer">
+  <footer class="site-footer reveal reveal-fade-in">
     <div class="container footer-content">
       <div class="footer-brand">
         <img src="assets/app_icon.png" alt="PicsTools App Icon" width="36" height="36" style="border-radius: 8px;">
