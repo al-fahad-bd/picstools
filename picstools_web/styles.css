@@ -23,6 +23,15 @@
   --neo-red: #EF4444;
   --neo-blue: #3B82F6;
 
+  /* Accent Color Aliases */
+  --accent-cyan: #06B6D4;
+  --accent-orange: #F97316;
+  --accent-green: #10B981;
+  --accent-purple: #8B5CF6;
+  --accent-pink: #EC4899;
+  --accent-yellow: #FACC15;
+  --accent-blue: #3B82F6;
+
   /* Gradients */
   --grad-primary: linear-gradient(135deg, #06B6D4 0%, #8B5CF6 50%, #EC4899 100%);
   --grad-accent: linear-gradient(135deg, #FACC15 0%, #F97316 100%);
@@ -1044,8 +1053,12 @@ body {
 
 /* Dark contrast for light neo backgrounds */
 .bg-yellow .tool-icon-img,
-.bg-cyan .tool-icon-img {
-  filter: brightness(0);
+.bg-cyan .tool-icon-img,
+.tool-icon-box.bg-yellow .tool-icon-img,
+.tool-icon-box.bg-cyan .tool-icon-img,
+.mini-tool-icon-box.bg-yellow .mini-tool-img,
+.mini-tool-icon-box.bg-cyan .mini-tool-img {
+  filter: brightness(0) !important;
 }
 
 /* Crisp pure white contrast for vibrant colored backgrounds */
@@ -1053,17 +1066,28 @@ body {
 .bg-pink .tool-icon-img,
 .bg-green .tool-icon-img,
 .bg-orange .tool-icon-img,
-.bg-blue .tool-icon-img {
-  filter: brightness(0) invert(1);
+.bg-blue .tool-icon-img,
+.tool-icon-box.bg-purple .tool-icon-img,
+.tool-icon-box.bg-pink .tool-icon-img,
+.tool-icon-box.bg-green .tool-icon-img,
+.tool-icon-box.bg-orange .tool-icon-img,
+.tool-icon-box.bg-blue .tool-icon-img,
+.mini-tool-icon-box.bg-purple .mini-tool-img,
+.mini-tool-icon-box.bg-pink .mini-tool-img,
+.mini-tool-icon-box.bg-green .mini-tool-img,
+.mini-tool-icon-box.bg-orange .mini-tool-img,
+.mini-tool-icon-box.bg-blue .mini-tool-img {
+  filter: brightness(0) invert(1) !important;
 }
 
-.bg-yellow { background-color: var(--neo-yellow); }
-.bg-purple { background-color: var(--neo-purple); color: white; }
-.bg-cyan { background-color: var(--neo-cyan); }
-.bg-pink { background-color: var(--neo-pink); color: white; }
-.bg-green { background-color: var(--neo-green); color: white; }
-.bg-orange { background-color: var(--neo-orange); color: white; }
-.bg-blue { background-color: var(--neo-blue); color: white; }
+/* Explicit vibrant background colors for all tool icon boxes */
+.bg-yellow, .tool-icon-box.bg-yellow, .mini-tool-icon-box.bg-yellow { background-color: var(--neo-yellow) !important; }
+.bg-purple, .tool-icon-box.bg-purple, .mini-tool-icon-box.bg-purple { background-color: var(--neo-purple) !important; }
+.bg-cyan,   .tool-icon-box.bg-cyan,   .mini-tool-icon-box.bg-cyan   { background-color: var(--neo-cyan) !important; }
+.bg-pink,   .tool-icon-box.bg-pink,   .mini-tool-icon-box.bg-pink   { background-color: var(--neo-pink) !important; }
+.bg-green,  .tool-icon-box.bg-green,  .mini-tool-icon-box.bg-green  { background-color: var(--neo-green) !important; }
+.bg-orange, .tool-icon-box.bg-orange, .mini-tool-icon-box.bg-orange { background-color: var(--neo-orange) !important; }
+.bg-blue,   .tool-icon-box.bg-blue,   .mini-tool-icon-box.bg-blue   { background-color: var(--neo-blue) !important; }
 
 .tool-badge-pill {
   font-size: 0.65rem;
@@ -1672,11 +1696,11 @@ body {
   border-radius: 50%;
 }
 
-.bg-cyan   { background: var(--accent-cyan); }
-.bg-orange { background: var(--accent-orange); }
-.bg-green  { background: var(--accent-green); }
-.bg-purple { background: var(--accent-purple); }
-.bg-yellow { background: #FFE500; }
+.tool-tag-dot.bg-cyan   { background-color: var(--neo-cyan); }
+.tool-tag-dot.bg-orange { background-color: var(--neo-orange); }
+.tool-tag-dot.bg-green  { background-color: var(--neo-green); }
+.tool-tag-dot.bg-purple { background-color: var(--neo-purple); }
+.tool-tag-dot.bg-yellow { background-color: var(--neo-yellow); }
 
 .review-timestamp {
   font-size: 0.74rem;
