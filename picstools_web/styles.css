@@ -1693,18 +1693,46 @@ body {
 .stagger-7 { transition-delay: 0.56s; }
 .stagger-8 { transition-delay: 0.64s; }
 
-/* Enhanced Micro-Interactions */
-.tool-card {
-  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+/* Enhanced 8 Essential Tools Scroll Reveal Animation & Micro-Interactions */
+.tool-card.reveal {
+  opacity: 0;
+  transform: translateY(50px) scale(0.92);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
               border-color 0.2s ease;
+  will-change: opacity, transform;
 }
 
-.tool-card:hover {
+.tool-card.reveal.is-revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.tool-card.reveal.is-revealed:hover {
   transform: translate(-5px, -5px);
   box-shadow: 9px 9px 0px var(--border-color);
   border-color: var(--neo-cyan);
 }
+
+.tool-card.reveal .tool-icon-box {
+  transform: scale(0.8);
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s;
+}
+
+.tool-card.reveal.is-revealed .tool-icon-box {
+  transform: scale(1);
+}
+
+/* Staggered cascades for the 8 tools */
+.tools-grid .tool-card:nth-child(1) { transition-delay: 0.05s; }
+.tools-grid .tool-card:nth-child(2) { transition-delay: 0.11s; }
+.tools-grid .tool-card:nth-child(3) { transition-delay: 0.17s; }
+.tools-grid .tool-card:nth-child(4) { transition-delay: 0.23s; }
+.tools-grid .tool-card:nth-child(5) { transition-delay: 0.29s; }
+.tools-grid .tool-card:nth-child(6) { transition-delay: 0.35s; }
+.tools-grid .tool-card:nth-child(7) { transition-delay: 0.41s; }
+.tools-grid .tool-card:nth-child(8) { transition-delay: 0.47s; }
 
 .stat-item-card {
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -2292,53 +2320,187 @@ body {
   will-change: transform;
 }
 
-/* 2. High-Velocity Infinite Marquee Ticker */
-.marquee-wrapper {
+/* 2. High-Velocity Neo-Brutalist Kinetic Angled Marquee Showcase */
+.marquee-showcase-container {
+  position: relative;
+  overflow: hidden;
+  padding: 55px 0 65px;
+  margin: 15px 0 30px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.marquee-tape {
+  width: 115vw;
+  margin-left: -7.5vw;
   overflow: hidden;
   user-select: none;
-  background: var(--bg-surface);
-  border-top: 2.5px solid var(--border-color);
-  border-bottom: 2.5px solid var(--border-color);
-  padding: 14px 0;
+  padding: 13px 0;
+  border-top: 3.5px solid #0F172A;
+  border-bottom: 3.5px solid #0F172A;
   position: relative;
-  z-index: 10;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 0px #0F172A, 0 16px 30px rgba(0, 0, 0, 0.28);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.marquee-content {
+/* Dual Parallel Tapes (-2.8deg Parallel Alignment) */
+.tape-parallel {
+  transform: rotate(-2.8deg);
+}
+
+.tape-parallel:hover {
+  transform: rotate(-2.8deg) scale(1.008);
+}
+
+/* Ribbon 1: High-Voltage Neo-Yellow Tape */
+.tape-yellow {
+  background: #FFE600;
+  color: #0F172A;
+  z-index: 10;
+  box-shadow: 0 8px 0px #0F172A, 0 16px 28px rgba(0, 0, 0, 0.25);
+}
+
+/* Ribbon 2: Electric Neo-Cyan Tape */
+.tape-cyan {
+  background: #00F0FF;
+  color: #0F172A;
+  z-index: 9;
+  box-shadow: 0 8px 0px #0F172A, 0 16px 28px rgba(0, 0, 0, 0.25);
+}
+
+/* Tracks */
+.marquee-track {
   display: flex;
   white-space: nowrap;
-  gap: 36px;
-  animation: marqueeScroll 22s linear infinite;
+  gap: 32px;
+  width: max-content;
 }
 
-.marquee-wrapper:hover .marquee-content {
+.track-scroll-left {
+  animation: marqueeScrollLeft 24s linear infinite;
+}
+
+.track-scroll-right {
+  animation: marqueeScrollRight 28s linear infinite;
+}
+
+.marquee-tape:hover .marquee-track {
   animation-play-state: paused;
 }
 
+@keyframes marqueeScrollLeft {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marqueeScrollRight {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+/* Marquee Item & Pop Badges */
 .marquee-item {
   display: inline-flex;
   align-items: center;
   gap: 12px;
   font-family: var(--font-heading);
-  font-weight: 800;
-  font-size: 0.88rem;
+  font-weight: 900;
+  font-size: 0.94rem;
   letter-spacing: 0.8px;
-  color: var(--text-primary);
+  text-transform: uppercase;
+  color: #0F172A;
+}
+
+.pop-icon {
+  font-size: 1.18rem;
+}
+
+.pop-star {
+  font-size: 1.05rem;
+  color: #0F172A;
+}
+
+.pop-tag {
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1.5px solid #0F172A;
+  box-shadow: 2px 2px 0px #0F172A;
   text-transform: uppercase;
 }
 
-.marquee-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--neo-cyan);
-  box-shadow: 0 0 10px var(--neo-cyan);
+.tag-cyan {
+  background: #00F0FF;
+  color: #0F172A;
 }
 
-@keyframes marqueeScroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+.tag-pink {
+  background: #FF007A;
+  color: #FFFFFF;
+}
+
+.tag-green {
+  background: #10B981;
+  color: #FFFFFF;
+}
+
+.tag-purple {
+  background: #8B5CF6;
+  color: #FFFFFF;
+}
+
+.tag-dark {
+  background: #0F172A;
+  color: #FFE600;
+}
+
+.pop-pill {
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 2px 10px;
+  border-radius: 20px;
+  background: #0F172A;
+  color: #00F0FF;
+  border: 1.5px solid #0F172A;
+  letter-spacing: 0.6px;
+  box-shadow: 1.5px 1.5px 0px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .marquee-showcase-container {
+    padding: 35px 0 45px;
+    gap: 10px;
+  }
+
+  .marquee-tape {
+    width: 125vw;
+    margin-left: -12.5vw;
+    padding: 10px 0;
+  }
+
+  .tape-parallel {
+    transform: rotate(-2.2deg);
+  }
+
+  .tape-parallel:hover {
+    transform: rotate(-2.2deg) scale(1.008);
+  }
+
+  .marquee-item {
+    font-size: 0.82rem;
+    gap: 8px;
+  }
+
+  .pop-tag, .pop-pill {
+    font-size: 0.58rem;
+    padding: 2px 6px;
+  }
 }
 
 /* 3. Ambient Lo-Fi Audio Equalizer Controller */
@@ -2426,21 +2588,45 @@ body {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 3px;
+  width: 3.5px;
   background: #00F0FF;
-  box-shadow: 0 0 14px #00F0FF, 0 0 35px rgba(0, 240, 255, 0.85);
+  box-shadow: 0 0 16px #00F0FF, 0 0 38px rgba(0, 240, 255, 0.95), 0 0 70px rgba(0, 240, 255, 0.45);
   z-index: 20;
-  left: 50%;
+  left: 2%;
   transform: translateX(-50%);
   pointer-events: none;
-  animation: laserScanAuto 7s ease-in-out infinite alternate;
-  transition: left 0.12s ease-out;
+  animation: laserScanAuto 6.5s ease-in-out infinite alternate;
+  transition: left 0.08s ease-out;
 }
 
+/* Glowing trailing scan aura */
+.cutout-laser-beam::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 45px;
+  right: 100%;
+  background: linear-gradient(to left, rgba(0, 240, 255, 0.25), transparent);
+  pointer-events: none;
+}
+
+.cutout-laser-beam::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 45px;
+  left: 100%;
+  background: linear-gradient(to right, rgba(0, 240, 255, 0.25), transparent);
+  pointer-events: none;
+}
+
+/* Full edge-to-edge sweep across the entire image (left to right) */
 @keyframes laserScanAuto {
-  0% { left: 42%; }
-  50% { left: 58%; }
-  100% { left: 42%; }
+  0% { left: 2%; }
+  50% { left: 98%; }
+  100% { left: 2%; }
 }
 
 .laser-beam-indicator {
@@ -2452,13 +2638,16 @@ body {
   color: #0F172A;
   border: 2px solid #0F172A;
   border-radius: 20px;
-  padding: 4px 10px;
+  padding: 5px 12px;
   font-family: var(--font-heading);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 900;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
   white-space: nowrap;
-  box-shadow: 2px 2px 0px #0F172A;
+  box-shadow: 2.5px 2.5px 0px #0F172A, 0 0 15px rgba(0, 240, 255, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .cutout-hud-status {

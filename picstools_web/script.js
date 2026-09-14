@@ -250,7 +250,7 @@ function initCompressorPlayground() {
   updateValues();
 }
 
-// 7. Interactive Cutout Laser Scanner Hover & Touch
+// 7. Interactive Cutout Laser Scanner Hover & Touch (Full Edge-to-Edge Sweep)
 function initCutoutInteractiveScan() {
   const frame = document.querySelector('.cutout-interactive-frame');
   const laser = document.querySelector('.cutout-laser-beam');
@@ -259,7 +259,7 @@ function initCutoutInteractiveScan() {
   function updateLaserPosition(clientX) {
     const rect = frame.getBoundingClientRect();
     const x = clientX - rect.left;
-    const pct = Math.max(2, Math.min(98, (x / rect.width) * 100));
+    const pct = Math.max(1, Math.min(99, (x / rect.width) * 100));
     laser.style.animation = 'none';
     laser.style.left = `${pct}%`;
   }
@@ -269,7 +269,7 @@ function initCutoutInteractiveScan() {
   });
 
   frame.addEventListener('mouseleave', () => {
-    laser.style.animation = 'laserScanAuto 7s ease-in-out infinite alternate';
+    laser.style.animation = 'laserScanAuto 6.5s ease-in-out infinite alternate';
   });
 
   frame.addEventListener('touchmove', (e) => {
@@ -279,7 +279,7 @@ function initCutoutInteractiveScan() {
   }, { passive: true });
 
   frame.addEventListener('touchend', () => {
-    laser.style.animation = 'laserScanAuto 7s ease-in-out infinite alternate';
+    laser.style.animation = 'laserScanAuto 6.5s ease-in-out infinite alternate';
   });
 }
 
