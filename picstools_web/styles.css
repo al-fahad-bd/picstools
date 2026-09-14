@@ -452,6 +452,7 @@ body {
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
   transform: rotate(25deg);
   animation: sheen 4.5s infinite;
+  pointer-events: none;
 }
 
 @keyframes sheen {
@@ -469,10 +470,19 @@ body {
   padding: 16px 34px;
 }
 
-.play-svg {
+.play-svg,
+.play-icon {
   width: 26px;
   height: 26px;
   flex-shrink: 0;
+  display: block;
+  object-fit: contain;
+}
+
+.btn-primary-play.large .play-svg,
+.btn-primary-play.large .play-icon {
+  width: 32px;
+  height: 32px;
 }
 
 .btn-subtext {
