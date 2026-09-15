@@ -3376,6 +3376,14 @@ body.mobile-nav-locked {
   border-radius: 9999px;
 }
 
+.deck-hint-full {
+  display: inline;
+}
+
+.deck-hint-short {
+  display: none;
+}
+
 .deck-hint-dot {
   width: 8px;
   height: 8px;
@@ -3897,17 +3905,42 @@ body.mobile-nav-locked {
     padding: 5px 10px;
   }
 
+  .review-deck-container {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
   .deck-hint-bar {
-    max-width: calc(100% - 24px);
-    gap: 10px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    gap: 8px;
   }
 
   .deck-hint-pill {
     font-size: 0.7rem;
     padding: 4px 10px;
+    flex: 1;
+    min-width: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .deck-counter-badge {
+    flex-shrink: 0;
+    min-width: auto;
+    font-size: 0.78rem;
+    padding: 3px 10px;
+  }
+
+  .deck-hint-full {
+    display: none !important;
+  }
+
+  .deck-hint-short {
+    display: inline !important;
   }
 }
 
@@ -6378,6 +6411,112 @@ body.mobile-nav-locked {
     justify-content: center;
     padding: 12px 18px;
   }
+
+  /* VS Comparison Cards (<= 480px) */
+  .vs-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .vs-card {
+    padding: 16px 14px !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .vs-card-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    margin-bottom: 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .vs-title {
+    font-size: 1.05rem !important;
+    line-height: 1.25 !important;
+    margin: 0 !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    word-break: break-word !important;
+  }
+
+  .vs-card-header .badge {
+    font-size: 0.60rem !important;
+    padding: 3px 8px !important;
+    border-radius: 6px !important;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    letter-spacing: 0.2px !important;
+  }
+
+  .vs-list {
+    gap: 12px !important;
+  }
+
+  .vs-item {
+    gap: 10px !important;
+  }
+
+  .vs-item-icon {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 0.78rem !important;
+  }
+
+  .vs-item-text h4 {
+    font-size: 0.88rem !important;
+  }
+
+  .vs-item-text p {
+    font-size: 0.76rem !important;
+  }
+
+  /* Deck Hint Bar (<= 480px) */
+  .review-deck-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .deck-hint-bar {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    gap: 6px !important;
+  }
+
+  .deck-hint-pill {
+    font-size: 0.68rem !important;
+    padding: 4px 8px !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+
+  .deck-counter-badge {
+    font-size: 0.75rem !important;
+    padding: 3px 9px !important;
+    min-width: auto !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* FAQ (<= 480px) */
+  .faq-item {
+    overflow: hidden !important;
+  }
+
+  .faq-answer {
+    max-height: 0;
+    overflow: hidden !important;
+    padding: 0 14px 0 !important;
+  }
+
+  .faq-item.open .faq-answer {
+    padding-bottom: 14px !important;
+  }
 }
 
 /* ==========================================================================
@@ -7196,20 +7335,69 @@ body.mobile-nav-locked {
   .vs-grid {
     grid-template-columns: 1fr !important;
     gap: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .vs-card {
     padding: 10px 8px !important;
     border-radius: 10px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
   }
 
-  .vs-card-title {
-    font-size: 0.94rem !important;
-  }
-
-  .vs-row {
-    font-size: 0.70rem !important;
+  .vs-card-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
     gap: 6px !important;
+    margin-bottom: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .vs-title {
+    font-size: 0.88rem !important;
+    line-height: 1.22 !important;
+    margin: 0 !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    word-break: break-word !important;
+  }
+
+  .vs-card-header .badge {
+    font-size: 0.52rem !important;
+    padding: 2px 6px !important;
+    border-radius: 5px !important;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    letter-spacing: 0.2px !important;
+    box-shadow: 1.5px 1.5px 0px var(--border-color) !important;
+  }
+
+  .vs-list {
+    gap: 9px !important;
+  }
+
+  .vs-item {
+    gap: 6px !important;
+  }
+
+  .vs-item-icon {
+    width: 18px !important;
+    height: 18px !important;
+    font-size: 0.70rem !important;
+  }
+
+  .vs-item-text h4 {
+    font-size: 0.78rem !important;
+    margin-bottom: 1px !important;
+  }
+
+  .vs-item-text p {
+    font-size: 0.68rem !important;
+    line-height: 1.32 !important;
   }
 
   /* 11. Workflows Section */
@@ -7303,6 +7491,40 @@ body.mobile-nav-locked {
     padding: 2px 5px !important;
   }
 
+  .review-deck-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .deck-hint-bar {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    gap: 5px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .deck-hint-pill {
+    font-size: 0.64rem !important;
+    padding: 3px 6px !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    gap: 4px !important;
+  }
+
+  .deck-hint-dot {
+    width: 6px !important;
+    height: 6px !important;
+  }
+
+  .deck-counter-badge {
+    font-size: 0.70rem !important;
+    padding: 2px 7px !important;
+    min-width: auto !important;
+    flex-shrink: 0 !important;
+  }
+
   .review-cards-deck {
     height: 380px !important;
     max-width: 100% !important;
@@ -7344,16 +7566,33 @@ body.mobile-nav-locked {
   }
 
   /* 14. FAQ Section */
+  .faq-item {
+    border-radius: 10px !important;
+    overflow: hidden !important;
+  }
+
   .faq-question {
-    padding: 8px 8px !important;
+    padding: 10px 8px !important;
     font-size: 0.74rem !important;
     gap: 6px !important;
   }
 
+  .faq-chevron {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 0.70rem !important;
+  }
+
   .faq-answer {
-    padding: 0 8px 8px !important;
+    max-height: 0;
+    overflow: hidden !important;
+    padding: 0 8px 0 !important;
     font-size: 0.70rem !important;
     line-height: 1.36 !important;
+  }
+
+  .faq-item.open .faq-answer {
+    padding: 0 8px 10px !important;
   }
 
   /* 15. Download CTA Section */
