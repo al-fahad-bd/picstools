@@ -53,9 +53,109 @@
         <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark/light theme">
           <span class="theme-icon">🌙</span>
         </button>
+        <!-- Mobile Navigation Menu Toggle Button -->
+        <button id="mobile-menu-toggle" class="mobile-menu-btn" aria-label="Open mobile navigation menu" aria-expanded="false" aria-controls="mobile-sidebar">
+          <span class="menu-bar bar-1"></span>
+          <span class="menu-bar bar-2"></span>
+          <span class="menu-bar bar-3"></span>
+        </button>
       </div>
     </div>
   </header>
+
+  <!-- Mobile Sidebar Navigation Drawer & Backdrop -->
+  <div id="mobile-sidebar-backdrop" class="mobile-sidebar-backdrop" aria-hidden="true"></div>
+  <aside id="mobile-sidebar" class="mobile-sidebar" aria-label="Mobile Navigation Drawer" aria-hidden="true">
+    <div class="sidebar-header">
+      <a href="/" class="sidebar-brand">
+        <img src="assets/app_icon.png" alt="PicsTools App Icon" class="brand-icon" width="38" height="38">
+        <div class="sidebar-brand-text">
+          <div class="sidebar-title">PicsTools <span class="brand-tag">v1.0</span></div>
+          <span class="sidebar-subtitle">On-Device Creative Suite</span>
+        </div>
+      </a>
+      <button id="mobile-menu-close" class="mobile-close-btn" aria-label="Close navigation menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="sidebar-body">
+      <div class="sidebar-section-heading">Navigation</div>
+      <nav class="sidebar-nav">
+        <a href="/" class="sidebar-link">
+          <span class="sidebar-icon-chip chip-cyan">🏠</span>
+          <div class="sidebar-link-content">
+            <span class="sidebar-link-title">Home Landing</span>
+            <span class="sidebar-link-desc">Explore all features &amp; studio</span>
+          </div>
+          <span class="sidebar-link-arrow">→</span>
+        </a>
+        <a href="/#features" class="sidebar-link">
+          <span class="sidebar-icon-chip chip-purple">🛠️</span>
+          <div class="sidebar-link-content">
+            <span class="sidebar-link-title">8 Image Tools</span>
+            <span class="sidebar-link-desc">Compress, convert, resize &amp; more</span>
+          </div>
+          <span class="sidebar-link-arrow">→</span>
+        </a>
+        <a href="/#cutout-studio" class="sidebar-link">
+          <span class="sidebar-icon-chip chip-pink">✂️</span>
+          <div class="sidebar-link-content">
+            <span class="sidebar-link-title">AI Cutout Studio</span>
+            <span class="sidebar-link-desc">Local neural matting in 250ms</span>
+          </div>
+          <span class="sidebar-link-arrow">→</span>
+        </a>
+        <a href="/#comparison" class="sidebar-link">
+          <span class="sidebar-icon-chip chip-yellow">⚡</span>
+          <div class="sidebar-link-content">
+            <span class="sidebar-link-title">Why On-Device</span>
+            <span class="sidebar-link-desc">100% private &amp; offline</span>
+          </div>
+          <span class="sidebar-link-arrow">→</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-section-heading">Legal &amp; Policy</div>
+      <nav class="sidebar-nav sidebar-nav-secondary">
+        <a href="/privacy" class="sidebar-link">
+          <span class="sidebar-icon-chip chip-neutral">🛡️</span>
+          <div class="sidebar-link-content">
+            <span class="sidebar-link-title">Privacy Policy</span>
+          </div>
+          <span class="sidebar-link-arrow">→</span>
+        </a>
+        <a href="/terms" class="sidebar-link">
+          <span class="sidebar-icon-chip chip-neutral">📜</span>
+          <div class="sidebar-link-content">
+            <span class="sidebar-link-title">Terms of Service</span>
+          </div>
+          <span class="sidebar-link-arrow">→</span>
+        </a>
+        <a href="/delete-account" class="sidebar-link active">
+          <span class="sidebar-icon-chip chip-pink">🗑️</span>
+          <div class="sidebar-link-content">
+            <span class="sidebar-link-title">Delete Account</span>
+          </div>
+          <span class="sidebar-link-arrow">→</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-footer">
+      <a href="/#download" class="sidebar-cta-btn">
+        <span>Get App Free</span>
+        <span class="sidebar-cta-badge">⚡ Instant APK</span>
+      </a>
+      <div class="sidebar-security-badge">
+        <span class="pulse-dot"></span>
+        <span>100% On-Device • Airplane Mode Ready</span>
+      </div>
+    </div>
+  </aside>
 
   <!-- Main Content Layout -->
   <main class="container main-layout">

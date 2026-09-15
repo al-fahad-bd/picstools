@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCard3DTilt();
   initClientReviewDeck();
   initToolsStudio();
+  initMobileNavigation();
 });
 
 // 1. Theme Toggling with LocalStorage Persistence
@@ -1177,4 +1178,99 @@ function initToolsStudio() {
     });
   }
 }
+
+// Mobile Sidebar Navigation & Drawer Controller
+function initMobileNavigation() {
+  const menuToggle = document.getElementById('mobile-menu-toggle');
+  const menuClose = document.getElementById('mobile-menu-close');
+  const sidebar = document.getElementById('mobile-sidebar');
+  const backdrop = document.getElementById('mobile-sidebar-backdrop');
+  if (!sidebar) return;
+
+  function openSidebar() {
+    sidebar.classList.add('open');
+    if (backdrop) backdrop.classList.add('open');
+    if (menuToggle) {
+      menuToggle.classList.add('active');
+      menuToggle.setAttribute('aria-expanded', 'true');
+    }
+    sidebar.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('mobile-nav-locked');
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('open');
+    if (menuToggle) {
+      menuToggle.classList.remove('active');
+      menuToggle.setAttribute('aria-expanded', 'false');
+    }
+    sidebar.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('mobile-nav-locked');
+  }
+
+  if (menuToggle) {
+    menuToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (sidebar.classList.contains('open')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    });
+  }
+
+  if (menuClose) {
+    menuClose.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeSidebar();
+    });
+  }
+
+  if (backdrop) {
+    backdrop.addEventListener('click', closeSidebar);
+  }
+
+  // Close on Escape key press
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+      closeSidebar();
+    }
+  });
+
+  // Close when clicking any link inside the sidebar
+  const sidebarLinks = sidebar.querySelectorAll('a');
+  sidebarLinks.forEach((link) => {
+    link.addEventListener('click', (e) => {
+      const href = link.getAttribute('href');
+      // If navigating to an anchor on current page
+      if (href && href.startsWith('#')) {
+        e.preventDefault();
+        closeSidebar();
+        const targetEl = document.querySelector(href);
+        if (targetEl) {
+          setTimeout(() => {
+            const headerOffset = 80;
+            const elementPosition = targetEl.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }, 150);
+        }
+      } else {
+        closeSidebar();
+      }
+    });
+  });
+
+  // Automatically close sidebar if screen resized past mobile breakpoint (> 900px)
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 900 && sidebar.classList.contains('open')) {
+      closeSidebar();
+    }
+  });
+}
+
 
