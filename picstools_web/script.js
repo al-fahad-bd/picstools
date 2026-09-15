@@ -307,6 +307,7 @@ function initParallaxEffects() {
   if (!heroWrapper || !phoneMockup) return;
 
   heroWrapper.addEventListener('mousemove', (e) => {
+    if (window.innerWidth <= 768) return;
     const rect = heroWrapper.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
@@ -318,6 +319,7 @@ function initParallaxEffects() {
   });
 
   heroWrapper.addEventListener('mouseleave', () => {
+    if (window.innerWidth <= 768) return;
     phoneMockup.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
     if (creatorCard) {
       creatorCard.style.transform = 'translate(0px, 0px)';
