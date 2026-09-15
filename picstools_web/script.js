@@ -358,12 +358,40 @@ function initCursorGlow() {
 // 10. Ambient Lo-Fi / Focus Sound Controller
 function initAmbientAudio() {
   const audioBtn = document.getElementById('ambient-audio-toggle');
-  if (!audioBtn) return;
+  const sidebarAudioBtn = document.getElementById('sidebar-ambient-toggle');
+  const sidebarAudioBadge = document.getElementById('sidebar-audio-badge');
+  if (!audioBtn && !sidebarAudioBtn) return;
 
   let audio = null;
   let isPlaying = false;
 
-  audioBtn.addEventListener('click', () => {
+  function updateAudioUI(playing) {
+    isPlaying = playing;
+    if (audioBtn) {
+      if (playing) {
+        audioBtn.classList.add('playing');
+        const label = audioBtn.querySelector('.audio-label');
+        if (label) label.textContent = 'Focus Sound ON';
+      } else {
+        audioBtn.classList.remove('playing');
+        const label = audioBtn.querySelector('.audio-label');
+        if (label) label.textContent = 'Ambient Focus';
+      }
+    }
+    if (sidebarAudioBtn) {
+      if (playing) {
+        sidebarAudioBtn.classList.add('playing');
+      } else {
+        sidebarAudioBtn.classList.remove('playing');
+      }
+    }
+    if (sidebarAudioBadge) {
+      sidebarAudioBadge.textContent = playing ? 'ON' : 'OFF';
+      sidebarAudioBadge.classList.toggle('active', playing);
+    }
+  }
+
+  function toggleAudio() {
     if (!audio) {
       audio = new Audio('assets/cosmic_glow.mp3');
       audio.loop = true;
@@ -372,19 +400,25 @@ function initAmbientAudio() {
 
     if (!isPlaying) {
       audio.play().then(() => {
-        isPlaying = true;
-        audioBtn.classList.add('playing');
-        audioBtn.querySelector('.audio-label').textContent = 'Focus Sound ON';
+        updateAudioUI(true);
       }).catch((e) => {
         console.warn('Audio playback error:', e);
       });
     } else {
       audio.pause();
-      isPlaying = false;
-      audioBtn.classList.remove('playing');
-      audioBtn.querySelector('.audio-label').textContent = 'Ambient Focus';
+      updateAudioUI(false);
     }
-  });
+  }
+
+  if (audioBtn) {
+    audioBtn.addEventListener('click', toggleAudio);
+  }
+  if (sidebarAudioBtn) {
+    sidebarAudioBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleAudio();
+    });
+  }
 }
 
 // 11. 3D Card Gyroscope / Tilt Engine on Hover

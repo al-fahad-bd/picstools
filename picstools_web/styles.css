@@ -740,6 +740,124 @@ body.mobile-nav-locked {
   color: var(--text-secondary);
 }
 
+/* Sidebar Lo-Fi Ambient Audio Widget */
+.sidebar-audio-section {
+  margin-top: 14px;
+  margin-bottom: 8px;
+}
+
+.sidebar-audio-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-color);
+  box-shadow: 2px 2px 0px var(--border-color);
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  box-sizing: border-box;
+}
+
+.sidebar-audio-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3.5px 3.5px 0px var(--border-color);
+  border-color: var(--neo-cyan);
+}
+
+.sidebar-audio-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 0.5px 0.5px 0px var(--border-color);
+}
+
+.sidebar-audio-btn.playing {
+  border-color: var(--neo-cyan);
+  box-shadow: 2.5px 2.5px 0px var(--neo-cyan);
+}
+
+.sidebar-audio-btn .audio-equalizer {
+  display: flex;
+  align-items: flex-end;
+  gap: 2.5px;
+  height: 18px;
+  width: 22px;
+  padding: 6px;
+  background: var(--neo-soft-cyan);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  flex-shrink: 0;
+  justify-content: center;
+  box-sizing: content-box;
+}
+
+[data-theme="dark"] .sidebar-audio-btn .audio-equalizer {
+  background: rgba(6, 182, 212, 0.2);
+}
+
+.sidebar-audio-btn .audio-equalizer .equalizer-bar {
+  width: 3.5px;
+  height: 4px;
+  background: var(--text-primary);
+  border-radius: 1px;
+  transition: height 0.2s ease, background-color 0.2s ease;
+}
+
+.sidebar-audio-btn.playing .audio-equalizer .equalizer-bar {
+  background: var(--neo-cyan);
+}
+
+.sidebar-audio-btn.playing .audio-equalizer .equalizer-bar:nth-child(1) { animation: eqBar 0.8s ease-in-out infinite alternate; }
+.sidebar-audio-btn.playing .audio-equalizer .equalizer-bar:nth-child(2) { animation: eqBar 0.55s ease-in-out 0.2s infinite alternate; }
+.sidebar-audio-btn.playing .audio-equalizer .equalizer-bar:nth-child(3) { animation: eqBar 0.9s ease-in-out 0.4s infinite alternate; }
+
+.sidebar-audio-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sidebar-audio-title {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 0.86rem;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.sidebar-audio-desc {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.sidebar-audio-badge {
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.sidebar-audio-badge.active {
+  background: var(--neo-green);
+  color: #0F172A;
+  border-color: var(--border-color);
+  box-shadow: 1.5px 1.5px 0px var(--border-color);
+}
+
 /* Badges */
 .badge {
   display: inline-flex;
@@ -2050,7 +2168,7 @@ body.mobile-nav-locked {
   position: absolute;
   left: 0;
   top: 0;
-  min-width: 320px;
+  min-width: 0;
 }
 
 .cutout-slider-handle {
@@ -4600,24 +4718,10 @@ body.mobile-nav-locked {
     flex-shrink: 0;
   }
 
-  /* Ambient Focus Lo-Fi Sound: icon-only on mobile (no 2-line break) */
-  .ambient-audio-btn {
-    padding: 0;
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 2px 2px 0px var(--border-color);
-  }
-
-  .ambient-audio-btn .audio-label {
-    display: none;
-  }
-
-  .ambient-audio-btn .audio-equalizer {
-    height: 14px;
-    gap: 2.5px;
+  /* Music Button: Hidden from top appbar on mobile devices; moved to mobile sidebar menu */
+  .site-header .ambient-audio-btn,
+  #ambient-audio-toggle {
+    display: none !important;
   }
 
   /* Get App CTA: single-line pill, never wraps into 3 lines */
@@ -4924,12 +5028,6 @@ body.mobile-nav-locked {
     gap: 6px;
   }
 
-  .ambient-audio-btn {
-    width: 35px;
-    height: 35px;
-    border-radius: 8px;
-  }
-
   /* Switch CTA to short label 'Get App' */
   .cta-text-full {
     display: none;
@@ -5013,6 +5111,579 @@ body.mobile-nav-locked {
     width: 100%;
     justify-content: center;
     padding: 12px 18px;
+  }
+}
+
+/* ==========================================================================
+   Ultra-Compact Viewport Suite (320px - 360px Small Mobile & Foldables)
+   ========================================================================== */
+@media (max-width: 360px) {
+  /* 1. Viewport & Universal Box Boundaries */
+  html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  .container {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 2. Top Header */
+  .header-container {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    gap: 4px;
+  }
+
+  .brand-link {
+    gap: 5px;
+  }
+
+  .brand-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+  }
+
+  .brand-title {
+    font-size: 0.90rem;
+    letter-spacing: -0.3px;
+  }
+
+  .header-actions {
+    gap: 4px;
+  }
+
+  .cta-nav-btn {
+    padding: 5px 8px;
+    font-size: 0.68rem;
+    border-radius: 7px;
+    letter-spacing: -0.2px;
+  }
+
+  .theme-toggle-btn {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border-radius: 7px;
+    font-size: 0.82rem;
+  }
+
+  .mobile-menu-btn {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border-radius: 7px;
+    gap: 3.5px;
+  }
+
+  .mobile-menu-btn .menu-bar {
+    width: 14px;
+    height: 1.8px;
+  }
+
+  .mobile-menu-btn.active .bar-1 {
+    transform: translateY(5.3px) rotate(45deg);
+  }
+
+  .mobile-menu-btn.active .bar-3 {
+    transform: translateY(-5.3px) rotate(-45deg);
+  }
+
+  /* 3. Mobile Sidebar Drawer */
+  .mobile-sidebar {
+    width: min(295px, 92vw);
+  }
+
+  .sidebar-header {
+    padding: 12px 14px;
+  }
+
+  .sidebar-body {
+    padding: 10px 8px;
+  }
+
+  .sidebar-audio-btn {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  .sidebar-audio-title {
+    font-size: 0.80rem;
+  }
+
+  .sidebar-audio-desc {
+    font-size: 0.65rem;
+  }
+
+  .sidebar-audio-badge {
+    font-size: 0.62rem;
+    padding: 2px 6px;
+  }
+
+  .sidebar-link {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  .sidebar-icon-chip {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    font-size: 0.85rem;
+  }
+
+  .sidebar-link-title {
+    font-size: 0.82rem;
+  }
+
+  .sidebar-link-desc {
+    font-size: 0.64rem;
+  }
+
+  .sidebar-footer {
+    padding: 10px 12px 14px;
+  }
+
+  .sidebar-cta-btn {
+    padding: 10px 12px;
+    font-size: 0.86rem;
+  }
+
+  /* 4. Hero Section */
+  .hero-wrapper {
+    padding-top: 22px;
+    padding-bottom: 26px;
+  }
+
+  .hero-pill-badge {
+    font-size: 0.58rem;
+    padding: 3px 8px;
+    margin-bottom: 10px;
+  }
+
+  .hero-headline {
+    font-size: 1.50rem;
+    line-height: 1.16;
+    letter-spacing: -0.4px;
+  }
+
+  .hero-subhead {
+    font-size: 0.82rem;
+    line-height: 1.4;
+  }
+
+  .creator-proof-pill {
+    padding: 6px 8px;
+    gap: 8px;
+    border-radius: 12px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .creator-avatar {
+    width: 26px;
+    height: 26px;
+  }
+
+  .creator-avatar:not(:first-child) {
+    margin-left: -10px;
+  }
+
+  .creator-proof-stars {
+    font-size: 0.74rem;
+  }
+
+  .creator-proof-desc {
+    font-size: 0.66rem;
+    line-height: 1.25;
+  }
+
+  .btn-primary-play {
+    padding: 10px 12px;
+    font-size: 0.82rem;
+    border-radius: 9px;
+  }
+
+  .btn-secondary-web {
+    padding: 10px 12px;
+    font-size: 0.82rem;
+    border-radius: 9px;
+  }
+
+  .hero-guarantees {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .guarantee-item {
+    font-size: 0.72rem;
+  }
+
+  /* 5. Interactive Studio Section (#features) */
+  .tools-section {
+    padding-top: 32px;
+    padding-bottom: 32px;
+  }
+
+  .section-title {
+    font-size: 1.40rem;
+    letter-spacing: -0.4px;
+  }
+
+  .section-subtitle {
+    font-size: 0.78rem;
+  }
+
+  .web-cat-btn {
+    padding: 4px 6px;
+    font-size: 0.66rem;
+  }
+
+  .studio-tool-tab {
+    min-width: 125px;
+    padding: 6px 8px;
+  }
+
+  .tab-title {
+    font-size: 0.74rem;
+  }
+
+  .tab-cat-badge {
+    font-size: 0.55rem;
+    padding: 1px 4px;
+  }
+
+  .studio-stage {
+    padding: 12px !important;
+    border-radius: 14px !important;
+    border-width: 2px !important;
+    box-shadow: 3px 3px 0px var(--border-color) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .stage-header-row {
+    gap: 8px;
+  }
+
+  .tool-icon-box {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    border-radius: 7px;
+  }
+
+  .tool-icon-box img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .tool-name {
+    font-size: 1.02rem;
+  }
+
+  .stage-subtitle {
+    font-size: 0.76rem;
+    line-height: 1.3;
+  }
+
+  .stage-desc {
+    font-size: 0.72rem;
+    line-height: 1.35;
+  }
+
+  .feature-item {
+    font-size: 0.68rem;
+    line-height: 1.3;
+  }
+
+  .stage-actions .btn-primary-glow {
+    width: 100%;
+    justify-content: center;
+    padding: 8px 10px;
+    font-size: 0.80rem;
+  }
+
+  .sim-stat-box {
+    padding: 7px;
+    font-size: 0.70rem;
+  }
+
+  .sim-control-group {
+    padding: 8px;
+  }
+
+  .sim-pill-group {
+    gap: 4px;
+  }
+
+  .sim-pill-btn {
+    padding: 4px 6px;
+    font-size: 0.66rem;
+  }
+
+  /* 6. 8 Tools Grid: 1 Column on <= 360px */
+  .tools-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .tool-card {
+    padding: 12px 10px;
+    border-radius: 12px;
+    box-shadow: 3px 3px 0px var(--border-color);
+  }
+
+  .tool-card-title {
+    font-size: 0.96rem;
+  }
+
+  .tool-card-desc {
+    font-size: 0.72rem;
+    line-height: 1.35;
+  }
+
+  /* 7. Cutout Studio Section */
+  .cutout-studio-section {
+    padding-top: 32px;
+    padding-bottom: 32px;
+  }
+
+  .cutout-interactive-box {
+    padding: 10px !important;
+    border-radius: 12px !important;
+  }
+
+  .cutout-slider-container {
+    height: 175px;
+  }
+
+  .cutout-compare-labels {
+    font-size: 0.60rem;
+    padding: 2px 5px;
+  }
+
+  .cutout-action-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .cutout-action-btn {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.78rem;
+    padding: 8px 10px;
+  }
+
+  /* 8. Why On-Device Comparison */
+  .vs-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+  .vs-card {
+    padding: 12px 10px;
+    border-radius: 12px;
+  }
+
+  .vs-card-title {
+    font-size: 1rem;
+  }
+
+  .vs-row {
+    font-size: 0.72rem;
+    gap: 6px;
+  }
+
+  /* 9. Workflows Section */
+  .workflows-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+  .workflow-card {
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .workflow-img {
+    height: 140px;
+  }
+
+  .workflow-title {
+    font-size: 0.94rem;
+  }
+
+  .workflow-desc {
+    font-size: 0.72rem;
+  }
+
+  /* 10. Stats Section */
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px;
+  }
+
+  .stat-item-card {
+    padding: 12px 10px;
+    border-radius: 10px;
+  }
+
+  .stat-number {
+    font-size: 1.75rem;
+  }
+
+  .stat-label {
+    font-size: 0.72rem;
+  }
+
+  /* 11. Clients / Reviews Section */
+  .clients-title-line {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .clients-title {
+    font-size: 1.65rem;
+  }
+
+  .heartbeat-badge-box {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .heartbeat-pulse-icon {
+    width: 28px;
+    height: 14px;
+  }
+
+  .clients-highlight-pill {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+  }
+
+  .review-cards-deck {
+    height: 380px;
+    max-width: 100%;
+  }
+
+  .review-stack-card {
+    padding: 12px 10px;
+    border-radius: 12px;
+    border-width: 2px;
+    box-shadow: 3px 3px 0px var(--border-color);
+  }
+
+  .client-avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .client-name {
+    font-size: 0.88rem;
+  }
+
+  .client-role {
+    font-size: 0.64rem;
+  }
+
+  .review-quote-text {
+    font-size: 0.74rem;
+    line-height: 1.34;
+  }
+
+  .deck-controls {
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .deck-nav-btn {
+    padding: 6px 8px;
+    font-size: 0.72rem;
+  }
+
+  /* 12. FAQ Section */
+  .faq-question {
+    padding: 10px 10px;
+    font-size: 0.78rem;
+    gap: 6px;
+  }
+
+  .faq-answer {
+    padding: 0 10px 10px;
+    font-size: 0.72rem;
+    line-height: 1.38;
+  }
+
+  /* 13. Download CTA Section */
+  .download-card {
+    padding: 18px 10px;
+    border-radius: 12px;
+  }
+
+  .download-headline {
+    font-size: 1.35rem;
+    line-height: 1.18;
+  }
+
+  .download-desc {
+    font-size: 0.76rem;
+    line-height: 1.32;
+  }
+
+  .download-btn-group {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .dl-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 9px 10px;
+    font-size: 0.78rem;
+  }
+
+  .dl-badge-wrap {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .dl-badge {
+    font-size: 0.60rem;
+    padding: 2px 5px;
+  }
+
+  /* 14. Footer */
+  .footer-content {
+    gap: 12px;
+  }
+
+  .footer-brand {
+    font-size: 0.76rem;
+  }
+
+  .footer-nav {
+    gap: 6px 8px;
+  }
+
+  .footer-nav a {
+    font-size: 0.68rem;
+  }
+
+  .footer-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    font-size: 0.66rem;
   }
 }
 
