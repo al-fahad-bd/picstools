@@ -439,6 +439,27 @@
 
               </div>
 
+              <!-- Authentic Smartphone Bottom Navigation Dock & Home Bar -->
+              <div class="phone-bottom-nav">
+                <div class="phone-nav-item active">
+                  <span class="phone-nav-icon">⚡</span>
+                  <span class="phone-nav-label">Tools</span>
+                </div>
+                <div class="phone-nav-item">
+                  <span class="phone-nav-icon">✂️</span>
+                  <span class="phone-nav-label">Cutout</span>
+                </div>
+                <div class="phone-nav-item">
+                  <span class="phone-nav-icon">📄</span>
+                  <span class="phone-nav-label">PDF</span>
+                </div>
+                <div class="phone-nav-item">
+                  <span class="phone-nav-icon">⚙️</span>
+                  <span class="phone-nav-label">Settings</span>
+                </div>
+              </div>
+              <div class="phone-home-indicator"></div>
+
             </div>
           </div>
         </div>
@@ -1351,24 +1372,21 @@
                 </div>
               </div>
 
-              <!-- Interactive Simulator: Remove Background Slider -->
+              <!-- Interactive Simulator: Remove Background Clean Image Preview -->
               <div class="stage-simulator simulator-cutout">
                 <div class="simulator-card">
                   <div class="sim-header">
-                    <span class="sim-title">✨ Before & After Split Slider</span>
-                    <span class="sim-pill">DRAG HANDLE ⇄</span>
+                    <span class="sim-title">✨ AI Subject Isolation</span>
+                    <span class="sim-pill">100% ON-DEVICE</span>
                   </div>
-                  <div class="sim-cutout-compare" id="sim-cutout-compare">
-                    <div class="cutout-img-after-checker">
-                      <img src="assets/ai_cutout_studio.jpg" alt="Transparent Cutout" class="cutout-subject-only">
-                    </div>
-                    <div class="cutout-img-before" id="cutout-before-clip">
-                      <img src="assets/ai_cutout_studio.jpg" alt="Original Photo">
-                    </div>
-                    <div class="cutout-slider-handle" id="cutout-slider-handle">
-                      <div class="handle-bar"></div>
-                      <div class="handle-circle">⇄</div>
-                      <div class="handle-bar"></div>
+                  <div class="sim-cutout-showcase">
+                    <div class="cutout-img-checker-wrap">
+                      <img src="assets/ai_cutout_studio.jpg" alt="Transparent AI Cutout Preview"
+                        class="cutout-preview-img">
+                      <div class="cutout-preview-badge">
+                        <span class="pulse-dot"></span>
+                        <span>BiRefNet Neural Matte</span>
+                      </div>
                     </div>
                   </div>
                   <div class="sim-metrics-grid">

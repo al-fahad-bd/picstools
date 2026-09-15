@@ -1144,7 +1144,7 @@ body.mobile-nav-locked {
 /* Smartphone Shell */
 .phone-mockup {
   width: 100%;
-  max-width: 440px;
+  max-width: 320px;
   margin: 0 auto;
   background: var(--bg-card);
   border: 4px solid var(--border-color);
@@ -1380,6 +1380,59 @@ body.mobile-nav-locked {
   font-size: 0.65rem;
   color: var(--text-secondary);
   line-height: 1.25;
+}
+
+/* Authentic Smartphone Bottom Navigation Dock & Home Bar */
+.phone-bottom-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 8px 10px 4px;
+  background: var(--table-stripe);
+  border-top: 1.5px solid var(--border-color);
+  border-radius: 14px;
+  margin-top: 4px;
+}
+
+.phone-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: all 0.15s ease;
+}
+
+.phone-nav-item.active {
+  color: var(--text-primary);
+}
+
+.phone-nav-icon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.phone-nav-label {
+  font-family: var(--font-heading);
+  font-size: 0.60rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.phone-nav-item.active .phone-nav-label {
+  color: var(--text-primary);
+  font-weight: 900;
+}
+
+.phone-home-indicator {
+  width: 90px;
+  height: 4px;
+  background: var(--border-color);
+  border-radius: 4px;
+  margin: 6px auto 2px;
+  opacity: 0.75;
 }
 
 /* ==========================================================================
@@ -2121,84 +2174,56 @@ body.mobile-nav-locked {
   transform: translateY(-1px);
 }
 
-/* Simulator: Split Cutout Slider */
-.sim-cutout-compare {
+/* Simulator: AI Cutout Clean Image Display */
+.sim-cutout-showcase {
   position: relative;
   width: 100%;
-  height: 190px;
   border-radius: 12px;
   overflow: hidden;
   border: 2px solid var(--border-color);
-  user-select: none;
-  background: #FFF;
+  background: #0B1120;
 }
 
-.cutout-img-after-checker {
-  position: absolute;
-  inset: 0;
-  background-color: #E2E8F0;
-  background-image: linear-gradient(45deg, #CBD5E1 25%, transparent 25%),
-                    linear-gradient(-45deg, #CBD5E1 25%, transparent 25%),
-                    linear-gradient(45deg, transparent 75%, #CBD5E1 75%),
-                    linear-gradient(-45deg, transparent 75%, #CBD5E1 75%);
-  background-size: 16px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cutout-subject-only {
+.cutout-img-checker-wrap {
+  position: relative;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.cutout-img-before {
-  position: absolute;
-  inset: 0;
-  width: 50%;
+  height: 200px;
   overflow: hidden;
-  border-right: 2.5px solid var(--neo-yellow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0F172A;
+  background-image: linear-gradient(45deg, #1E293B 25%, transparent 25%),
+                    linear-gradient(-45deg, #1E293B 25%, transparent 25%),
+                    linear-gradient(45deg, transparent 75%, #1E293B 75%),
+                    linear-gradient(-45deg, transparent 75%, #1E293B 75%);
+  background-size: 16px 16px;
 }
 
-.cutout-img-before img {
+.cutout-preview-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  position: absolute;
-  left: 0;
-  top: 0;
-  min-width: 0;
+  display: block;
 }
 
-.cutout-slider-handle {
+.cutout-preview-badge {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 4px;
-  background: var(--neo-yellow);
-  cursor: ew-resize;
-  display: flex;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-family: var(--font-heading);
+  font-size: 0.70rem;
+  font-weight: 800;
+  color: #F8FAFC;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  z-index: 10;
-  transform: translateX(-50%);
-}
-
-.handle-circle {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: var(--neo-yellow);
-  color: #0F172A;
-  border: 2px solid var(--border-color);
-  font-size: 0.74rem;
-  font-weight: 900;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 2px 2px 0px var(--border-color);
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Simulator: PDF stack */
@@ -2757,8 +2782,9 @@ body.mobile-nav-locked {
     height: 145px;
   }
 
-  .sim-cutout-compare {
-    height: 170px;
+  .cutout-img-checker-wrap,
+  .sim-cutout-showcase {
+    height: 160px;
   }
 
   #live-signature-canvas {
@@ -2820,32 +2846,51 @@ body.mobile-nav-locked {
     height: 112px;
   }
 
-  /* Stage Nav Bar */
+  /* Stage Nav Bar Mobile Layout */
   .stage-nav-bar {
-    flex-direction: row;
-    justify-content: space-between;
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
+    gap: 12px 8px;
     padding-top: 14px;
     margin-top: 14px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
-  .stage-nav-btn {
-    padding: 7px 11px;
-    font-size: 0.74rem;
-  }
-
-  .stage-dots-bar {
-    gap: 4px;
+  .stage-dots {
+    order: -1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
   }
 
   .stage-dot {
-    width: 7px;
-    height: 7px;
+    width: 8px;
+    height: 8px;
   }
 
   .stage-dot.active {
-    width: 18px;
+    width: 20px;
+    border-radius: 6px;
+    transform: none;
+  }
+
+  .stage-nav-btn {
+    flex: 1 1 calc(50% - 6px);
+    max-width: calc(50% - 4px);
+    box-sizing: border-box;
+    padding: 8px 10px;
+    font-size: 0.76rem;
+    text-align: center;
+    justify-content: center;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
   }
 
   .studio-guarantee-ribbon {
@@ -6091,54 +6136,124 @@ body.mobile-nav-locked {
   }
 
   .phone-mockup {
-    max-width: 320px !important;
+    max-width: 250px !important;
     margin: 0 auto !important;
-    border-radius: 28px !important;
+    border-radius: 34px !important;
     border-width: 3px !important;
     box-shadow: 6px 6px 0px var(--border-color) !important;
   }
 
   .phone-app-screen {
-    padding: 12px 10px !important;
-    gap: 10px !important;
-  }
-
-  .app-tools-preview-grid {
+    padding: 10px 8px !important;
     gap: 8px !important;
   }
 
+  .app-tools-preview-grid {
+    gap: 6px !important;
+  }
+
   .app-tool-mini-card {
-    padding: 8px 6px !important;
+    padding: 6px 5px !important;
     min-width: 0 !important;
   }
 
   .mini-tool-title {
-    font-size: 0.72rem !important;
+    font-size: 0.68rem !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
   }
 
   .mini-tool-sub {
-    font-size: 0.58rem !important;
+    font-size: 0.54rem !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
   }
 
   .mini-tool-badge {
-    font-size: 0.52rem !important;
-    padding: 1px 4px !important;
+    font-size: 0.48rem !important;
+    padding: 1px 3px !important;
   }
 
   .mini-tool-icon-box {
-    width: 22px !important;
-    height: 22px !important;
+    width: 20px !important;
+    height: 20px !important;
   }
 
   .mini-tool-img {
-    width: 12px !important;
-    height: 12px !important;
+    width: 11px !important;
+    height: 11px !important;
+  }
+
+  .phone-bottom-nav {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    padding: 6px 8px 3px !important;
+    border-radius: 10px !important;
+    margin-top: 3px !important;
+  }
+
+  .phone-nav-icon {
+    font-size: 0.82rem !important;
+  }
+
+  .phone-nav-label {
+    font-size: 0.52rem !important;
+  }
+
+  .phone-home-indicator {
+    width: 75px !important;
+    height: 3.5px !important;
+    margin: 5px auto 1px !important;
+  }
+
+  /* Stage Nav Bar Mobile Wrapped Layout */
+  .stage-nav-bar {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px 8px !important;
+    padding-top: 14px !important;
+    margin-top: 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .stage-dots {
+    order: -1 !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .stage-dot {
+    width: 8px !important;
+    height: 8px !important;
+  }
+
+  .stage-dot.active {
+    width: 20px !important;
+    border-radius: 6px !important;
+    transform: none !important;
+  }
+
+  .stage-nav-btn {
+    flex: 1 1 calc(50% - 6px) !important;
+    max-width: calc(50% - 4px) !important;
+    box-sizing: border-box !important;
+    padding: 8px 8px !important;
+    font-size: 0.74rem !important;
+    text-align: center !important;
+    justify-content: center !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    white-space: nowrap !important;
   }
 
   /* Small mobile / Pixel 7 / iPhone SE optimizations */
@@ -6581,9 +6696,9 @@ body.mobile-nav-locked {
   /* Authentic Phone UI Mockup on 320px screens */
   .phone-mockup {
     width: 100% !important;
-    max-width: 275px !important;
+    max-width: 236px !important;
     margin: 0 auto !important;
-    border-radius: 22px !important;
+    border-radius: 30px !important;
     border: 3px solid var(--border-color) !important;
     box-shadow: 4px 4px 0px var(--border-color) !important;
     box-sizing: border-box !important;
@@ -6731,6 +6846,35 @@ body.mobile-nav-locked {
     text-overflow: ellipsis !important;
   }
 
+  .phone-bottom-nav {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    padding: 5px 6px 3px !important;
+    border-radius: 8px !important;
+    margin-top: 2px !important;
+    border-top: 1px solid var(--border-color) !important;
+  }
+
+  .phone-nav-item {
+    gap: 1px !important;
+  }
+
+  .phone-nav-icon {
+    font-size: 0.72rem !important;
+  }
+
+  .phone-nav-label {
+    font-size: 0.46rem !important;
+  }
+
+  .phone-home-indicator {
+    width: 60px !important;
+    height: 3px !important;
+    margin: 4px auto 1px !important;
+    border-radius: 3px !important;
+  }
+
   /* 5. Marquee Tape Showcase */
   .marquee-showcase-container {
     width: 100% !important;
@@ -6867,6 +7011,54 @@ body.mobile-nav-locked {
   .sim-pill-btn {
     padding: 3px 5px !important;
     font-size: 0.62rem !important;
+  }
+
+  /* Stage Navigation Bar Prev/Next & Dots */
+  .stage-nav-bar {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px 6px !important;
+    padding-top: 12px !important;
+    margin-top: 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .stage-dots {
+    order: -1 !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 5px !important;
+    margin-bottom: 2px !important;
+  }
+
+  .stage-dot {
+    width: 7px !important;
+    height: 7px !important;
+  }
+
+  .stage-dot.active {
+    width: 16px !important;
+    border-radius: 5px !important;
+    transform: none !important;
+  }
+
+  .stage-nav-btn {
+    flex: 1 1 calc(50% - 4px) !important;
+    max-width: calc(50% - 3px) !important;
+    box-sizing: border-box !important;
+    padding: 7px 6px !important;
+    font-size: 0.70rem !important;
+    text-align: center !important;
+    justify-content: center !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    white-space: nowrap !important;
+    border-radius: 8px !important;
   }
 
   /* 7. 8 Tools Grid: 1 Column on <= 360px */
