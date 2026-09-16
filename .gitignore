@@ -47,3 +47,7 @@ app.*.map.json
 *.keystore
 /android/key.properties
 
+# Kilo internal directory
+.kilo/
+
+
