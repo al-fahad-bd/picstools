@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -59,10 +60,8 @@ class SignatureSuccessView extends StatelessWidget {
         context,
         '🎉 Saved $label to Gallery & Files!',
         icon: Icons.draw_rounded,
-        onTap: () => saver.openFileOrDirectory(
-          file: lastSaved,
-          subFolder: 'Signatures',
-        ),
+        onTap: () =>
+            saver.openFileOrDirectory(file: lastSaved, subFolder: 'Signatures'),
       );
     }
   }
@@ -125,7 +124,8 @@ class SignatureSuccessView extends StatelessWidget {
                         ),
                       ),
                       title: 'Transparent PNG',
-                      subtitle: 'Ideal for overlaying on documents & dark backgrounds',
+                      subtitle:
+                          'Ideal for overlaying on documents & dark backgrounds',
                       onTap: () {
                         Navigator.pop(ctx);
                         _saveSignatureMultiple(context, [
@@ -391,7 +391,16 @@ class SignatureSuccessView extends StatelessWidget {
           builder: (dialogCtx, setModalState) {
             Widget bgWidget;
             if (bgMode == 'dark') {
-              bgWidget = Container(color: const Color(0xFF0F172A));
+              bgWidget = Container(
+                decoration: const BoxDecoration(color: Color(0xFF141923)),
+                child: CustomPaint(
+                  painter: CheckeredPatternPainter(
+                    squareSize: 12,
+                    colorLight: const Color(0xFF1E2636),
+                    colorDark: const Color(0xFF121722),
+                  ),
+                ),
+              );
             } else if (bgMode == 'white') {
               bgWidget = Container(color: Colors.white);
             } else {
@@ -509,9 +518,54 @@ class SignatureSuccessView extends StatelessWidget {
                               child: InteractiveViewer(
                                 child: Padding(
                                   padding: const EdgeInsets.all(12),
-                                  child: Image.file(
-                                    imageFile,
-                                    fit: BoxFit.contain,
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      if (bgMode == 'dark') ...[
+                                        // Ambient contrast glow/halo for dark strokes (e.g. black, navy blue)
+                                        // ensuring full visibility on dark backgrounds like WhatsApp viewer
+                                        ImageFiltered(
+                                          imageFilter: ui.ImageFilter.blur(
+                                            sigmaX: 3.5,
+                                            sigmaY: 3.5,
+                                          ),
+                                          child: ColorFiltered(
+                                            colorFilter: ColorFilter.mode(
+                                              Colors.white.withValues(
+                                                alpha: 0.85,
+                                              ),
+                                              BlendMode.srcIn,
+                                            ),
+                                            child: Image.file(
+                                              imageFile,
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
+                                        ),
+                                        ImageFiltered(
+                                          imageFilter: ui.ImageFilter.blur(
+                                            sigmaX: 1.2,
+                                            sigmaY: 1.2,
+                                          ),
+                                          child: ColorFiltered(
+                                            colorFilter: ColorFilter.mode(
+                                              Colors.white.withValues(
+                                                alpha: 0.95,
+                                              ),
+                                              BlendMode.srcIn,
+                                            ),
+                                            child: Image.file(
+                                              imageFile,
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                      Image.file(
+                                        imageFile,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),

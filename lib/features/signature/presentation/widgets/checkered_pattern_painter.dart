@@ -2,13 +2,19 @@ import 'package:flutter/material.dart';
 
 class CheckeredPatternPainter extends CustomPainter {
   final double squareSize;
+  final Color colorLight;
+  final Color colorDark;
 
-  CheckeredPatternPainter({this.squareSize = 8.0});
+  CheckeredPatternPainter({
+    this.squareSize = 8.0,
+    this.colorLight = const Color(0xFFF1F5F9),
+    this.colorDark = const Color(0xFFCBD5E1),
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paintLight = Paint()..color = const Color(0xFFF1F5F9);
-    final paintDark = Paint()..color = const Color(0xFFCBD5E1);
+    final paintLight = Paint()..color = colorLight;
+    final paintDark = Paint()..color = colorDark;
 
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paintLight);
 
@@ -27,5 +33,8 @@ class CheckeredPatternPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant CheckeredPatternPainter oldDelegate) =>
+      oldDelegate.squareSize != squareSize ||
+      oldDelegate.colorLight != colorLight ||
+      oldDelegate.colorDark != colorDark;
 }
