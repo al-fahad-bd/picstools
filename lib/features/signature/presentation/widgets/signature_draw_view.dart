@@ -218,9 +218,8 @@ class SignatureDrawView extends StatelessWidget {
                 fullWidth: true,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 onPressed: () {
-                  final renderBox =
-                      canvasKey.currentContext?.findRenderObject()
-                          as RenderBox?;
+                  final ro = canvasKey.currentContext?.findRenderObject();
+                  final renderBox = ro is RenderBox ? ro : null;
                   final size = renderBox?.size ?? const Size(350, 300);
                   bloc.add(StartExportSignatureEvent(size));
                 },

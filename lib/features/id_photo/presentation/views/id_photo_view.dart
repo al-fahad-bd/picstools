@@ -1136,10 +1136,7 @@ class _IdPhotoViewContent extends StatelessWidget {
                 if (res.printSheetPdfFile != null)
                   XFile(res.printSheetPdfFile!.path),
               ];
-              final box = context.findRenderObject() as RenderBox?;
-              final origin = box != null
-                  ? box.localToGlobal(Offset.zero) & box.size
-                  : null;
+              final origin = FileShareService.getOrigin(context);
               getIt<FileShareService>().shareFiles(
                 files: files,
                 text: 'Created with PicsTools!',

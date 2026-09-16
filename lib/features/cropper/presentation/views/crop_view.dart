@@ -561,10 +561,7 @@ class _CropViewContent extends StatelessWidget {
             backgroundColor: NeoColors.pink,
             fullWidth: true,
             onPressed: () {
-              final box = context.findRenderObject() as RenderBox?;
-              final origin = box != null
-                  ? box.localToGlobal(Offset.zero) & box.size
-                  : null;
+              final origin = FileShareService.getOrigin(context);
               getIt<FileShareService>().shareFiles(
                 files: [XFile(state.result.croppedFile.path)],
                 text: 'Cropped with PicsTools!',

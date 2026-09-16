@@ -394,11 +394,8 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                             vertical: 12,
                           ),
                           onPressed: () {
-                            final box =
-                                context.findRenderObject() as RenderBox?;
-                            final origin = box != null
-                                ? box.localToGlobal(Offset.zero) & box.size
-                                : null;
+                            final origin =
+                                FileShareService.getOrigin(modalContext);
                             getIt<FileShareService>().shareFiles(
                               files: [XFile(imageFile.path)],
                               text: 'Resized with PicsTools!',
@@ -1140,14 +1137,16 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
   ) {
     final bloc = context.read<ResizerBloc>();
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        children: [
-          NeoCard(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // High-Impact Resize Complete Banner
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+          child: NeoCard(
             backgroundColor: NeoColors.softCyan,
-            shadowOffset: 5,
-            padding: const EdgeInsets.all(20),
+            shadowOffset: 4,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Column(
               children: [
                 const NeoBadge(
@@ -1155,7 +1154,7 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                   backgroundColor: NeoColors.cyan,
                   fontSize: 12,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 Text(
                   '${state.results.length} Image(s) Resized',
                   style: GoogleFonts.spaceGrotesk(
@@ -1167,11 +1166,52 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
               ],
             ),
           ),
-          const SizedBox(height: 20),
+        ),
 
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
+        // Section header
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'RESIZED PHOTOS (${state.results.length})',
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.8,
+                  color: isDark
+                      ? NeoColors.textSecondaryDark
+                      : NeoColors.textSecondaryLight,
+                ),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.touch_app_rounded,
+                    size: 13,
+                    color: isDark ? NeoColors.softCyan : NeoColors.cyan,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'TAP TO PREVIEW',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: isDark ? NeoColors.softCyan : NeoColors.cyan,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+
+        // Scrollable File items preview list
+        Expanded(
+          child: ListView.separated(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
             itemCount: state.results.length,
             separatorBuilder: (_, _) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
@@ -1189,16 +1229,48 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                 ),
                 child: Row(
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        item.resizedFile,
-                        width: 60,
-                        height: 60,
-                        fit: BoxFit.cover,
+                    // Thumbnail with zoom hint overlay badge
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isDark
+                              ? NeoColors.borderDark
+                              : NeoColors.borderLight,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(6.5),
+                        child: Stack(
+                          children: [
+                            Image.file(
+                              item.resizedFile,
+                              width: 62,
+                              height: 62,
+                              fit: BoxFit.cover,
+                            ),
+                            Positioned(
+                              right: 2,
+                              bottom: 2,
+                              child: Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.65),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: const Icon(
+                                  Icons.fullscreen_rounded,
+                                  color: Colors.white,
+                                  size: 13,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 14),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1209,7 +1281,10 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                               fontSize: 14,
                               fontWeight: FontWeight.w900,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
+                          const SizedBox(height: 3),
                           Text(
                             '${FileUtils.formatBytes(item.originalSizeBytes)} ➔ ${FileUtils.formatBytes(item.resizedSizeBytes)}',
                             style: GoogleFonts.spaceGrotesk(
@@ -1219,92 +1294,211 @@ class _ResizeViewContentState extends State<_ResizeViewContent> {
                                   : NeoColors.textSecondaryLight,
                             ),
                           ),
+                          const SizedBox(height: 6),
+                          const _ResizeTapPreviewBadge(),
                         ],
                       ),
-                    ),
-                    const Icon(
-                      Icons.visibility_rounded,
-                      size: 20,
-                      color: NeoColors.cyan,
                     ),
                   ],
                 ),
               );
             },
           ),
-          const SizedBox(height: 28),
+        ),
 
-          NeoButton(
-            label: 'SAVE TO DEVICE',
-            icon: const Icon(
-              Icons.download_rounded,
-              color: NeoColors.borderLight,
+        // Pinned Bottom Actions: Save, Share & New
+        Container(
+          decoration: BoxDecoration(
+            color: isDark ? NeoColors.darkBg : NeoColors.lightBg,
+            border: Border(
+              top: BorderSide(
+                color: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+                width: 2.5,
+              ),
             ),
-            backgroundColor: NeoColors.green,
-            fullWidth: true,
-            onPressed: () async {
-              final proceed = await NeoDownloadDialog.show(
-                context,
-                title: 'Download ${state.results.length} Resized Photos',
-                subtitle:
-                    'Export all resized photos instantly to your device gallery',
-              );
-              if (!proceed) return;
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                offset: const Offset(0, -4),
+                blurRadius: 10,
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              NeoButton(
+                label: 'SAVE TO DEVICE',
+                icon: const Icon(
+                  Icons.download_rounded,
+                  color: NeoColors.borderLight,
+                ),
+                backgroundColor: NeoColors.green,
+                fullWidth: true,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                onPressed: () async {
+                  final proceed = await NeoDownloadDialog.show(
+                    context,
+                    title: 'Download ${state.results.length} Resized Photos',
+                    subtitle:
+                        'Export all resized photos instantly to your device gallery',
+                  );
+                  if (!proceed) return;
 
-              final saver = getIt<FileSaveService>();
-              File? lastSaved;
-              for (final res in state.results) {
-                lastSaved = await saver.saveFileToPublicStorage(
-                  sourceFile: res.resizedFile,
-                  subFolder: 'Resized',
-                );
-              }
-              if (context.mounted) {
-                NeoToast.showSuccess(
-                  context,
-                  '🎉 Saved ${state.results.length} resized photo(s) to Gallery!',
-                  onTap: () => saver.openFileOrDirectory(
-                    file: lastSaved,
-                    subFolder: 'Resized',
+                  final saver = getIt<FileSaveService>();
+                  File? lastSaved;
+                  for (final res in state.results) {
+                    lastSaved = await saver.saveFileToPublicStorage(
+                      sourceFile: res.resizedFile,
+                      subFolder: 'Resized',
+                    );
+                  }
+                  if (context.mounted) {
+                    NeoToast.showSuccess(
+                      context,
+                      '🎉 Saved ${state.results.length} resized photo(s) to Gallery!',
+                      onTap: () => saver.openFileOrDirectory(
+                        file: lastSaved,
+                        subFolder: 'Resized',
+                      ),
+                    );
+                  }
+                },
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: NeoButton(
+                      label: 'SHARE FILES',
+                      icon: const Icon(
+                        Icons.share_rounded,
+                        color: NeoColors.borderLight,
+                        size: 18,
+                      ),
+                      backgroundColor: NeoColors.cyan,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      onPressed: () {
+                        final xFiles = state.results
+                            .map((r) => XFile(r.resizedFile.path))
+                            .toList();
+                        final origin = FileShareService.getOrigin(context);
+                        getIt<FileShareService>().shareFiles(
+                          files: xFiles,
+                          text: 'Resized with PicsTools!',
+                          sharePositionOrigin: origin,
+                        );
+                      },
+                    ),
                   ),
-                );
-              }
-            },
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: NeoButton(
+                      label: 'RESIZE MORE',
+                      icon: const Icon(
+                        Icons.refresh_rounded,
+                        color: NeoColors.borderLight,
+                        size: 18,
+                      ),
+                      backgroundColor: NeoColors.yellow,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      onPressed: () => bloc.add(ResetResizerEvent()),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
-          NeoButton(
-            label: 'SHARE RESIZED FILE(S)',
-            icon: const Icon(Icons.share_rounded, color: NeoColors.borderLight),
-            backgroundColor: NeoColors.cyan,
-            fullWidth: true,
-            onPressed: () {
-              final xFiles = state.results
-                  .map((r) => XFile(r.resizedFile.path))
-                  .toList();
-              final box = context.findRenderObject() as RenderBox?;
-              final origin = box != null
-                  ? box.localToGlobal(Offset.zero) & box.size
-                  : null;
-              getIt<FileShareService>().shareFiles(
-                files: xFiles,
-                text: 'Resized with PicsTools!',
-                sharePositionOrigin: origin,
-              );
-            },
-          ),
-          const SizedBox(height: 12),
-          NeoButton(
-            label: 'RESIZE ANOTHER IMAGE',
-            icon: const Icon(
-              Icons.refresh_rounded,
-              color: NeoColors.borderLight,
-            ),
-            backgroundColor: NeoColors.yellow,
-            fullWidth: true,
-            onPressed: () => bloc.add(ResetResizerEvent()),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
+
+class _ResizeTapPreviewBadge extends StatefulWidget {
+  const _ResizeTapPreviewBadge();
+
+  @override
+  State<_ResizeTapPreviewBadge> createState() => _ResizeTapPreviewBadgeState();
+}
+
+class _ResizeTapPreviewBadgeState extends State<_ResizeTapPreviewBadge>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat(reverse: true);
+
+    _scaleAnimation = Tween<double>(
+      begin: 0.95,
+      end: 1.05,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scaleAnimation.value,
+          alignment: Alignment.centerLeft,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? NeoColors.cyan.withValues(
+                      alpha: 0.22 + (_controller.value * 0.15),
+                    )
+                  : NeoColors.cyan.withValues(
+                      alpha: 0.15 + (_controller.value * 0.1),
+                    ),
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(
+                color: (isDark ? NeoColors.softCyan : NeoColors.cyan)
+                    .withValues(alpha: 0.6 + (_controller.value * 0.4)),
+                width: 1.2,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.touch_app_rounded,
+                  size: 13,
+                  color: isDark ? NeoColors.softCyan : NeoColors.cyan,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  'TAP TO PREVIEW',
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.4,
+                    color: isDark ? NeoColors.softCyan : NeoColors.cyan,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+

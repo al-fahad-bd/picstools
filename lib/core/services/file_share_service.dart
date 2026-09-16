@@ -1,8 +1,17 @@
-import 'dart:ui';
+import 'package:flutter/widgets.dart';
 import 'package:share_plus/share_plus.dart';
 import 'monetization/ad_service.dart';
 
 abstract class FileShareService {
+  static Rect? getOrigin(BuildContext? context) {
+    if (context == null || !context.mounted) return null;
+    final ro = context.findRenderObject();
+    if (ro is RenderBox && ro.hasSize) {
+      return ro.localToGlobal(Offset.zero) & ro.size;
+    }
+    return null;
+  }
+
   Future<void> shareFiles({
     required List<XFile> files,
     String? text,

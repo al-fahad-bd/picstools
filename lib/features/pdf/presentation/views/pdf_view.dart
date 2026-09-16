@@ -979,35 +979,7 @@ class _PdfViewContent extends StatelessWidget {
                           textColor: NeoColors.borderLight,
                           fontSize: 12,
                         ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.25),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.touch_app_rounded,
-                                size: 12,
-                                color: NeoColors.lightSurface,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                'TAP TO PREVIEW',
-                                style: GoogleFonts.spaceGrotesk(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: NeoColors.lightSurface,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        const _PulsingTapPreviewBadge(),
                       ],
                     ),
                     const SizedBox(height: 12),
@@ -1083,10 +1055,7 @@ class _PdfViewContent extends StatelessWidget {
                 textColor: NeoColors.lightSurface,
                 fullWidth: true,
                 onPressed: () {
-                  final box = context.findRenderObject() as RenderBox?;
-                  final origin = box != null
-                      ? box.localToGlobal(Offset.zero) & box.size
-                      : null;
+                  final origin = FileShareService.getOrigin(context);
                   getIt<FileShareService>().shareFiles(
                     files: [XFile(state.result.pdfFile.path)],
                     text: 'Created with PicsTools!',
@@ -1110,6 +1079,95 @@ class _PdfViewContent extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _PulsingTapPreviewBadge extends StatefulWidget {
+  const _PulsingTapPreviewBadge();
+
+  @override
+  State<_PulsingTapPreviewBadge> createState() =>
+      _PulsingTapPreviewBadgeState();
+}
+
+class _PulsingTapPreviewBadgeState extends State<_PulsingTapPreviewBadge>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat(reverse: true);
+
+    _scaleAnimation = Tween<double>(begin: 0.94, end: 1.06).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scaleAnimation.value,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 9,
+                vertical: 4,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(
+                  alpha: 0.25 + (_controller.value * 0.15),
+                ),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: NeoColors.yellow.withValues(
+                    alpha: 0.5 + (_controller.value * 0.5),
+                  ),
+                  width: 1.2,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.touch_app_rounded,
+                    size: 13,
+                    color: NeoColors.yellow,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'TAP TO PREVIEW',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.4,
+                      color: NeoColors.lightSurface,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

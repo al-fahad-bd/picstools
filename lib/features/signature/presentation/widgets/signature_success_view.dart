@@ -251,10 +251,7 @@ class SignatureSuccessView extends StatelessWidget {
                       subtitle: 'Transparent background signature',
                       onTap: () {
                         Navigator.pop(ctx);
-                        final box = context.findRenderObject() as RenderBox?;
-                        final origin = box != null
-                            ? box.localToGlobal(Offset.zero) & box.size
-                            : null;
+                        final origin = FileShareService.getOrigin(context);
                         getIt<FileShareService>().shareFiles(
                           files: [XFile(res.transparentPngFile.path)],
                           text: 'Transparent Digital Signature',
@@ -280,10 +277,7 @@ class SignatureSuccessView extends StatelessWidget {
                       subtitle: 'Guaranteed visibility on all apps & documents',
                       onTap: () {
                         Navigator.pop(ctx);
-                        final box = context.findRenderObject() as RenderBox?;
-                        final origin = box != null
-                            ? box.localToGlobal(Offset.zero) & box.size
-                            : null;
+                        final origin = FileShareService.getOrigin(context);
                         getIt<FileShareService>().shareFiles(
                           files: [XFile(res.solidBackgroundFile.path)],
                           text: 'White Background Signature',
@@ -309,10 +303,7 @@ class SignatureSuccessView extends StatelessWidget {
                       subtitle: 'Shares Transparent PNG & White JPG',
                       onTap: () {
                         Navigator.pop(ctx);
-                        final box = context.findRenderObject() as RenderBox?;
-                        final origin = box != null
-                            ? box.localToGlobal(Offset.zero) & box.size
-                            : null;
+                        final origin = FileShareService.getOrigin(context);
                         getIt<FileShareService>().shareFiles(
                           files: [
                             XFile(res.transparentPngFile.path),

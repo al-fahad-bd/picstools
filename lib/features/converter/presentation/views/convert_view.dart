@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:path/path.dart' as path;
 import '../../../../core/widgets/neo_back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -579,14 +580,16 @@ class _ConvertViewContent extends StatelessWidget {
   ) {
     final bloc = context.read<ConverterBloc>();
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        children: [
-          NeoCard(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // High-Impact Conversion Complete Banner
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+          child: NeoCard(
             backgroundColor: NeoColors.softGreen,
-            shadowOffset: 5,
-            padding: const EdgeInsets.all(20),
+            shadowOffset: 4,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Column(
               children: [
                 const NeoBadge(
@@ -594,7 +597,7 @@ class _ConvertViewContent extends StatelessWidget {
                   backgroundColor: NeoColors.green,
                   fontSize: 12,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 Text(
                   '${state.results.length} File(s) Converted',
                   style: GoogleFonts.spaceGrotesk(
@@ -606,11 +609,52 @@ class _ConvertViewContent extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 20),
+        ),
 
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
+        // Section header
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'CONVERTED PHOTOS (${state.results.length})',
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.8,
+                  color: isDark
+                      ? NeoColors.textSecondaryDark
+                      : NeoColors.textSecondaryLight,
+                ),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.touch_app_rounded,
+                    size: 13,
+                    color: isDark ? NeoColors.softGreen : NeoColors.green,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'TAP TO PREVIEW',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: isDark ? NeoColors.softGreen : NeoColors.green,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+
+        // Scrollable File items preview list
+        Expanded(
+          child: ListView.separated(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
             itemCount: state.results.length,
             separatorBuilder: (_, _) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
@@ -619,29 +663,82 @@ class _ConvertViewContent extends StatelessWidget {
                 backgroundColor: isDark
                     ? NeoColors.darkSurface
                     : NeoColors.lightSurface,
+                onTap: () => _openImageViewerModal(
+                  context,
+                  item.convertedFile,
+                  format: item.targetFormat,
+                  sizeBytes: item.convertedSizeBytes,
+                ),
                 child: Row(
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        item.convertedFile,
-                        width: 60,
-                        height: 60,
-                        fit: BoxFit.cover,
+                    // Thumbnail with zoom hint overlay badge
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isDark
+                              ? NeoColors.borderDark
+                              : NeoColors.borderLight,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(6.5),
+                        child: Stack(
+                          children: [
+                            Image.file(
+                              item.convertedFile,
+                              width: 62,
+                              height: 62,
+                              fit: BoxFit.cover,
+                            ),
+                            Positioned(
+                              right: 2,
+                              bottom: 2,
+                              child: Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.65),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: const Icon(
+                                  Icons.fullscreen_rounded,
+                                  color: Colors.white,
+                                  size: 13,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 14),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Format: ${item.targetFormat}',
-                            style: GoogleFonts.spaceGrotesk(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w900,
-                            ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Format: ${item.targetFormat}',
+                                  style: GoogleFonts.spaceGrotesk(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              NeoBadge(
+                                label: item.targetFormat.toUpperCase(),
+                                backgroundColor: NeoColors.yellow,
+                                fontSize: 11,
+                              ),
+                            ],
                           ),
+                          const SizedBox(height: 3),
                           Text(
                             'Size: ${FileUtils.formatBytes(item.convertedSizeBytes)}',
                             style: GoogleFonts.spaceGrotesk(
@@ -651,6 +748,8 @@ class _ConvertViewContent extends StatelessWidget {
                                   : NeoColors.textSecondaryLight,
                             ),
                           ),
+                          const SizedBox(height: 6),
+                          const _ConvertTapPreviewBadge(),
                         ],
                       ),
                     ),
@@ -659,79 +758,390 @@ class _ConvertViewContent extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 28),
+        ),
 
-          NeoButton(
-            label: 'SAVE TO DEVICE',
-            icon: const Icon(
-              Icons.download_rounded,
-              color: NeoColors.borderLight,
+        // Pinned Bottom Actions: Save, Share & New
+        Container(
+          decoration: BoxDecoration(
+            color: isDark ? NeoColors.darkBg : NeoColors.lightBg,
+            border: Border(
+              top: BorderSide(
+                color: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+                width: 2.5,
+              ),
             ),
-            backgroundColor: NeoColors.green,
-            fullWidth: true,
-            onPressed: () async {
-              final proceed = await NeoDownloadDialog.show(
-                context,
-                title: 'Download ${state.results.length} Converted Photo(s)',
-                subtitle:
-                    'Export all converted files directly to your device storage',
-              );
-              if (!proceed) return;
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                offset: const Offset(0, -4),
+                blurRadius: 10,
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              NeoButton(
+                label: 'SAVE TO DEVICE',
+                icon: const Icon(
+                  Icons.download_rounded,
+                  color: NeoColors.borderLight,
+                ),
+                backgroundColor: NeoColors.green,
+                fullWidth: true,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                onPressed: () async {
+                  final proceed = await NeoDownloadDialog.show(
+                    context,
+                    title: 'Download ${state.results.length} Converted Photo(s)',
+                    subtitle:
+                        'Export all converted files directly to your device storage',
+                  );
+                  if (!proceed) return;
 
-              final saver = getIt<FileSaveService>();
-              File? lastSaved;
-              for (final res in state.results) {
-                lastSaved = await saver.saveFileToPublicStorage(
-                  sourceFile: res.convertedFile,
-                  subFolder: 'Converted',
-                );
-              }
-              if (context.mounted) {
-                NeoToast.showSuccess(
-                  context,
-                  '🎉 Saved ${state.results.length} converted photo(s) to Gallery!',
-                  onTap: () => saver.openFileOrDirectory(
-                    file: lastSaved,
-                    subFolder: 'Converted',
+                  final saver = getIt<FileSaveService>();
+                  File? lastSaved;
+                  for (final res in state.results) {
+                    lastSaved = await saver.saveFileToPublicStorage(
+                      sourceFile: res.convertedFile,
+                      subFolder: 'Converted',
+                    );
+                  }
+                  if (context.mounted) {
+                    NeoToast.showSuccess(
+                      context,
+                      '🎉 Saved ${state.results.length} converted photo(s) to Gallery!',
+                      onTap: () => saver.openFileOrDirectory(
+                        file: lastSaved,
+                        subFolder: 'Converted',
+                      ),
+                    );
+                  }
+                },
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: NeoButton(
+                      label: 'SHARE FILES',
+                      icon: const Icon(
+                        Icons.share_rounded,
+                        color: NeoColors.borderLight,
+                        size: 18,
+                      ),
+                      backgroundColor: NeoColors.cyan,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      onPressed: () {
+                        final xFiles = state.results
+                            .map((r) => XFile(r.convertedFile.path))
+                            .toList();
+                        final origin = FileShareService.getOrigin(context);
+                        getIt<FileShareService>().shareFiles(
+                          files: xFiles,
+                          text: 'Converted with PicsTools!',
+                          sharePositionOrigin: origin,
+                        );
+                      },
+                    ),
                   ),
-                );
-              }
-            },
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: NeoButton(
+                      label: 'CONVERT MORE',
+                      icon: const Icon(
+                        Icons.refresh_rounded,
+                        color: NeoColors.borderLight,
+                        size: 18,
+                      ),
+                      backgroundColor: NeoColors.yellow,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      onPressed: () => bloc.add(ResetConverterEvent()),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
-          NeoButton(
-            label: 'SHARE CONVERTED FILE(S)',
-            icon: const Icon(Icons.share_rounded, color: NeoColors.borderLight),
-            backgroundColor: NeoColors.cyan,
-            fullWidth: true,
-            onPressed: () {
-              final xFiles = state.results
-                  .map((r) => XFile(r.convertedFile.path))
-                  .toList();
-              final box = context.findRenderObject() as RenderBox?;
-              final origin = box != null
-                  ? box.localToGlobal(Offset.zero) & box.size
-                  : null;
-              getIt<FileShareService>().shareFiles(
-                files: xFiles,
-                text: 'Converted with PicsTools!',
-                sharePositionOrigin: origin,
-              );
-            },
-          ),
-          const SizedBox(height: 12),
-          NeoButton(
-            label: 'CONVERT MORE PHOTOS',
-            icon: const Icon(
-              Icons.refresh_rounded,
-              color: NeoColors.borderLight,
+        ),
+      ],
+    );
+  }
+
+  void _openImageViewerModal(
+    BuildContext context,
+    File imageFile, {
+    required String format,
+    required int sizeBytes,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (modalContext) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.85,
+          decoration: BoxDecoration(
+            color: isDark ? NeoColors.darkBg : NeoColors.lightBg,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border.all(
+              color: isDark ? NeoColors.borderDark : NeoColors.borderLight,
+              width: 3,
             ),
-            backgroundColor: NeoColors.yellow,
-            fullWidth: true,
-            onPressed: () => bloc.add(ResetConverterEvent()),
           ),
-        ],
-      ),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              children: [
+                // Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 12.0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: NeoStyles.neoDecoration(
+                                backgroundColor: NeoColors.green,
+                                radius: 8,
+                                shadow: 2,
+                              ),
+                              child: const Icon(
+                                Icons.image_rounded,
+                                size: 18,
+                                color: NeoColors.borderLight,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                path.basename(imageFile.path),
+                                style: GoogleFonts.spaceGrotesk(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close_rounded),
+                        onPressed: () => Navigator.pop(modalContext),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1, thickness: 1.5),
+
+                // Image Canvas
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.file(
+                            imageFile,
+                            fit: BoxFit.contain,
+                            width: double.infinity,
+                            height: double.infinity,
+                          ),
+                        ),
+                        Positioned(
+                          top: 10,
+                          right: 10,
+                          child: NeoBadge(
+                            label:
+                                '$format • ${FileUtils.formatBytes(sizeBytes)}',
+                            backgroundColor: NeoColors.green,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Actions
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: NeoButton(
+                          label: 'SHARE',
+                          icon: const Icon(
+                            Icons.share_rounded,
+                            size: 16,
+                            color: NeoColors.borderLight,
+                          ),
+                          backgroundColor: NeoColors.cyan,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 12,
+                          ),
+                          onPressed: () {
+                            final origin =
+                                FileShareService.getOrigin(modalContext);
+                            getIt<FileShareService>().shareFiles(
+                              files: [XFile(imageFile.path)],
+                              text: 'Converted with PicsTools!',
+                              sharePositionOrigin: origin,
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: NeoButton(
+                          label: 'SAVE IMAGE',
+                          icon: const Icon(
+                            Icons.download_rounded,
+                            size: 16,
+                            color: NeoColors.borderLight,
+                          ),
+                          backgroundColor: NeoColors.green,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 12,
+                          ),
+                          onPressed: () async {
+                            final proceed = await NeoDownloadDialog.show(
+                              modalContext,
+                              title: 'Download Converted Photo',
+                              subtitle:
+                                  'Save converted photo to your device storage',
+                            );
+                            if (!proceed) return;
+
+                            final saver = getIt<FileSaveService>();
+                            final saved = await saver.saveFileToPublicStorage(
+                              sourceFile: imageFile,
+                              subFolder: 'Converted',
+                            );
+                            if (modalContext.mounted) {
+                              NeoToast.showSuccess(
+                                modalContext,
+                                '🎉 Saved to Gallery!\n${saved.path.split(Platform.pathSeparator).last}',
+                                onTap: () => saver.openFileOrDirectory(
+                                  file: saved,
+                                  subFolder: 'Converted',
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
+
+class _ConvertTapPreviewBadge extends StatefulWidget {
+  const _ConvertTapPreviewBadge();
+
+  @override
+  State<_ConvertTapPreviewBadge> createState() =>
+      _ConvertTapPreviewBadgeState();
+}
+
+class _ConvertTapPreviewBadgeState extends State<_ConvertTapPreviewBadge>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat(reverse: true);
+
+    _scaleAnimation = Tween<double>(
+      begin: 0.95,
+      end: 1.05,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scaleAnimation.value,
+          alignment: Alignment.centerLeft,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? NeoColors.green.withValues(
+                      alpha: 0.22 + (_controller.value * 0.15),
+                    )
+                  : NeoColors.green.withValues(
+                      alpha: 0.15 + (_controller.value * 0.1),
+                    ),
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(
+                color: (isDark ? NeoColors.softGreen : NeoColors.green)
+                    .withValues(alpha: 0.6 + (_controller.value * 0.4)),
+                width: 1.2,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.touch_app_rounded,
+                  size: 13,
+                  color: isDark ? NeoColors.softGreen : NeoColors.green,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  'TAP TO PREVIEW',
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.4,
+                    color: isDark ? NeoColors.softGreen : NeoColors.green,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
