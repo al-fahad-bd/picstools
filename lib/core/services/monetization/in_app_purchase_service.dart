@@ -48,6 +48,7 @@ class ProSubscriptionPricing {
 abstract class InAppPurchaseService {
   Future<void> initialize();
   bool isProUser();
+  void refreshProStatus();
   ValueListenable<bool> get isProListenable;
   Future<bool> purchaseProSubscription({String? productId});
   Future<bool> restorePurchases();
@@ -85,7 +86,12 @@ class InAppPurchaseServiceImpl
 
   InAppPurchaseServiceImpl(this._prefs) {
     _isPro = _prefs.getBool(_proPrefKey) ?? false;
-    _isProNotifier.value = _isPro;
+    _isProNotifier.value = isProUser();
+  }
+
+  @override
+  void refreshProStatus() {
+    _isProNotifier.value = isProUser();
   }
 
   @override
@@ -202,7 +208,19 @@ class InAppPurchaseServiceImpl
   }
 
   @override
-  bool isProUser() => _isPro;
+  bool isProUser() {
+    if (_isPro) return true;
+    try {
+      final vipStartTime = _prefs.getInt('vip_gift_start_time');
+      if (vipStartTime != null) {
+        final startTime = DateTime.fromMillisecondsSinceEpoch(vipStartTime);
+        if (DateTime.now().difference(startTime).inHours < 24) {
+          return true;
+        }
+      }
+    } catch (_) {}
+    return false;
+  }
 
   @override
   Future<bool> checkSubscriptionStatus() async {
@@ -434,6 +452,11 @@ class MockInAppPurchaseServiceImpl implements InAppPurchaseService {
 
   @override
   bool isProUser() => _isPro;
+
+  @override
+  void refreshProStatus() {
+    _isProNotifier.value = _isPro;
+  }
 
   void setProForTesting(bool val) {
     _isPro = val;

@@ -488,6 +488,9 @@ class _OnboardingGiftViewState extends State<OnboardingGiftView>
                                     'vip_gift_start_time',
                                     DateTime.now().millisecondsSinceEpoch,
                                   );
+                                  if (getIt.isRegistered<InAppPurchaseService>()) {
+                                    getIt<InAppPurchaseService>().refreshProStatus();
+                                  }
                                   if (context.mounted) {
                                     context.go('/home');
                                   }

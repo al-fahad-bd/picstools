@@ -5,13 +5,14 @@ import '../constants/neo_colors.dart';
 import '../constants/neo_styles.dart';
 import '../services/service_locator.dart';
 import '../services/monetization/in_app_purchase_service.dart';
+import '../services/monetization/ad_service.dart';
 import 'neo_badge.dart';
 import 'neo_button.dart';
 import 'neo_card.dart';
 
 class NeoDownloadDialog {
   /// Prompts the user with commercial download options if they are on the Free tier.
-  /// If the user is already a PRO member, returns `true` immediately with no dialog or ads.
+  /// If the user is already a PRO or active VIP member, returns `true` immediately with no dialog or ads.
   /// Returns `true` if the user selected the "Watch Ad & Download Free" option.
   /// Returns `false` if dismissed or cancelled.
   static Future<bool> show(
@@ -20,8 +21,10 @@ class NeoDownloadDialog {
     String? subtitle,
   }) async {
     final iapService = getIt<InAppPurchaseService>();
-    if (iapService.isProUser()) {
-      return true; // Pro users download instantly with 0 ads & 0 popups
+    final isVip =
+        getIt.isRegistered<AdService>() && getIt<AdService>().isVipActive();
+    if (iapService.isProUser() || isVip) {
+      return true; // Pro and VIP users download instantly with 0 ads & 0 popups
     }
 
     final result = await showModalBottomSheet<bool>(
