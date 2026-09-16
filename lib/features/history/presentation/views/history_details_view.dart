@@ -122,7 +122,7 @@ class HistoryDetailsView extends StatelessWidget {
     try {
       final saver = getIt<FileSaveService>();
       final isPdf = file.path.toLowerCase().endsWith('.pdf');
-      await saver.saveFileToPublicStorage(
+      final savedFile = await saver.saveFileToPublicStorage(
         sourceFile: file,
         subFolder: isPdf ? 'Documents' : 'Processed',
       );
@@ -133,6 +133,10 @@ class HistoryDetailsView extends StatelessWidget {
           icon: isPdf
               ? Icons.picture_as_pdf_rounded
               : Icons.download_done_rounded,
+          onTap: () => saver.openFileOrDirectory(
+            file: savedFile,
+            subFolder: isPdf ? 'Documents' : 'Processed',
+          ),
         );
       }
     } catch (e) {

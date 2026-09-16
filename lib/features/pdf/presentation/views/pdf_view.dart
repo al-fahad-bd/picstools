@@ -1063,6 +1063,10 @@ class _PdfViewContent extends StatelessWidget {
                       context,
                       '🎉 Saved PDF Document to Device!\n${saved.path.split(Platform.pathSeparator).last}',
                       icon: Icons.picture_as_pdf_rounded,
+                      onTap: () => saver.openFileOrDirectory(
+                        file: saved,
+                        subFolder: 'PDF',
+                      ),
                     );
                   }
                 },

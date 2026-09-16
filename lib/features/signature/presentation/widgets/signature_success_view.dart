@@ -47,8 +47,9 @@ class SignatureSuccessView extends StatelessWidget {
     if (!proceed) return;
 
     final saver = getIt<FileSaveService>();
+    File? lastSaved;
     for (final f in files) {
-      await saver.saveFileToPublicStorage(
+      lastSaved = await saver.saveFileToPublicStorage(
         sourceFile: f,
         subFolder: 'Signatures',
       );
@@ -58,6 +59,10 @@ class SignatureSuccessView extends StatelessWidget {
         context,
         '🎉 Saved $label to Gallery & Files!',
         icon: Icons.draw_rounded,
+        onTap: () => saver.openFileOrDirectory(
+          file: lastSaved,
+          subFolder: 'Signatures',
+        ),
       );
     }
   }

@@ -437,6 +437,10 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                               NeoToast.showSuccess(
                                 modalContext,
                                 '🎉 Saved to Gallery!\n${saved.path.split(Platform.pathSeparator).last}',
+                                onTap: () => saver.openFileOrDirectory(
+                                  file: saved,
+                                  subFolder: 'Compressed',
+                                ),
                               );
                             }
                           },
@@ -1119,8 +1123,9 @@ class _CompressViewContentState extends State<_CompressViewContent> {
               if (!proceed) return;
 
               final saver = getIt<FileSaveService>();
+              File? lastSaved;
               for (final res in state.results) {
-                await saver.saveFileToPublicStorage(
+                lastSaved = await saver.saveFileToPublicStorage(
                   sourceFile: res.compressedFile,
                   subFolder: 'Compressed',
                 );
@@ -1129,6 +1134,10 @@ class _CompressViewContentState extends State<_CompressViewContent> {
                 NeoToast.showSuccess(
                   context,
                   '🎉 Saved ${state.results.length} compressed photo(s) to Gallery!',
+                  onTap: () => saver.openFileOrDirectory(
+                    file: lastSaved,
+                    subFolder: 'Compressed',
+                  ),
                 );
               }
             },

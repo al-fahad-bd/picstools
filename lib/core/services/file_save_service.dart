@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:gal/gal.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
@@ -12,6 +13,8 @@ abstract class FileSaveService {
     subFolder, // 'Compressed', 'Resized', 'Cropped', 'Converted', 'PDF', 'Signatures', 'Passport'
     bool showInterstitialAd = true,
   });
+
+  Future<void> openFileOrDirectory({File? file, String? subFolder});
 }
 
 class FileSaveServiceImpl implements FileSaveService {
@@ -38,30 +41,35 @@ class FileSaveServiceImpl implements FileSaveService {
 
     Directory? targetDir;
 
-    // 1. Try to get public Downloads directory first across platforms
-    try {
-      final downloadsDir = await getDownloadsDirectory();
-      if (downloadsDir != null) {
-        targetDir = Directory(
-          p.join(downloadsDir.path, 'PicsTools', subFolder),
-        );
+    // 1. On Android, use the standard public Download/PicsTools directory
+    if (Platform.isAndroid) {
+      final pubDownload = Directory(
+        '/storage/emulated/0/Download/PicsTools/$subFolder',
+      );
+      if (await pubDownload.exists() || await _tryCreateDir(pubDownload)) {
+        targetDir = pubDownload;
       }
-    } catch (_) {}
+    }
 
-    // Fallback for Android / iOS if getDownloadsDirectory is null
+    // 2. Try to get downloads directory or fallback
     if (targetDir == null) {
-      if (Platform.isAndroid) {
-        final pubDownload = Directory(
-          '/storage/emulated/0/Download/PicsTools/$subFolder',
-        );
-        if (await pubDownload.exists() || await _tryCreateDir(pubDownload)) {
-          targetDir = pubDownload;
-        } else {
-          final extDir = await getExternalStorageDirectory();
+      try {
+        final downloadsDir = await getDownloadsDirectory();
+        if (downloadsDir != null) {
           targetDir = Directory(
-            p.join(extDir?.path ?? '', 'PicsTools', subFolder),
+            p.join(downloadsDir.path, 'PicsTools', subFolder),
           );
         }
+      } catch (_) {}
+    }
+
+    // Fallback for Android / iOS if above is null
+    if (targetDir == null) {
+      if (Platform.isAndroid) {
+        final extDir = await getExternalStorageDirectory();
+        targetDir = Directory(
+          p.join(extDir?.path ?? '', 'PicsTools', subFolder),
+        );
       } else {
         final docsDir = await getApplicationDocumentsDirectory();
         targetDir = Directory(p.join(docsDir.path, 'PicsTools', subFolder));
@@ -104,4 +112,30 @@ class FileSaveServiceImpl implements FileSaveService {
       return false;
     }
   }
+
+  @override
+  Future<void> openFileOrDirectory({File? file, String? subFolder}) async {
+    try {
+      // 1. On Android: open with native viewer using FileProvider
+      if (Platform.isAndroid) {
+        if (file != null && await file.exists()) {
+          try {
+            const platform = MethodChannel('com.deltrix.picstools/native_file_viewer');
+            final opened = await platform.invokeMethod<bool>('openFile', {'filePath': file.path});
+            if (opened == true) {
+              return;
+            }
+          } catch (_) {}
+        }
+      }
+
+      // 2. On iOS or fallback: open photo album if image, or gal
+      await Gal.open();
+    } catch (_) {
+      try {
+        await Gal.open();
+      } catch (_) {}
+    }
+  }
 }
+

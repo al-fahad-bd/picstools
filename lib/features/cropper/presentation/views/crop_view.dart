@@ -546,6 +546,10 @@ class _CropViewContent extends StatelessWidget {
                 NeoToast.showSuccess(
                   context,
                   '🎉 Saved cropped photo to Gallery!\n${saved.path.split(Platform.pathSeparator).last}',
+                  onTap: () => saver.openFileOrDirectory(
+                    file: saved,
+                    subFolder: 'Cropped',
+                  ),
                 );
               }
             },

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/scheduler.dart';
 import '../../../../core/widgets/neo_back_button.dart';
 import 'package:flutter/material.dart';
@@ -1099,12 +1100,13 @@ class _IdPhotoViewContent extends StatelessWidget {
               if (!proceed) return;
 
               final saver = getIt<FileSaveService>();
-              await saver.saveFileToPublicStorage(
+              final savedSingle = await saver.saveFileToPublicStorage(
                 sourceFile: res.singlePhotoFile,
                 subFolder: 'ID_Photos',
               );
+              File? savedPdf;
               if (res.printSheetPdfFile != null) {
-                await saver.saveFileToPublicStorage(
+                savedPdf = await saver.saveFileToPublicStorage(
                   sourceFile: res.printSheetPdfFile!,
                   subFolder: 'ID_Photos',
                 );
@@ -1114,6 +1116,10 @@ class _IdPhotoViewContent extends StatelessWidget {
                   context,
                   '🎉 Saved Passport Photo & Sheet to Device!',
                   icon: Icons.badge_rounded,
+                  onTap: () => saver.openFileOrDirectory(
+                    file: savedPdf ?? savedSingle,
+                    subFolder: 'ID_Photos',
+                  ),
                 );
               }
             },

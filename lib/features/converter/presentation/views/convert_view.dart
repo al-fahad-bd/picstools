@@ -1,3 +1,4 @@
+import 'dart:io';
 import '../../../../core/widgets/neo_back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -678,8 +679,9 @@ class _ConvertViewContent extends StatelessWidget {
               if (!proceed) return;
 
               final saver = getIt<FileSaveService>();
+              File? lastSaved;
               for (final res in state.results) {
-                await saver.saveFileToPublicStorage(
+                lastSaved = await saver.saveFileToPublicStorage(
                   sourceFile: res.convertedFile,
                   subFolder: 'Converted',
                 );
@@ -688,6 +690,10 @@ class _ConvertViewContent extends StatelessWidget {
                 NeoToast.showSuccess(
                   context,
                   '🎉 Saved ${state.results.length} converted photo(s) to Gallery!',
+                  onTap: () => saver.openFileOrDirectory(
+                    file: lastSaved,
+                    subFolder: 'Converted',
+                  ),
                 );
               }
             },

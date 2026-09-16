@@ -65,8 +65,9 @@ class _BackgroundRemoverViewContentState
     String message, {
     Color color = NeoColors.green,
     IconData icon = Icons.check_circle_rounded,
+    VoidCallback? onTap,
   }) {
-    NeoToast.show(context, message, color: color, icon: icon);
+    NeoToast.show(context, message, color: color, icon: icon, onTap: onTap);
   }
 
   Future<void> _pickImage(BuildContext context, ImageSource source) async {
@@ -105,6 +106,10 @@ class _BackgroundRemoverViewContentState
           '🎉 Saved Transparent PNG to Gallery!\n${savedFile.path.split(Platform.pathSeparator).last}',
           color: NeoColors.green,
           icon: Icons.download_done_rounded,
+          onTap: () => saveService.openFileOrDirectory(
+            file: savedFile,
+            subFolder: 'RemovedBG',
+          ),
         );
       }
     } catch (e) {

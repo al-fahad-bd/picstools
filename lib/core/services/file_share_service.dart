@@ -27,24 +27,21 @@ class FileShareServiceImpl implements FileShareService {
   }) async {
     if (files.isEmpty) return;
 
+    final params = ShareParams(
+      files: files,
+      text: text,
+      subject: subject,
+      sharePositionOrigin: sharePositionOrigin,
+    );
+
     if (showAd && _adService.shouldShowAds()) {
       await _adService.showInterstitialAd(
         onDismissed: () {
-          Share.shareXFiles(
-            files,
-            text: text,
-            subject: subject,
-            sharePositionOrigin: sharePositionOrigin,
-          );
+          SharePlus.instance.share(params);
         },
       );
     } else {
-      await Share.shareXFiles(
-        files,
-        text: text,
-        subject: subject,
-        sharePositionOrigin: sharePositionOrigin,
-      );
+      await SharePlus.instance.share(params);
     }
   }
 }
