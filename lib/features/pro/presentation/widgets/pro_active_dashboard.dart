@@ -99,7 +99,7 @@ class _ProActiveDashboardState extends State<ProActiveDashboard>
                             ),
                           ),
                           Text(
-                            'VIP CREATOR MEMBERSHIP',
+                            'PRO CREATOR MEMBERSHIP',
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 10,
                               fontWeight: FontWeight.w800,

@@ -6,6 +6,7 @@ import '../../../../core/widgets/neo_button.dart';
 import '../../../../core/widgets/neo_toast.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/monetization/in_app_purchase_service.dart';
+import '../../../../core/services/monetization/ad_service.dart';
 import '../bloc/pro_bloc.dart';
 import '../widgets/pro_image_hero.dart';
 import '../widgets/pro_plan_selector.dart';
@@ -86,6 +87,8 @@ class _ProViewContentState extends State<_ProViewContent> {
             (state is ProPurchaseSuccessState && state.isPro) ||
             (state is ProErrorState && state.isPro);
         final pricing = state.pricing;
+        final isVip =
+            getIt.isRegistered<AdService>() && getIt<AdService>().isVipActive();
 
         return Scaffold(
           backgroundColor: isDark ? NeoColors.darkBg : NeoColors.lightBg,
@@ -111,7 +114,7 @@ class _ProViewContentState extends State<_ProViewContent> {
                     ProImageHero(
                       isDark: isDark,
                       heightFactor: 0.46,
-                      badgeLabel: '👑 VIP PRO ACTIVE',
+                      badgeLabel: '👑 PRO ACTIVE',
                       badgeIcon: Icons.verified_rounded,
                       badgeColor: NeoColors.green,
                       badgeTextColor: Colors.black,
@@ -168,15 +171,17 @@ class _ProViewContentState extends State<_ProViewContent> {
                                 vertical: 2.5,
                               ),
                               decoration: BoxDecoration(
-                                color: NeoColors.pink,
+                                color: isVip ? NeoColors.yellow : NeoColors.pink,
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
-                                'CREATIVE STUDIO ACCESS',
+                                isVip
+                                    ? '👑 24-HR VIP TRIAL ACTIVE'
+                                    : 'CREATIVE STUDIO ACCESS',
                                 style: GoogleFonts.spaceGrotesk(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w900,
-                                  color: Colors.white,
+                                  color: isVip ? Colors.black : Colors.white,
                                   letterSpacing: 0.6,
                                 ),
                               ),
@@ -198,7 +203,9 @@ class _ProViewContentState extends State<_ProViewContent> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Batch processing, high-speed editing, and 100% ad-free experience.',
+                          isVip
+                              ? 'Enjoying your 24-hour VIP pass? Upgrade to Pro to lock in unlimited access and keep all perks forever.'
+                              : 'Batch processing, high-speed editing, and 100% ad-free experience.',
                           style: GoogleFonts.spaceGrotesk(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,

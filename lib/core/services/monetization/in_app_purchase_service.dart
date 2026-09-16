@@ -86,12 +86,13 @@ class InAppPurchaseServiceImpl
 
   InAppPurchaseServiceImpl(this._prefs) {
     _isPro = _prefs.getBool(_proPrefKey) ?? false;
-    _isProNotifier.value = isProUser();
+    _isProNotifier.value = _isPro;
   }
 
   @override
   void refreshProStatus() {
-    _isProNotifier.value = isProUser();
+    _isPro = _prefs.getBool(_proPrefKey) ?? false;
+    _isProNotifier.value = _isPro;
   }
 
   @override
@@ -208,19 +209,7 @@ class InAppPurchaseServiceImpl
   }
 
   @override
-  bool isProUser() {
-    if (_isPro) return true;
-    try {
-      final vipStartTime = _prefs.getInt('vip_gift_start_time');
-      if (vipStartTime != null) {
-        final startTime = DateTime.fromMillisecondsSinceEpoch(vipStartTime);
-        if (DateTime.now().difference(startTime).inHours < 24) {
-          return true;
-        }
-      }
-    } catch (_) {}
-    return false;
-  }
+  bool isProUser() => _isPro;
 
   @override
   Future<bool> checkSubscriptionStatus() async {
