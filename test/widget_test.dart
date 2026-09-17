@@ -144,7 +144,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.textContaining("Here's 24 Hours Ad-Free"), findsOneWidget);
+    expect(find.textContaining('Get 24 Hours Free'), findsOneWidget);
     expect(find.text('VIP ACCESS PASS'), findsOneWidget);
     expect(find.text('CLAIM GIFT & START CREATING 🚀'), findsOneWidget);
   });

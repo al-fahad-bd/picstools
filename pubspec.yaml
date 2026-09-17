@@ -31,10 +31,10 @@ dependencies:
   gal: ^2.3.3
   dio: ^5.11.0
   crypto: ^3.0.7
-  flutter_onnxruntime: ^1.8.3
+  flutter_onnxruntime: ^1.8.5
   in_app_purchase: ^3.3.0
-  firebase_core: ^4.13.0
-  firebase_auth: ^6.5.7
+  firebase_core: ^4.15.0
+  firebase_auth: ^6.7.0
   cloud_firestore: ^6.9.0
   google_mobile_ads: ^9.1.0
   video_player: ^2.14.0
@@ -42,6 +42,8 @@ dependencies:
   google_sign_in: ^7.2.0
   firebase_analytics: ^12.6.0
   firebase_crashlytics: ^5.4.0
+  firebase_remote_config: ^6.7.0
+  package_info_plus: ^10.2.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

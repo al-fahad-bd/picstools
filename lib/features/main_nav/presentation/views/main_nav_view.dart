@@ -3,6 +3,8 @@ import '../../../../core/constants/neo_colors.dart';
 import '../../../../core/widgets/neo_bottom_nav_bar.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/audio_service.dart';
+import '../../../../core/services/remote_config_service.dart';
+import '../../../../core/widgets/app_update_dialog.dart';
 import '../../../home/presentation/views/home_view.dart';
 import '../../../history/presentation/views/history_view.dart';
 import '../../../pro/presentation/views/pro_view.dart';
@@ -54,6 +56,22 @@ class _MainNavViewState extends State<MainNavView> {
     super.initState();
     _currentNavIndex = widget.initialIndex;
     _startAudioIfEnabled();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkForAppUpdate();
+    });
+  }
+
+  Future<void> _checkForAppUpdate() async {
+    try {
+      if (getIt.isRegistered<RemoteConfigService>()) {
+        final updateInfo = await getIt<RemoteConfigService>().checkForUpdate();
+        if (updateInfo.isUpdateAvailable && mounted) {
+          AppUpdateDialog.show(context, updateInfo);
+        }
+      }
+    } catch (e) {
+      debugPrint('Update check error: $e');
+    }
   }
 
   @override

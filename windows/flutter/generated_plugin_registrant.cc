@@ -11,6 +11,7 @@
 #include <file_selector_windows/file_selector_windows.h>
 #include <firebase_auth/firebase_auth_plugin_c_api.h>
 #include <firebase_core/firebase_core_plugin_c_api.h>
+#include <firebase_remote_config/firebase_remote_config_plugin_c_api.h>
 #include <flutter_onnxruntime/flutter_onnxruntime_plugin.h>
 #include <gal/gal_plugin_c_api.h>
 #include <printing/printing_plugin.h>
@@ -28,6 +29,8 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("FirebaseAuthPluginCApi"));
   FirebaseCorePluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FirebaseCorePluginCApi"));
+  FirebaseRemoteConfigPluginCApiRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("FirebaseRemoteConfigPluginCApi"));
   FlutterOnnxruntimePluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FlutterOnnxruntimePlugin"));
   GalPluginCApiRegisterWithRegistrar(

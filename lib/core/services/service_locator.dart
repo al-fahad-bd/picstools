@@ -8,6 +8,7 @@ import 'sound_service.dart';
 import 'audio_service.dart';
 import 'auth_service.dart';
 import 'analytics_service.dart';
+import 'remote_config_service.dart';
 import 'monetization/ad_service.dart';
 import 'monetization/in_app_purchase_service.dart';
 import 'storage/r2_storage_service.dart';
@@ -49,6 +50,10 @@ Future<void> initServiceLocator() async {
   getIt.registerLazySingleton<AnalyticsService>(
     () => AnalyticsServiceImpl(),
   );
+
+  final remoteConfigService = RemoteConfigServiceImpl();
+  await remoteConfigService.initialize();
+  getIt.registerSingleton<RemoteConfigService>(remoteConfigService);
 
   // Core Services
   getIt.registerLazySingleton<ImagePickerService>(
