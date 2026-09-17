@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../constants/neo_colors.dart';
 import '../services/service_locator.dart';
+import '../services/analytics_service.dart';
 import '../services/monetization/ad_service.dart';
 import '../services/monetization/in_app_purchase_service.dart';
 
@@ -104,11 +105,22 @@ class _AppNativeAdState extends State<AppNativeAd> {
               _hasFailed = false;
             });
           }
+          if (getIt.isRegistered<AnalyticsService>()) {
+            getIt<AnalyticsService>().logAdShown(adFormat: 'Native');
+          }
         },
         onAdFailedToLoad: (ad, error) {
           debugPrint(
             '❌ [AppNativeAd] Native Ad failed to load: ${error.message}',
           );
+          if (getIt.isRegistered<AnalyticsService>()) {
+            getIt<AnalyticsService>().logAdLoadFailed(
+              adFormat: 'Native',
+              errorCode: error.code,
+              errorMessage: error.message,
+              domain: error.domain,
+            );
+          }
           ad.dispose();
           if (mounted) {
             setState(() {

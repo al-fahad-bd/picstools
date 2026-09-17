@@ -29,6 +29,13 @@ abstract class AnalyticsService {
     bool fatal = false,
   });
   void log(String message);
+  Future<void> logAdLoadFailed({
+    required String adFormat,
+    required int errorCode,
+    required String errorMessage,
+    String? domain,
+  });
+  Future<void> logAdShown({required String adFormat});
 }
 
 class AnalyticsServiceImpl implements AnalyticsService {
@@ -199,6 +206,61 @@ class AnalyticsServiceImpl implements AnalyticsService {
       _crashlytics.log(message);
     } catch (e) {
       debugPrint('Crashlytics log failed: $e');
+    }
+  }
+
+  @override
+  Future<void> logAdLoadFailed({
+    required String adFormat,
+    required int errorCode,
+    required String errorMessage,
+    String? domain,
+  }) async {
+    try {
+      final logSummary =
+          'AdMob [$adFormat] failed: code $errorCode - $errorMessage (domain: $domain)';
+      debugPrint('❌ [AnalyticsService] $logSummary');
+      _crashlytics.log(logSummary);
+
+      // Record non-fatal error so it appears in Crashlytics issues table
+      await _crashlytics.recordError(
+        Exception('AdMob $adFormat Error $errorCode: $errorMessage'),
+        null,
+        reason: 'AdMob load failed for format: $adFormat (domain: $domain)',
+        fatal: false,
+      );
+
+      // Also log as an Analytics event for breakdown graphs
+      final params = <String, Object>{
+        'ad_format': adFormat,
+        'error_code': errorCode,
+        'error_message': errorMessage.length > 100
+            ? errorMessage.substring(0, 100)
+            : errorMessage,
+      };
+      if (domain != null) {
+        params['error_domain'] = domain;
+      }
+
+      await _analytics.logEvent(
+        name: 'ad_load_failed',
+        parameters: params,
+      );
+    } catch (e) {
+      debugPrint('Failed to log ad failure: $e');
+    }
+  }
+
+  @override
+  Future<void> logAdShown({required String adFormat}) async {
+    try {
+      _crashlytics.log('AdMob [$adFormat] impression displayed successfully');
+      await _analytics.logEvent(
+        name: 'ad_impression_success',
+        parameters: {'ad_format': adFormat},
+      );
+    } catch (e) {
+      debugPrint('Failed to log ad shown: $e');
     }
   }
 }

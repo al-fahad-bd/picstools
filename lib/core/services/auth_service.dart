@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -57,11 +58,8 @@ class FirebaseAuthServiceImpl implements AuthService {
   String? _cachedName;
   bool _googleSignInInitialized = false;
 
-  FirebaseAuthServiceImpl({
-    FirebaseAuth? auth,
-    this.firestore,
-    this.prefs,
-  })  : _auth = auth ?? FirebaseAuth.instance;
+  FirebaseAuthServiceImpl({FirebaseAuth? auth, this.firestore, this.prefs})
+    : _auth = auth ?? FirebaseAuth.instance;
 
   FirebaseFirestore? get _db {
     if (firestore != null) return firestore;
@@ -136,7 +134,9 @@ class FirebaseAuthServiceImpl implements AuthService {
         }
       }
     } catch (e) {
-      debugPrint('⚠️ [PicsTools Auth] Could not load profile from Firestore: $e');
+      debugPrint(
+        '⚠️ [PicsTools Auth] Could not load profile from Firestore: $e',
+      );
     }
   }
 
@@ -167,7 +167,9 @@ class FirebaseAuthServiceImpl implements AuthService {
     }
 
     try {
-      debugPrint('🔑 [PicsTools Auth] Initiating Firebase anonymous sign-in...');
+      debugPrint(
+        '🔑 [PicsTools Auth] Initiating Firebase anonymous sign-in...',
+      );
       final userCredential = await _auth.signInAnonymously();
       final user = userCredential.user;
       if (user != null) {
@@ -200,7 +202,9 @@ class FirebaseAuthServiceImpl implements AuthService {
       }
       return user != null;
     } on FirebaseAuthException catch (e) {
-      debugPrint('❌ [PicsTools Auth] Email sign-in failed: ${e.code} - ${e.message}');
+      debugPrint(
+        '❌ [PicsTools Auth] Email sign-in failed: ${e.code} - ${e.message}',
+      );
       rethrow;
     } catch (e) {
       debugPrint('❌ [PicsTools Auth] Unexpected sign-in error: $e');
@@ -271,7 +275,9 @@ class FirebaseAuthServiceImpl implements AuthService {
       if (current != null && current.isAnonymous) {
         final result = await current.linkWithCredential(credential);
         user = result.user;
-        debugPrint('🎉 [PicsTools Auth] Successfully linked anonymous session to email: $email');
+        debugPrint(
+          '🎉 [PicsTools Auth] Successfully linked anonymous session to email: $email',
+        );
       } else {
         final result = await _auth.createUserWithEmailAndPassword(
           email: email.trim(),
@@ -294,7 +300,9 @@ class FirebaseAuthServiceImpl implements AuthService {
       }
       return user != null;
     } on FirebaseAuthException catch (e) {
-      debugPrint('❌ [PicsTools Auth] Link anonymous failed: ${e.code} - ${e.message}');
+      debugPrint(
+        '❌ [PicsTools Auth] Link anonymous failed: ${e.code} - ${e.message}',
+      );
       rethrow;
     } catch (e) {
       debugPrint('❌ [PicsTools Auth] Unexpected link error: $e');
@@ -309,21 +317,25 @@ class FirebaseAuthServiceImpl implements AuthService {
       debugPrint('🔑 [PicsTools Auth] Initiating Google Sign-In...');
       final account = await GoogleSignIn.instance.authenticate();
       final auth = account.authentication;
-      final credential = GoogleAuthProvider.credential(
-        idToken: auth.idToken,
-      );
+      final credential = GoogleAuthProvider.credential(idToken: auth.idToken);
 
       final current = _auth.currentUser;
       User? user;
       if (current != null && current.isAnonymous) {
         try {
-          debugPrint('🔑 [PicsTools Auth] Linking anonymous user with Google credential...');
+          debugPrint(
+            '🔑 [PicsTools Auth] Linking anonymous user with Google credential...',
+          );
           final result = await current.linkWithCredential(credential);
           user = result.user;
-          debugPrint('🎉 [PicsTools Auth] Successfully linked anonymous session to Google: ${user?.email}');
+          debugPrint(
+            '🎉 [PicsTools Auth] Successfully linked anonymous session to Google: ${user?.email}',
+          );
         } on FirebaseAuthException catch (e) {
           if (e.code == 'credential-already-in-use') {
-            debugPrint('ℹ️ [PicsTools Auth] Credential already in use; signing in directly with Google...');
+            debugPrint(
+              'ℹ️ [PicsTools Auth] Credential already in use; signing in directly with Google...',
+            );
             final result = await _auth.signInWithCredential(credential);
             user = result.user;
           } else {
@@ -343,19 +355,39 @@ class FirebaseAuthServiceImpl implements AuthService {
           displayName: user.displayName,
           age: _cachedAge,
         );
-        debugPrint('🎉 [PicsTools Auth] Google Sign-In SUCCESS! | UID: ${user.uid} | Email: ${user.email}');
+        debugPrint(
+          '🎉 [PicsTools Auth] Google Sign-In SUCCESS! | UID: ${user.uid} | Email: ${user.email}',
+        );
         return true;
       }
       return false;
-    } on GoogleSignInException catch (e) {
+    } on GoogleSignInException catch (e, stack) {
       if (e.code == GoogleSignInExceptionCode.canceled) {
         debugPrint('ℹ️ [PicsTools Auth] Google Sign-In canceled by user.');
         return false;
       }
-      debugPrint('❌ [PicsTools Auth] Google Sign-In failed: ${e.code} - ${e.description}');
+      debugPrint(
+        '❌ [PicsTools Auth] Google Sign-In failed: ${e.code} - ${e.description}',
+      );
+      try {
+        FirebaseCrashlytics.instance.recordError(
+          e,
+          stack,
+          reason: 'Google Sign-In failed: ${e.code} - ${e.description}',
+          fatal: false,
+        );
+      } catch (_) {}
       rethrow;
-    } catch (e) {
+    } catch (e, stack) {
       debugPrint('❌ [PicsTools Auth] Google Sign-In unexpected error: $e');
+      try {
+        FirebaseCrashlytics.instance.recordError(
+          e,
+          stack,
+          reason: 'Google Sign-In unexpected error: $e',
+          fatal: false,
+        );
+      } catch (_) {}
       rethrow;
     }
   }
@@ -366,7 +398,9 @@ class FirebaseAuthServiceImpl implements AuthService {
       await _auth.sendPasswordResetEmail(email: email.trim());
       return true;
     } on FirebaseAuthException catch (e) {
-      debugPrint('❌ [PicsTools Auth] Password reset failed: ${e.code} - ${e.message}');
+      debugPrint(
+        '❌ [PicsTools Auth] Password reset failed: ${e.code} - ${e.message}',
+      );
       rethrow;
     }
   }
@@ -492,12 +526,12 @@ class MockAuthServiceImpl implements AuthService {
     String? initialPhotoUrl,
     int? initialAge,
     bool isAnonymous = true,
-  })  : _mockUserId = initialUserId,
-        _mockEmail = initialEmail,
-        _mockDisplayName = initialDisplayName,
-        _mockPhotoUrl = initialPhotoUrl,
-        _mockAge = initialAge,
-        _mockIsAnonymous = isAnonymous;
+  }) : _mockUserId = initialUserId,
+       _mockEmail = initialEmail,
+       _mockDisplayName = initialDisplayName,
+       _mockPhotoUrl = initialPhotoUrl,
+       _mockAge = initialAge,
+       _mockIsAnonymous = isAnonymous;
 
   @override
   Future<void> initialize() async {}
@@ -632,6 +666,5 @@ class MockAuthServiceImpl implements AuthService {
   bool get isSignedIn => _mockUserId != null;
 
   @override
-  Stream<String?> get authStateChanges =>
-      Stream.value(_mockUserId);
+  Stream<String?> get authStateChanges => Stream.value(_mockUserId);
 }

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../service_locator.dart';
+import '../analytics_service.dart';
 import 'in_app_purchase_service.dart';
 
 abstract class AdService {
@@ -202,6 +203,14 @@ class AdServiceImpl implements AdService {
             debugPrint(
               '❌ [AdService] Interstitial Ad failed to load: ${error.message}',
             );
+            if (getIt.isRegistered<AnalyticsService>()) {
+              getIt<AnalyticsService>().logAdLoadFailed(
+                adFormat: 'Interstitial',
+                errorCode: error.code,
+                errorMessage: error.message,
+                domain: error.domain,
+              );
+            }
             _interstitialAd = null;
             _isInterstitialLoading = false;
           },
@@ -238,6 +247,14 @@ class AdServiceImpl implements AdService {
         debugPrint(
           '❌ [AdService] Interstitial Ad failed to show: ${error.message}',
         );
+        if (getIt.isRegistered<AnalyticsService>()) {
+          getIt<AnalyticsService>().logAdLoadFailed(
+            adFormat: 'Interstitial_Show',
+            errorCode: error.code,
+            errorMessage: error.message,
+            domain: error.domain,
+          );
+        }
         ad.dispose();
         _interstitialAd = null;
         onDismissed?.call();
@@ -246,6 +263,9 @@ class AdServiceImpl implements AdService {
     );
 
     await _interstitialAd!.show();
+    if (getIt.isRegistered<AnalyticsService>()) {
+      getIt<AnalyticsService>().logAdShown(adFormat: 'Interstitial');
+    }
   }
 
   @override
@@ -273,6 +293,14 @@ class AdServiceImpl implements AdService {
             debugPrint(
               '❌ [AdService] Rewarded Interstitial Ad failed to load: ${error.message}',
             );
+            if (getIt.isRegistered<AnalyticsService>()) {
+              getIt<AnalyticsService>().logAdLoadFailed(
+                adFormat: 'Rewarded',
+                errorCode: error.code,
+                errorMessage: error.message,
+                domain: error.domain,
+              );
+            }
             _rewardedInterstitialAd = null;
             _isRewardedLoading = false;
           },
@@ -320,6 +348,14 @@ class AdServiceImpl implements AdService {
         debugPrint(
           '❌ [AdService] Rewarded Interstitial Ad failed to show: ${error.message}',
         );
+        if (getIt.isRegistered<AnalyticsService>()) {
+          getIt<AnalyticsService>().logAdLoadFailed(
+            adFormat: 'Rewarded_Show',
+            errorCode: error.code,
+            errorMessage: error.message,
+            domain: error.domain,
+          );
+        }
         ad.dispose();
         _rewardedInterstitialAd = null;
         onRewarded(); // Graceful fallback
@@ -332,6 +368,9 @@ class AdServiceImpl implements AdService {
       onUserEarnedReward: (ad, reward) {
         debugPrint('🎉 [AdService] Rewarded ad completed cleanly.');
         earnedReward = true;
+        if (getIt.isRegistered<AnalyticsService>()) {
+          getIt<AnalyticsService>().logAdShown(adFormat: 'Rewarded');
+        }
       },
     );
   }
