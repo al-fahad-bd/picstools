@@ -781,13 +781,3 @@ class RemoveBgToolGraphic extends StatelessWidget {
     );
   }
 }
-
-class SocialToolGraphic extends StatelessWidget {
-  final bool isDark;
-  const SocialToolGraphic({super.key, required this.isDark});
-
-  @override
-  Widget build(BuildContext context) {
-    return RemoveBgToolGraphic(isDark: isDark);
-  }
-}
