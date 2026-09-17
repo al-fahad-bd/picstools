@@ -40,6 +40,8 @@ dependencies:
   video_player: ^2.14.0
   lottie: ^3.5.1
   google_sign_in: ^7.2.0
+  firebase_analytics: ^12.6.0
+  firebase_crashlytics: ^5.4.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

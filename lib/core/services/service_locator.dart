@@ -7,6 +7,7 @@ import 'file_share_service.dart';
 import 'sound_service.dart';
 import 'audio_service.dart';
 import 'auth_service.dart';
+import 'analytics_service.dart';
 import 'monetization/ad_service.dart';
 import 'monetization/in_app_purchase_service.dart';
 import 'storage/r2_storage_service.dart';
@@ -45,6 +46,10 @@ Future<void> initServiceLocator() async {
   await audioService.init();
   getIt.registerSingleton<AudioService>(audioService);
 
+  getIt.registerLazySingleton<AnalyticsService>(
+    () => AnalyticsServiceImpl(),
+  );
+
   // Core Services
   getIt.registerLazySingleton<ImagePickerService>(
     () => ImagePickerServiceImpl(),
@@ -73,6 +78,9 @@ Future<void> initServiceLocator() async {
   if (prefs.getBool('onboarding_completed') == true) {
     authService.signInAnonymously();
   }
+  authService.authStateChanges.listen((userId) {
+    getIt<AnalyticsService>().setUserId(userId);
+  });
   getIt.registerSingleton<AuthService>(authService);
 
   // Cloud Storage & Sync Services

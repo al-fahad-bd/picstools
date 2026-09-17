@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:picstools/features/pro/presentation/views/pro_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/services/history_service.dart';
@@ -23,8 +24,13 @@ import '../../features/settings/presentation/views/developer_details_view.dart';
 import '../../features/tool_placeholder_view.dart';
 
 abstract class AppRouter {
+  static final FirebaseAnalytics _analytics = FirebaseAnalytics.instance;
+
   static GoRouter router = GoRouter(
     initialLocation: '/splash',
+    observers: [
+      FirebaseAnalyticsObserver(analytics: _analytics),
+    ],
     routes: [
       GoRoute(path: '/splash', builder: (context, state) => const SplashView()),
       GoRoute(
