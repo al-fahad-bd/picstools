@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "77843855143-3m06gr2l4m5g2ue8i174jl34v1cbv8ab.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.deltrix.picstools",
+            "certificate_hash": "3383df8dfe3d0b1dc7893c5d0e1e34b13a0fde7d"
+          }
+        },
+        {
           "client_id": "77843855143-ak29dspjncpv1pqqmiaegov07l83goj5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -27,6 +35,14 @@
           "android_info": {
             "package_name": "com.deltrix.picstools",
             "certificate_hash": "3569145181b889598f4c40896f1d3b21146a8030"
+          }
+        },
+        {
+          "client_id": "77843855143-kocr8qpcq3dhef93rb18qb38t14oegs8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.deltrix.picstools",
+            "certificate_hash": "5c83441624533fca1f9e6f618bdefbdd7ec95660"
           }
         },
         {
